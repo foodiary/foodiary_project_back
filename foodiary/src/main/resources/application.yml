@@ -12,7 +12,16 @@ spring:
   redis:
     port: 6379
     host: localhost
+    
 # client-id: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
 # secret-key: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
 # redirect-uri: http://localhost:8080
 # grant-type: authorization_code
+
+springdoc:
+  # default-consumes-media-type: application/json
+  # default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    display-query-params-without-oauth2: true
