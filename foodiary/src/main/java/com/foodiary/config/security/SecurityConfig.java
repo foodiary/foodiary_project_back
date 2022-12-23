@@ -32,7 +32,15 @@ public class SecurityConfig {
                 .antMatchers(
                 "/",
                 "/v3/api-docs/**",
-                "/swagger-ui/**").permitAll()
+                "/swagger-ui/**",
+                "/swagger-resources/**",
+                "/member/signup",
+                // 여기부터는 스웨거 테스트용, permitAll에 오면 안됨
+                "/member/{memberId}",
+                "/member/login",
+                "/member/logout"
+                
+                ).permitAll()
                 .anyRequest().authenticated() 
                 .and()
                 .exceptionHandling() 

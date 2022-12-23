@@ -4,6 +4,12 @@ spring:
   #   url: sdfdsf
   #   username: sdfdf
   #   password: fdsdfs
+  # mvc:
+  #   pathmatch:
+  #     matching-strategy: ant_path_matcher
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   
   redis:
     port: 6379
