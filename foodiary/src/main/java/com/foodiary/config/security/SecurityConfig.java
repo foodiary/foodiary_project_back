@@ -7,8 +7,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,12 +32,34 @@ public class SecurityConfig {
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-resources/**",
-                "/member/signup",
                 // 여기부터는 스웨거 테스트용, permitAll에 오면 안됨
                 "/member/{memberId}",
-                "/member/login",
-                "/member/logout"
+                "/member",
+                "/member/logout",
+                "/member/search/{memberId}",
+                "/member/reissue",
+                "/member/scrap",
+                "/member/scrap/daily/{scrapId}/{memberId}",
+                "/member/scrap/recipe/{scrapId}/{memberId}",
+                "/member/food/{memberId}",
+                "/member/food/list/{memberId}",
+                "/daily",
+                "/daily/{dailyId}/{memberId}",
+                "/daily/comment",
+                "/daily/comment/{dailyId}/{dailyCommentId}/{memberId}",
+                "/daily/like/{dailyId}/{memberId}",
+                "/daily/like/{dailyId}/{dailyLikeId}/{memberId}",
+                "/daily/scrap/{dailyId}/{memberId}",
                 
+                // 권한 필요없는 url
+                "/member/login",
+                "/member/signup",
+                "/member/search",
+                "/dailys",
+                "/daily/details"
+
+
+
                 ).permitAll()
                 .anyRequest().authenticated() 
                 .and()

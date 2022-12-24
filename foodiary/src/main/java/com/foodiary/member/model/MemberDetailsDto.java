@@ -1,7 +1,5 @@
 package com.foodiary.member.model;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberEditDto {
-
-    @ApiModelProperty(value="사용자 비밀번호", required = false)
-    private String password;
-
+public class MemberDetailsDto {
+    
+    @ApiModelProperty(value="사용자 아이디", required = true)
+    private String loginId;
+    
     @ApiModelProperty(value="사용자 이메일", required = false)
     private String email;
 
@@ -24,16 +22,7 @@ public class MemberEditDto {
     @ApiModelProperty(value="사용자 소개글", required = false)
     private String profile;
 
-    @ApiModelProperty(value="사용자 이미지", required = false)
-    private MultipartFile memberImage;
+    @ApiModelProperty(value="사용자 이미지 경로", required = false)
+    private String path;
 
-    public MemberEditDto(String email, String nickName, String profile, String path) {
-        this.email = email;
-        this.nickName = nickName;
-        this.profile = profile;
-    }
-
-    
-
-    
 }
