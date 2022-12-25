@@ -33,7 +33,8 @@ public class SecurityConfig {
                 "/",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
-                "/addmember"
+                "/addmember",
+                "/member/signup"
                 ).permitAll()
                 .anyRequest().authenticated() 
                 .and()
