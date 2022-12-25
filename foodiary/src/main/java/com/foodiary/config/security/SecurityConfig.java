@@ -32,7 +32,9 @@ public class SecurityConfig {
                 .antMatchers(
                 "/",
                 "/v3/api-docs/**",
-                "/swagger-ui/**").permitAll()
+                "/swagger-ui/**",
+                "/addmember"
+                ).permitAll()
                 .anyRequest().authenticated() 
                 .and()
                 .exceptionHandling() 
