@@ -46,18 +46,30 @@ public class SecurityConfig {
                 "/daily",
                 "/daily/{dailyId}/{memberId}",
                 "/daily/comment",
-                "/daily/comment/{dailyId}/{dailyCommentId}/{memberId}",
+                "/daily/comment/{dailyId}/{memberId}",
+                "/daily/comment/{dailyId}/{commentId}/{memberId}",
                 "/daily/like/{dailyId}/{memberId}",
                 "/daily/like/{dailyId}/{dailyLikeId}/{memberId}",
                 "/daily/scrap/{dailyId}/{memberId}",
+
+                "/recipe",
+                "/recipe/{recipeId}/{memberId}",
+                "/recipe/comment",
+                "/recipe/comment/{recipeId}/{memberId}",
+                "/recipe/comment/{recipeId}/{commentId}/{memberId}",
+                "/recipe/like/{recipeId}/{memberId}",
+                "/recipe/like/{recipeId}/{recipeLikeId}/{memberId}",
+                "/recipe/scrap/{recipeId}/{memberId}",
                 
                 // 권한 필요없는 url
                 "/member/login",
                 "/member/signup",
                 "/member/search",
                 "/dailys",
-                "/daily/details"
+                "/daily/details",
 
+                "/recipes",
+                "/recipe/details"
 
 
                 ).permitAll()

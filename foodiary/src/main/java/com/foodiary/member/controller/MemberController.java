@@ -17,17 +17,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.foodiary.daily.model.DailyDto;
+import com.foodiary.daily.model.DailysDto;
 import com.foodiary.main.model.FoodDto;
 import com.foodiary.main.model.FoodRecommendDto;
 import com.foodiary.member.model.MemberDetailsDto;
 import com.foodiary.member.model.MemberLoginDto;
 import com.foodiary.member.model.MemberScrapDto;
 import com.foodiary.member.model.MemberSerchDto;
-import com.foodiary.recipe.model.RecipeDto;
+import com.foodiary.recipe.model.RecipesDto;
 
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -182,20 +181,21 @@ public class MemberController {
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        List<DailyDto> dailyList = new ArrayList<>();
+        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<RecipeDto> recipeList = new ArrayList<>();
+        List<DailysDto> dailyList = new ArrayList<>();
+
+        dailyList.add(dailysDto);
+
+        RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+
+        List<RecipesDto> recipeList = new ArrayList<>();
+
+        recipeList.add(recipesDto);
 
         MemberSerchDto memberSerchDto = new MemberSerchDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
         
         return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
-    }
-
-    // 회원 전체 조회
-    @ApiOperation(value = "사용자 전체 조회", hidden = true)
-    @GetMapping(value = "/member/search/all")
-    public void members() throws Exception {
-        
     }
 
     @Operation(summary = "member reissue", description = "회원 토큰 재발급")
@@ -230,10 +230,18 @@ public class MemberController {
         @ApiParam(value = "memberId", required = true) int memberId
     ) throws Exception {
 
-        List<DailyDto> dailyList = new ArrayList<>();
+        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<RecipeDto> recipeList = new ArrayList<>();
-        
+        List<DailysDto> dailyList = new ArrayList<>();
+
+        dailyList.add(dailysDto);
+
+        RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+
+        List<RecipesDto> recipeList = new ArrayList<>();
+
+        recipeList.add(recipesDto);
+
         MemberScrapDto memberScrap = new MemberScrapDto(dailyList, recipeList);
         
         return new ResponseEntity<>(memberScrap, HttpStatus.OK);
@@ -312,13 +320,13 @@ public class MemberController {
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
     ) throws Exception {
 
-        FoodRecommendDto foodRecommendDto = new FoodRecommendDto(null, null, null, null,
-        null, null, null, null, 
-        null, null, null, null, 
-        null, null, null, null, 
-        null, null, null, null, 
-        null, null, null, null, 
-        null, null, null, null);
+        FoodRecommendDto foodRecommendDto = new FoodRecommendDto("한식", "된장찌개", "중식", "짬뽕",
+        "한식", "된장찌개", "중식", "짬뽕",
+        "한식", "된장찌개", "중식", "짬뽕",
+        "한식", "된장찌개", "중식", "짬뽕",
+        "한식", "된장찌개", "중식", "짬뽕",
+        "한식", "된장찌개", "중식", "짬뽕",
+        "한식", "된장찌개", "중식", "짬뽕");
 
         List<FoodRecommendDto> foodList = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-package com.foodiary.daily.model;
+package com.foodiary.recipe.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailyCommentEditDto {
+public class RecipeCommentEditDto {
     
     @ApiModelProperty(value="댓글 시퀀스", required = true)
     private int commentId;
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
-    private int dailyId;
+    private int recipeId;
 
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
