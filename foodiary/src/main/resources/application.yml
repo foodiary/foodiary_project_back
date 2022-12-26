@@ -1,22 +1,13 @@
 spring:
-  profiles:
-    group:
-      local:
-        - oauth
-
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:3306/test
-    username: test
+    username: root
     password: test1234
+
   redis:
     port: 6379
     host: localhost
-    
-# client-id: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
-# secret-key: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
-# redirect-uri: http://localhost:8080
-# grant-type: authorization_code
 
 springdoc:
   # default-consumes-media-type: application/json
@@ -25,3 +16,29 @@ springdoc:
     path: /swagger-ui.html
     disable-swagger-default-url: true
     display-query-params-without-oauth2: true
+
+jwt:
+  secret-key: St5h23phd4V37SFvHXBY2Zwmfvkkgjecqib0Bxz5Eh2Ch4R5dz
+  access-token-expiration-minutes: 60
+  refresh-token-expiration-minutes: 360
+mybatis:
+  type-aliases-package: com.foodiary
+  mapper-locations: mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+google:
+  client_id: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
+  client_secret: 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
+  redirect_uri: http://localhost:8080/oauth/google/callback
+  grant_type: authorization_code
+  scope: -profile
+         -email
+naver:
+  client_id: 2wiUq3wF__ufyI6HMm06
+  client_secret: O3n_qnR4iD
+  redirect_uri: http://localhost:8080/oauth/naver/callback
+  grant_type: authorization_code
+  state : test
+  scope: -profile
+         -email
