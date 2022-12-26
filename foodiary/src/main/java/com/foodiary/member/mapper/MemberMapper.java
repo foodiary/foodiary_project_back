@@ -1,9 +1,9 @@
 package com.foodiary.member.mapper;
-
 import org.apache.ibatis.annotations.Mapper;
 
 import com.foodiary.member.dto.MemberPostDto;
 import com.foodiary.member.entity.Member;
+
 
 @Mapper
 public interface MemberMapper {

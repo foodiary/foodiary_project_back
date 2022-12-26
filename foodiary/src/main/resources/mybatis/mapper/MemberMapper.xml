@@ -3,14 +3,15 @@
 
 <mapper namespace="com.foodiary.member.mapper.MemberMapper">
 
-    <select id="findByEmail" resultType="com.foodiary.member.MemberResponseDto">
-        SELECT * FROM MEMBER WHERE
+    <select id="findByEmail" resultType="com.foodiary.member.entity.Member">
+        SELECT * FROM TB_MEMBER 
+        WHERE MEMBER_EMAIL = #{email}
 	</select>
 
     <insert id="saveMember" parameterType="com.foodiary.member.dto.MemberPostDto">
-        INSERT INTO MEMBER (MEMBER_EMAIL, MEMBER_PW, MEMBER_NICKNAME,
-        MEMBER_FOOD, MEMBER_IMAGE, MEMBER_PROFILE, MEMBER_YN)
-        VALUE(#{email}, #{pw}, #{nickName}, #{food}, #{image}, #{profile}, #{yn})
+        INSERT INTO TB_MEMBER (MEMBER_EMAIL, MEMBER_PW, MEMBER_NICKNAME,
+        MEMBER_FOOD, MEMBER_IMAGE, MEMBER_PROFILE, MEMBER_YN, MEMBER_CREATE, MEMBER_UPDATE)
+        VALUES(#{email}, #{pw}, #{nickName}, #{food}, #{image}, #{profile}, #{yn}, now(), now())
 	</insert>
 
 </mapper>
