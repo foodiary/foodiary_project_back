@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.foodiary.food.mapper.FoodMapper">
+
+    <select id="findByFoodCetegory" resultType="com.foodiary.food.entity.Food">
+        SELECT * FROM TB_Food
+        WHERE FOOD_CATEGORY = #{category}
+    </select>
+
+<!--    <insert id="" parameterType="com.foodiary.food.dto.">-->
+
+<!--    </insert>-->
+
+</mapper>

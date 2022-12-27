@@ -20,7 +20,6 @@ public class MemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         Member member = memberMapper
                 .findByEmail(userEmail);
-        // return new MemberDetails(member);
-        return null;
+         return new MemberDetails(member);
     }
 }
