@@ -1,8 +1,11 @@
 package com.foodiary.member.controller;
 
+import com.foodiary.member.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,9 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.foodiary.member.dto.MemberPostDto;
 import com.foodiary.member.dto.MemberResponseDto;
 import com.foodiary.member.entity.Member;
-import com.foodiary.member.service.MemberService;
-
-import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor
