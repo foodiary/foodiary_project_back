@@ -29,7 +29,7 @@ mybatis:
 google:
   client_id: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
   client_secret: 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
-  redirect_uri: http://localhost:8080/oauth/google/callback
+  redirect_uri: http://localhost:3000/oauth/google/callback
   grant_type: authorization_code
   scope: -profile
          -email

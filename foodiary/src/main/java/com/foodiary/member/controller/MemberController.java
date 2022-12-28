@@ -2,6 +2,7 @@ package com.foodiary.member.controller;
 
 import com.foodiary.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import com.foodiary.member.dto.MemberResponseDto;
 import com.foodiary.member.entity.Member;
 
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/member")
@@ -33,6 +35,7 @@ public class MemberController {
 
     @GetMapping("/findmember")
     public ResponseEntity<Member> testFindMember(@RequestParam String email) {
+        log.info(email);
         return new ResponseEntity<>(memberService.getMember(email), HttpStatus.OK);
     }
 }

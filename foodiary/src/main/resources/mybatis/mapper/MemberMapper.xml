@@ -8,6 +8,11 @@
         WHERE MEMBER_EMAIL = #{email}
 	</select>
 
+    <select id="findByEmailAndPw" resultType="com.foodiary.member.entity.Member">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_EMAIL = #{email} AND MEMBER_PW = #{pw}
+    </select>
+
     <insert id="saveMember" parameterType="com.foodiary.member.dto.MemberPostDto">
         INSERT INTO TB_MEMBER (MEMBER_EMAIL, MEMBER_PW, MEMBER_NICKNAME,
         MEMBER_FOOD, MEMBER_IMAGE, MEMBER_PROFILE, MEMBER_YN, MEMBER_CREATE, MEMBER_UPDATE)

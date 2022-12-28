@@ -14,5 +14,7 @@ public interface MemberMapper {
     void saveMember(MemberPostDto memberPostDto);
 
      Member findByEmail(String email);
+
+     Member findByEmailAndPw(String email, String pw);
     
 }

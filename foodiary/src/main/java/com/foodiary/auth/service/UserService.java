@@ -70,6 +70,15 @@ public class UserService {
         return tokenResponse;
     }
 
+    public TokenResponse createLoginTokenResponse(String email, String pw) throws Exception {
+        Member member = memberMapper.findByEmailAndPw(email, pw);
+        log.info(member.getMemberEmail());
+        TokenResponse tokenResponse = jwtProvider.createTokensByLogin(email);
+        tokenResponse.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
+        tokenResponse.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
+        return tokenResponse;
+    }
+
     public Claims oauthVerify(String jwt) throws Exception {
         return jwtProvider.verifyToken(jwt);
     }
