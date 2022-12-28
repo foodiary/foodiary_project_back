@@ -21,6 +21,7 @@ public class FoodService {
 
         Random random = new Random();
         int randomIndex = random.nextInt(686);
+        System.out.println(randomIndex);
         FoodDto foodRecommend = foodMapper.findById(randomIndex);
         memberFoodMapper.saveMemberFood(memberId, foodRecommend.getFoodId());
 

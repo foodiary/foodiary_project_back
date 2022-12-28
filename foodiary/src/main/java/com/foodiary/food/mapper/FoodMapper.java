@@ -1,8 +1,11 @@
 package com.foodiary.food.mapper;
 
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.foodiary.food.model.FoodDto;
+import org.apache.ibatis.annotations.Param;
+
 
 import java.util.List;
 
@@ -13,5 +16,5 @@ public interface FoodMapper {
 
     List<FoodDto> findByFoodCetegory(String cetegory);
 
-    FoodDto findById(int foodId);
+    FoodDto findById(@Param("foodId") int foodId);
 }

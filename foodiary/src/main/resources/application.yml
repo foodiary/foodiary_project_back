@@ -8,9 +8,6 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher # 스웨거 설정, 안넣으면 시작에러남
 
-  redis:
-    port: 6379
-    host: localhost
 
   config:
     import: classpath:/application-aws.yml, classpath:/application-server.yml, classpath:/application-oauth.yml
@@ -45,3 +42,5 @@ springdoc:
     path: /swagger-ui.html
     disable-swagger-default-url: true
     display-query-params-without-oauth2: true
+
+
