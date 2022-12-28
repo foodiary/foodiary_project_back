@@ -1,7 +1,6 @@
 package com.foodiary.auth.jwt;
 
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Duration;
 import java.util.Calendar;
@@ -17,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.foodiary.auth.model.TokenResponse;
+import com.foodiary.auth.model.TokenResponseDto;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.redis.RedisDao;
 
@@ -26,7 +25,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Encoders;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,12 +63,12 @@ public class JwtProvider {
         return expiration;
     }
 
-    public TokenResponse createTokensByLogin(String email) throws Exception {
+    public TokenResponseDto createTokensByLogin(String email) throws Exception {
 
         String atk = "Bearer " + delegateAccessToken(email);
         String rtk = delegateRefreshToken(email);
         redisDao.setValues(email, rtk, Duration.ofMinutes((long) refreshTokenExpirationMinutes));
-        return new TokenResponse(atk, rtk, "bearer", false);
+        return new TokenResponseDto(atk, rtk, "bearer", false);
     }
 
 
@@ -155,14 +153,14 @@ public class JwtProvider {
         }
     }
 
-    public TokenResponse reissueAtk(MemberDto member) throws Exception {
+    public TokenResponseDto reissueAtk(MemberDto member) throws Exception {
         String rtkInRedis = redisDao.getValues(member.getMemberEmail());
         if (Objects.isNull(rtkInRedis)) {
             throw new JwtException("인증 정보가 만료되었습니다.");
         }
 
         String atk = delegateAccessToken(member.getMemberEmail());
-        return new TokenResponse(atk, null, "bearer", false);
+        return new TokenResponseDto(atk, null, "bearer", false);
     }
 
     public void deleteRtk(MemberDto member) throws JwtException {
