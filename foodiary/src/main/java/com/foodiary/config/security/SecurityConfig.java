@@ -7,8 +7,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +30,49 @@ public class SecurityConfig {
                 .antMatchers(
                 "/",
                 "/v3/api-docs/**",
-                "/swagger-ui/**").permitAll()
+                "/swagger-ui/**",
+                "/swagger-resources/**",
+                // 여기부터는 스웨거 테스트용, permitAll에 오면 안됨
+                "/member/{memberId}",
+                "/member",
+                "/member/logout",
+                "/member/search/{memberId}",
+                "/member/reissue",
+                "/member/scrap",
+                "/member/scrap/daily/{scrapId}/{memberId}",
+                "/member/scrap/recipe/{scrapId}/{memberId}",
+                "/member/food/{memberId}",
+                "/member/food/list/{memberId}",
+                "/daily",
+                "/daily/{dailyId}/{memberId}",
+                "/daily/comment",
+                "/daily/comment/{dailyId}/{memberId}",
+                "/daily/comment/{dailyId}/{commentId}/{memberId}",
+                "/daily/like/{dailyId}/{memberId}",
+                "/daily/like/{dailyId}/{dailyLikeId}/{memberId}",
+                "/daily/scrap/{dailyId}/{memberId}",
+
+                "/recipe",
+                "/recipe/{recipeId}/{memberId}",
+                "/recipe/comment",
+                "/recipe/comment/{recipeId}/{memberId}",
+                "/recipe/comment/{recipeId}/{commentId}/{memberId}",
+                "/recipe/like/{recipeId}/{memberId}",
+                "/recipe/like/{recipeId}/{recipeLikeId}/{memberId}",
+                "/recipe/scrap/{recipeId}/{memberId}",
+                
+                // 권한 필요없는 url
+                "/member/login",
+                "/member/signup",
+                "/member/search",
+                "/dailys",
+                "/daily/details",
+
+                "/recipes",
+                "/recipe/details"
+
+
+                ).permitAll()
                 .anyRequest().authenticated() 
                 .and()
                 .exceptionHandling() 
