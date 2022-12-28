@@ -1,6 +1,7 @@
 package com.foodiary.food.service;
 
 import com.foodiary.food.mapper.FoodMapper;
+import com.foodiary.food.mapper.MemberFoodMapper;
 import com.foodiary.food.model.FoodDto;
 
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,15 @@ import java.util.Random;
 public class FoodService {
 
     private final FoodMapper foodMapper;
+    private final MemberFoodMapper memberFoodMapper;
 
-    public FoodDto randomFood(String category) {
+    public FoodDto randomFood(int memberId) {
 
-        List<FoodDto> foods = foodMapper.findByFoodCetegory(category);
         Random random = new Random();
-        int randomIndex = random.nextInt(foods.size());
-        return foods.get(randomIndex);
+        int randomIndex = random.nextInt(686);
+        FoodDto foodRecommend = foodMapper.findById(randomIndex);
+        memberFoodMapper.saveMemberFood(memberId, foodRecommend.getFoodId());
+
+        return foodRecommend;
     }
 }
