@@ -1,19 +1,55 @@
 spring:
-  # datasource:
-  #   driver-class-name: sdfsdf
-  #   url: sdfdsf
-  #   username: sdfdf
-  #   password: fdsdfs
-  # mvc:
-  #   pathmatch:
-  #     matching-strategy: ant_path_matcher
+  profiles:
+    group:
+      local:
+        - oauth
+
   mvc:
     pathmatch:
-      matching-strategy: ant_path_matcher
-  
+      matching-strategy: ant_path_matcher # 스웨거 설정, 안넣으면 시작에러남
+
+  config:
+    import: classpath:/application-aws.yml
+    servlet:
+      multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
+      
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/foodiary_db
+    username: mijuu
+    password: vneldjfl124
   redis:
     port: 6379
     host: localhost
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: foodiary-bucket
+    stack:
+      auto: false
+
+mybatis:
+  type-aliases-package: com.foodiary
+  mapper-locations: mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    
+# client-id: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
+# secret-key: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
+# redirect-uri: http://localhost:8080
+# grant-type: authorization_code
 
 springdoc:
   # default-consumes-media-type: application/json

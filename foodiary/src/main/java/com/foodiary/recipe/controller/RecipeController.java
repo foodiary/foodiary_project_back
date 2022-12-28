@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.recipe.model.RecipeCommentDetailsDto;
 import com.foodiary.recipe.model.RecipeDetailsDto;
+import com.foodiary.recipe.model.RecipeEditDto;
+import com.foodiary.recipe.model.RecipeWriteDto;
 import com.foodiary.recipe.model.RecipesDto;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,7 +35,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @Controller
 public class RecipeController {
     
-        // TODO : 레시피 공유 게시글 쓸때 무조건 이미지 첨부할건지? 아니면 그냥 줄글 가능하게 할건지?, 이미지 몇개까지 첨부?
         @Operation(summary = "recipe write", description = "레시피 공유 게시글 작성")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -43,14 +46,15 @@ public class RecipeController {
         @ResponseBody
         @PostMapping(value = "/recipe")
         public ResponseEntity<String> recipeWrite(
-            @Parameter(description="회원 시퀀스", example = "3498", required = true)
-            @RequestPart("memberId") String memberId, // int로 안받아져서 string으로 받음
-            @Parameter(description="게시글 제목", example = "제목입니다", required = true)
-            @RequestPart("title") String title,
-            @Parameter(description="게시글 내용", example = "내용입니다", required = true)
-            @RequestPart("content") String content,
+            @RequestPart @Valid RecipeWriteDto recipeWriteDto,
+            // @Parameter(description="회원 시퀀스", example = "3498", required = true)
+            // @RequestPart("memberId") String memberId, // int로 안받아져서 string으로 받음
+            // @Parameter(description="게시글 제목", example = "제목입니다", required = true)
+            // @RequestPart("title") String title,
+            // @Parameter(description="게시글 내용", example = "내용입니다", required = true)
+            // @RequestPart("content") String content,
             @Parameter(description = "사진 이미지")
-            @RequestPart(value = "memberImage", required = true) MultipartFile memberImage
+            @RequestPart(value = "recipeImage", required = true) List<MultipartFile> recipeImage
         ) throws Exception {
     
             return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -69,12 +73,9 @@ public class RecipeController {
         public ResponseEntity<String> recipeModify(
             @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
             @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
-            @Parameter(description="게시글 제목", example = "제목입니다")
-            @RequestPart(value = "title", required = false) String title,
-            @Parameter(description="게시글 내용", example = "내용입니다")
-            @RequestPart(value = "content", required = false) String content,
+            @RequestPart RecipeEditDto recipeEditDto,
             @Parameter(description = "사진 이미지")
-            @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
+            @RequestPart(value = "recipeImage", required = false) List<MultipartFile> recipeImage
         ) throws Exception {
     
             return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -90,10 +91,10 @@ public class RecipeController {
         @ResponseBody
         @GetMapping(value = "/recipes")
         public ResponseEntity<List<RecipesDto>> recipes(
-            @ApiParam(value = "게시판 페이지", required = false) int pageNum
+            @ApiParam(value = "게시판 페이지", required = false) String pageNum
         ) throws Exception {
     
-            RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+            RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "이미지경로입니다.", 1, 2, LocalDateTime.now(), 5);
             List<RecipesDto> recipeList = new ArrayList<>();
     
             recipeList.add(recipesDto);
@@ -112,16 +113,16 @@ public class RecipeController {
         @GetMapping(value = "/recipe/details")
         public ResponseEntity<List<RecipeDetailsDto>> recipeDefails(
             @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-            @ApiParam(value = "게시판 페이지", required = false) int pageNum
+            @ApiParam(value = "게시판 페이지", required = false) String pageNum
         ) throws Exception {
     
             RecipeCommentDetailsDto recipeCommentDto = new RecipeCommentDetailsDto(1, recipeId, 1, "댓글 작성자", "댓글 내용입니다.");
     
-            List<RecipeCommentDetailsDto> recipeCommentDtoList = new ArrayList<>();
+            // List<RecipeCommentDetailsDto> recipeCommentDtoList = new ArrayList<>();
     
-            recipeCommentDtoList.add(recipeCommentDto);
+            // recipeCommentDtoList.add(recipeCommentDto);
             
-            RecipeDetailsDto recipeDto = new RecipeDetailsDto(recipeId, 1, "제목입니다.", "내용입니다", "경로입니다", 5, 7, LocalDateTime.now(), 5, recipeCommentDtoList);
+            RecipeDetailsDto recipeDto = new RecipeDetailsDto(recipeId, 1, "제목입니다.", "내용입니다", "이미지경로입니다", 5, 7, LocalDateTime.now(), 5);
     
             List<RecipeDetailsDto> recipeDetailsDtoList = new ArrayList<>();
     
@@ -149,7 +150,7 @@ public class RecipeController {
         }
     
         @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-        @Operation(summary = "recipe comment modify", description = "레시피 공유 게시글 댓글 작성")
+        @Operation(summary = "recipe comment write", description = "레시피 공유 게시글 댓글 작성")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
                 @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -166,7 +167,7 @@ public class RecipeController {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
     
-        @Operation(summary = "recipe comment modify", description = "레시피 공유 게시글 댓글 조회")
+        @Operation(summary = "recipe comment view", description = "레시피 공유 게시글 댓글 조회")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
                 @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -177,7 +178,7 @@ public class RecipeController {
         @GetMapping(value = "/recipe/comment")
         public ResponseEntity<List<RecipeCommentDetailsDto>> recipeCommentDetails(
             @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-            @ApiParam(value = "댓글 페이지", required = true) int pageNum
+            @ApiParam(value = "댓글 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
         ) throws Exception {
             RecipeCommentDetailsDto recipeCommentDetailsDto = new RecipeCommentDetailsDto(1, recipeId, 1, "댓글 작성자", "댓글 내용입니다.");
             List<RecipeCommentDetailsDto> detailsDtos = new ArrayList<>();

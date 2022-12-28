@@ -25,7 +25,7 @@ public class DailyDetailsDto {
     @ApiModelProperty(value="게시글 내용", required = true)
     private String content;
 
-    @ApiModelProperty(value="게시글 이미지 경로", required = true)
+    @ApiModelProperty(value="게시글 이미지 경로", required = false)
     private String path;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
@@ -40,6 +40,6 @@ public class DailyDetailsDto {
     @ApiModelProperty(value="댓글 수", required = true)
     private int comment;
 
-    @ApiModelProperty(value="댓글 리스트", required = true)
-    List<DailyCommentDetailsDto> dailyCommentDtoList;
+    // @ApiModelProperty(value="댓글 리스트", required = true)
+    // List<DailyCommentDetailsDto> dailyCommentDtoList;
 }

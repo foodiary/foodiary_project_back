@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.daily.model.DailyCommentDetailsDto;
 import com.foodiary.daily.model.DailyDetailsDto;
+import com.foodiary.daily.model.DailyEditDto;
+import com.foodiary.daily.model.DailyWriteDto;
 import com.foodiary.daily.model.DailysDto;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,7 +35,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @Controller
 public class DailyController {
     
-    // TODO : 하루식단 게시글 쓸때 무조건 이미지 첨부할건지? 아니면 그냥 줄글 가능하게 할건지?
     @Operation(summary = "daily write", description = "하루 식단 게시글 작성")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -43,14 +46,15 @@ public class DailyController {
     @ResponseBody
     @PostMapping(value = "/daily")
     public ResponseEntity<String> dailyWrite(
-        @Parameter(description="회원 시퀀스", example = "3498", required = true)
-        @RequestPart("memberId") String memberId, // int로 안받아져서 string으로 받음
-        @Parameter(description="게시글 제목", example = "제목입니다", required = true)
-        @RequestPart("title") String title,
-        @Parameter(description="게시글 내용", example = "내용입니다", required = true)
-        @RequestPart("content") String content,
+        @RequestPart @Valid DailyWriteDto dailyWriteDto,
+        // @Parameter(description="회원 시퀀스", example = "3498", required = true)
+        // @RequestPart("memberId") String memberId, // int로 안받아져서 string으로 받음
+        // @Parameter(description="게시글 제목", example = "제목입니다", required = true)
+        // @RequestPart("title") String title,
+        // @Parameter(description="게시글 내용", example = "내용입니다", required = true)
+        // @RequestPart("content") String content,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "memberImage", required = true) MultipartFile memberImage
+        @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
     ) throws Exception {
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -69,12 +73,9 @@ public class DailyController {
     public ResponseEntity<String> dailyModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
-        @Parameter(description="게시글 제목", example = "제목입니다")
-        @RequestPart(value = "title", required = false) String title,
-        @Parameter(description="게시글 내용", example = "내용입니다")
-        @RequestPart(value = "content", required = false) String content,
+        @RequestPart DailyEditDto dailyEditDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
+        @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
     ) throws Exception {
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -90,10 +91,10 @@ public class DailyController {
     @ResponseBody
     @GetMapping(value = "/dailys")
     public ResponseEntity<List<DailysDto>> dailys(
-        @ApiParam(value = "게시판 페이지", required = false) int pageNum
+        @ApiParam(value = "게시판 페이지", required = false) String pageNum
     ) throws Exception {
 
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "이미지 경로입니다.", 1, 2, LocalDateTime.now(), 5);
         List<DailysDto> dailyList = new ArrayList<>();
 
         dailyList.add(dailysDto);
@@ -112,16 +113,16 @@ public class DailyController {
     @GetMapping(value = "/daily/details")
     public ResponseEntity<List<DailyDetailsDto>> dailyDefails(
         @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @ApiParam(value = "게시판 페이지", required = false) int pageNum
+        @ApiParam(value = "게시판 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
     ) throws Exception {
 
         DailyCommentDetailsDto dailyCommentDto = new DailyCommentDetailsDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
 
-        List<DailyCommentDetailsDto> dailyCommentDtoList = new ArrayList<>();
+        // List<DailyCommentDetailsDto> dailyCommentDtoList = new ArrayList<>();
 
-        dailyCommentDtoList.add(dailyCommentDto);
+        // dailyCommentDtoList.add(dailyCommentDto);
         
-        DailyDetailsDto dailyDto = new DailyDetailsDto(dailyId, 1, "제목입니다.", "내용입니다", "경로입니다", 5, 7, LocalDateTime.now(), 5, dailyCommentDtoList);
+        DailyDetailsDto dailyDto = new DailyDetailsDto(dailyId, 1, "제목입니다.", "내용입니다", "이미지경로입니다", 5, 7, LocalDateTime.now(), 5);
 
         List<DailyDetailsDto> dailyDetailsDtoList = new ArrayList<>();
 
@@ -149,7 +150,7 @@ public class DailyController {
     }
 
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @Operation(summary = "daily comment modify", description = "하루 식단 게시글 댓글 작성")
+    @Operation(summary = "daily comment write", description = "하루 식단 게시글 댓글 작성")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -166,7 +167,7 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @Operation(summary = "daily comment modify", description = "하루 식단 게시글 댓글 조회")
+    @Operation(summary = "daily comment view", description = "하루 식단 게시글 댓글 조회")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -177,7 +178,7 @@ public class DailyController {
     @GetMapping(value = "/daily/comment")
     public ResponseEntity<List<DailyCommentDetailsDto>> dailyCommentDetails(
         @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @ApiParam(value = "댓글 페이지", required = true) int pageNum
+        @ApiParam(value = "댓글 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
     ) throws Exception {
         DailyCommentDetailsDto dailyCommentDetailsDto = new DailyCommentDetailsDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
         List<DailyCommentDetailsDto> detailsDtos = new ArrayList<>();
