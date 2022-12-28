@@ -9,10 +9,14 @@
         VALUES (#{email}, #{password}, #{nickName}, #{profile}, now(), now());
 	</insert>
 
-    <!-- <insert id="saveMember" parameterType="com.foodiary.member.dto.MemberPostDto">
-        INSERT INTO MEMBER (MEMBER_EMAIL, MEMBER_PW, MEMBER_NICKNAME,
-        MEMBER_FOOD, MEMBER_IMAGE, MEMBER_PROFILE, MEMBER_YN, MEMBER_CREATE, MEMBER_UPDATE)
-        VALUES (#{email}, #{pw}, #{nickName}, #{food}, #{image}, #{profile}, #{yn}, now(), now());
-	</insert> -->
+    <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER 
+        WHERE MEMBER_EMAIL = #{email}
+	</select>
+
+    <select id="findByEmailAndPw" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_EMAIL = #{email} AND MEMBER_PW = #{pw}
+    </select>
 
 </mapper>
