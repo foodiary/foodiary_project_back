@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -112,9 +113,11 @@ public class MemberController {
     @ResponseBody
     @GetMapping(value = "/member")
     public ResponseEntity<MemberDetailsDto> memberDetails(
-        @ApiParam(value = "회원 시퀀스", required = true)int memberId
+        @ApiParam(value = "회원 시퀀스", required = true)int memberId,
+        HttpServletRequest request
     ) throws Exception {
 
+        // System.out.println("값 찍기 : "+request.getHeader("accessToken"));
         MemberDetailsDto memberDetails = new MemberDetailsDto("사용자 아이디", "사용자 이메일", "사용자 닉네임", "사용자 소개글", "사용자 이미지 경로");
 
         return new ResponseEntity<>(memberDetails, HttpStatus.OK);
