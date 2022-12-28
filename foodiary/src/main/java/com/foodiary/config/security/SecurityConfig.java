@@ -1,5 +1,7 @@
 package com.foodiary.config.security;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
@@ -39,6 +41,22 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
+    public static String encrypt(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] passBytes = s.getBytes();
+            md.reset();
+            byte[] digested = md.digest(passBytes);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < digested.length; i++)
+                sb.append(Integer.toString((digested[i] & 0xff) + 0x100, 16).substring(1));
+            return sb.toString();
+        } catch (Exception e) {
+            return s;
+        }
+    }
+
     
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
