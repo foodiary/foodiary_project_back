@@ -8,6 +8,10 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher # 스웨거 설정, 안넣으면 시작에러남
 
+  redis:
+    port: 6379
+    host: localhost
+
   config:
     import: classpath:/application-aws.yml
     servlet:
@@ -15,22 +19,19 @@ spring:
         max-file-size: 10MB
         max-request-size: 10MB
       
-  # 미주 db
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/foodiary_db
-    username: mijuu
-    password: vneldjfl124
-  redis:
-    port: 6379
-    host: localhost
+#  # 미주 db
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://localhost:3306/foodiary_db
+#    username: mijuu
+#    password: vneldjfl124
 
 # 민택 db
-  # datasource:
-  #   driver-class-name: org.mariadb.jdbc.Driver
-  #   url: jdbc:mariadb://localhost:3306/test
-  #   username: root
-  #   password: test1234
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/test
+    username: root
+    password: test1234
 
 logging:
   level:
@@ -68,7 +69,7 @@ springdoc:
 google:
   client_id: 681375843184-2dka6lh5p5ngmar14l3trfemkskk63tn.apps.googleusercontent.com
   client_secret: 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
-  redirect_uri: http://localhost:3000/oauth/google/callback
+  redirect_uri: http://localhost:8080/oauth/google/callback
   grant_type: authorization_code
   scope: -profile
          -email
