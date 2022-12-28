@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FoodDto {
+public class FoodDtooo {
     
     @ApiModelProperty(value="추천 음식", required = true)
     private String food;

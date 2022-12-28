@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.foodiary.common.exception.VaildErrorDto;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.model.DailysDto;
-import com.foodiary.main.model.FoodDto;
+import com.foodiary.main.model.FoodDtooo;
 import com.foodiary.main.model.FoodRecommendDto;
 import com.foodiary.member.model.MemberDetailsDto;
 import com.foodiary.member.model.MemberEditDto;
@@ -297,13 +297,13 @@ public class MemberController {
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member/food/{memberId}")
-    public ResponseEntity<List<FoodDto>> memberFood(
+    public ResponseEntity<List<FoodDtooo>> memberFood(
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
     ) throws Exception {
 
-        FoodDto foodDto = new FoodDto("짬뽕", "중식", LocalDateTime.now());
+        FoodDtooo foodDto = new FoodDtooo("짬뽕", "중식", LocalDateTime.now());
 
-        List<FoodDto> foodList = new ArrayList<>();
+        List<FoodDtooo> foodList = new ArrayList<>();
 
         foodList.add(foodDto);
 
