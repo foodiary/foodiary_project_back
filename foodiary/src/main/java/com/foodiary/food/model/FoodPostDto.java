@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FoodPostDto {
-    private String foodCategory;
+    private int memberId;
 }

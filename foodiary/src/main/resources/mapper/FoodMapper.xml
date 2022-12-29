@@ -8,4 +8,9 @@
         WHERE FOOD_CATEGORY = #{category}
     </select>
 
+    <select id="findById" resultType="com.foodiary.food.model.FoodDto">
+        SELECT * FROM TB_Food
+        WHERE FOOD_ID = #{foodId}
+    </select>
+
 </mapper>

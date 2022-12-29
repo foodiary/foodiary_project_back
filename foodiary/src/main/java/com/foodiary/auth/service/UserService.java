@@ -4,6 +4,7 @@ import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.model.*;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberLoginDto;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.xml.transform.OutputKeys;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -43,7 +42,7 @@ public class UserService {
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else{
-                TokenResponse response = createTokenResponse(googleUser.email);
+                TokenResponseDto response = createTokenResponse(googleUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
         }
@@ -55,28 +54,28 @@ public class UserService {
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
             else{
-                TokenResponse response = createTokenResponse(naverUser.email);
+                TokenResponseDto response = createTokenResponse(naverUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
         }
         return null;
     }
-    private TokenResponse createTokenResponse(String email) throws Exception {
+    private TokenResponseDto createTokenResponse(String email) throws Exception {
         MemberDto member = memberMapper.findByEmail(email);
         log.info(member.getMemberEmail());
-        TokenResponse tokenResponse = jwtProvider.createTokensByLogin(email);
-        tokenResponse.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
-        tokenResponse.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
-        return tokenResponse;
+        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(email);
+        tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
+        tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
+        return tokenResponseDto;
     }
 
-    public TokenResponse createLoginTokenResponse(String email, String pw) throws Exception {
-        MemberDto member = memberMapper.findByEmailAndPw(email, pw);
+    public TokenResponseDto createLoginTokenResponse(MemberLoginDto loginDto) throws Exception {
+        MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), loginDto.getPassword());
         log.info(member.getMemberEmail());
-        TokenResponse tokenResponse = jwtProvider.createTokensByLogin(email);
-        tokenResponse.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
-        tokenResponse.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
-        return tokenResponse;
+        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(loginDto.getLoginId());
+        tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
+        tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
+        return tokenResponseDto;
     }
 
     public Claims oauthVerify(String jwt) throws Exception {

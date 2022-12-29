@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FoodMemberDto {
+public class MemberFoodResponseDto {
     private int foodMemberId;
     private int foodId;
     private int memberId;
