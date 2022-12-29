@@ -14,7 +14,12 @@ public interface FoodMapper {
 
     void saveFood(FoodDto food);
 
+    void saveMemberFood(@Param("memberId") int memberId, @Param("foodId") int foodId);
+
     List<FoodDto> findByFoodCetegory(String cetegory);
 
     FoodDto findById(@Param("foodId") int foodId);
+
+
+
 }
