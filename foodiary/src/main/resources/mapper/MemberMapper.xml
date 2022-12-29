@@ -4,9 +4,9 @@
 <mapper namespace="com.foodiary.member.mapper.MemberMapper">
 
     <insert id="saveMember">
-        INSERT INTO TB_MEMBER (MEMBER_EMAIL, MEMBER_PW, MEMBER_NICKNAME,
+        INSERT INTO TB_MEMBER (MEMBER_LOGINID, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_NICKNAME,
         MEMBER_PROFILE, MEMBER_CREATE, MEMBER_UPDATE)
-        VALUES (#{email}, #{password}, #{nickName}, #{profile}, now(), now());
+        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, now(), now());
 	</insert>
 
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
@@ -16,7 +16,7 @@
 
     <select id="findByEmailAndPw" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
-        WHERE MEMBER_EMAIL = #{email} AND MEMBER_PW = #{pw}
+        WHERE MEMBER_EMAIL = #{email} AND MEMBER_PASSWORD = #{pw}
     </select>
 
 </mapper>

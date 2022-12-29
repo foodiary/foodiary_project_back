@@ -32,11 +32,6 @@ cloud:
     stack:
       auto: false
 
-  type-aliases-package: com.foodiary
-  mapper-locations: mapper/*.xml
-  configuration:
-    map-underscore-to-camel-case: true
-
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

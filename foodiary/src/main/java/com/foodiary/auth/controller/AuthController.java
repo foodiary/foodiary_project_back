@@ -4,7 +4,8 @@ import com.foodiary.auth.model.TokenResponseDto;
 import com.foodiary.auth.service.GoogleOauth;
 import com.foodiary.auth.service.UserService;
 import com.foodiary.config.security.SecurityConfig;
-import com.foodiary.member.model.MemberLoginDto;
+import com.foodiary.member.model.MemberLoginRequestDto;
+
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -52,7 +53,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("/login")
-    public ResponseEntity<?> memberLogin(@RequestBody MemberLoginDto loginDto) throws Exception {
+    public ResponseEntity<?> memberLogin(@RequestBody MemberLoginRequestDto loginDto) throws Exception {
         TokenResponseDto response = userService.createLoginTokenResponse(loginDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

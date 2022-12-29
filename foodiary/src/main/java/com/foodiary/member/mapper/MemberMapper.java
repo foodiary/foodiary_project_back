@@ -13,7 +13,7 @@ public interface MemberMapper {
 
     MemberDto findByEmail(@Param("email") String email);
 
-    MemberDto findByEmailAndPw(@Param("email") String email,@Param("pw") String pw);
+    MemberDto findByEmailAndPw(@Param("email") String email, @Param("pw") String pw);
 
     // MemberDto findByEmailAndPw(String email, String pw);
 
