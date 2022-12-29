@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailyWriteDto {
+public class DailyWriteRequestDto {
     
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;

@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FoodPostDto {
+public class FoodRecommendRequestDto {
     private int memberId;
 }
