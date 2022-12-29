@@ -4,7 +4,8 @@ import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.model.*;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
-import com.foodiary.member.model.MemberLoginDto;
+import com.foodiary.member.model.MemberLoginRequestDto;
+
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +70,7 @@ public class UserService {
         return tokenResponseDto;
     }
 
-    public TokenResponseDto createLoginTokenResponse(MemberLoginDto loginDto) throws Exception {
+    public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
         MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), loginDto.getPassword());
         log.info(member.getMemberEmail());
         TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(loginDto.getLoginId());
