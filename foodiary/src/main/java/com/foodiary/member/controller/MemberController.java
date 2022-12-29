@@ -22,17 +22,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.common.email.EmailService;
-import com.foodiary.common.exception.VaildErrorDto;
+import com.foodiary.common.exception.VaildErrorResponseDto;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.model.DailysDto;
 import com.foodiary.main.model.FoodDtooo;
 import com.foodiary.main.model.FoodRecommendDto;
-import com.foodiary.member.model.MemberDetailsDto;
-import com.foodiary.member.model.MemberEditDto;
-import com.foodiary.member.model.MemberLoginDto;
-import com.foodiary.member.model.MemberScrapDto;
-import com.foodiary.member.model.MemberSerchDto;
-import com.foodiary.member.model.MemberSignUpDto;
+import com.foodiary.member.model.MemberDetailsResponseDto;
+import com.foodiary.member.model.MemberEditRequestDto;
+import com.foodiary.member.model.MemberLoginRequestDto;
+import com.foodiary.member.model.MemberScrapResponseDto;
+import com.foodiary.member.model.MemberSerchResponseDto;
+import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.member.service.MemberService;
 import com.foodiary.recipe.model.RecipesDto;
 
@@ -71,14 +71,14 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/signup")
     public ResponseEntity<?> memberSignUp(
-        @RequestPart @Valid MemberSignUpDto memberSignUpDto,
+        @RequestPart @Valid MemberSignUpRequestDto memberSignUpDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
     ) throws Exception {
 
         if(memberSignUpDto.getMore_password().equals(memberSignUpDto.getPassword())==false) {
             
-            VaildErrorDto vaildErrorDto = new VaildErrorDto("more_password", "비밀번호가 일치하지 않습니다", 400);
+            VaildErrorResponseDto vaildErrorDto = new VaildErrorResponseDto("more_password", "비밀번호가 일치하지 않습니다", 400);
 
             return new ResponseEntity<>(vaildErrorDto, HttpStatus.BAD_REQUEST);
         }
@@ -104,7 +104,7 @@ public class MemberController {
     @PatchMapping(value = "/member/{memberId}")
     public ResponseEntity<String> memberModify(
         @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
-        @RequestPart @Valid MemberEditDto memberEditDto,
+        @RequestPart @Valid MemberEditRequestDto memberEditDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
     ) throws Exception {
@@ -123,13 +123,13 @@ public class MemberController {
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member")
-    public ResponseEntity<MemberDetailsDto> memberDetails(
+    public ResponseEntity<MemberDetailsResponseDto> memberDetails(
         @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         HttpServletRequest request
     ) throws Exception {
 
         // System.out.println("값 찍기 : "+request.getHeader("accessToken"));
-        MemberDetailsDto memberDetails = new MemberDetailsDto("사용자 아이디", "사용자 이메일", "사용자 닉네임", "사용자 소개글", "사용자 이미지 경로");
+        MemberDetailsResponseDto memberDetails = new MemberDetailsResponseDto("사용자 아이디", "사용자 이메일", "사용자 닉네임", "사용자 소개글", "사용자 이미지 경로");
 
         return new ResponseEntity<>(memberDetails, HttpStatus.OK);
     }
@@ -144,7 +144,7 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/login")
     public ResponseEntity<String> memberLogin(
-        @RequestBody MemberLoginDto memberLoginDto
+        @RequestBody MemberLoginRequestDto memberLoginDto
     ) throws Exception {
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -192,7 +192,7 @@ public class MemberController {
     })
     @ResponseBody
     @GetMapping(value = "/member/search")
-    public ResponseEntity<MemberSerchDto> memberDetailOther(
+    public ResponseEntity<MemberSerchResponseDto> memberDetailOther(
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
@@ -208,11 +208,12 @@ public class MemberController {
 
         recipeList.add(recipesDto);
 
-        MemberSerchDto memberSerchDto = new MemberSerchDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
+        MemberSerchResponseDto memberSerchDto = new MemberSerchResponseDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
         
         return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
     }
 
+    // TODO : 토큰 재발큽 코드는 어떻게 진행할것인가?
     @Operation(summary = "member reissue", description = "회원 토큰 재발급")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -241,7 +242,7 @@ public class MemberController {
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member/scrap")
-    public ResponseEntity<MemberScrapDto> scraps(
+    public ResponseEntity<MemberScrapResponseDto> scraps(
         @ApiParam(value = "memberId", required = true) int memberId
     ) throws Exception {
 
@@ -257,7 +258,7 @@ public class MemberController {
 
         recipeList.add(recipesDto);
 
-        MemberScrapDto memberScrap = new MemberScrapDto(dailyList, recipeList);
+        MemberScrapResponseDto memberScrap = new MemberScrapResponseDto(dailyList, recipeList);
         
         return new ResponseEntity<>(memberScrap, HttpStatus.OK);
     }
@@ -298,57 +299,59 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @Operation(summary = "member food recommend", description = "회원 음식 추천 목록")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @GetMapping(value = "/member/food/{memberId}")
-    public ResponseEntity<List<FoodDtooo>> memberFood(
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
-    ) throws Exception {
+    // TODO : 민택님이 수정해서 사용하시면 될거같습니다
+    // @Operation(summary = "member food recommend", description = "회원 음식 추천 목록")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @GetMapping(value = "/member/food/{memberId}")
+    // public ResponseEntity<List<FoodDtooo>> memberFood(
+    //     @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+    // ) throws Exception {
 
-        FoodDtooo foodDto = new FoodDtooo("짬뽕", "중식", LocalDateTime.now());
+    //     FoodDtooo foodDto = new FoodDtooo("짬뽕", "중식", LocalDateTime.now());
 
-        List<FoodDtooo> foodList = new ArrayList<>();
+    //     List<FoodDtooo> foodList = new ArrayList<>();
 
-        foodList.add(foodDto);
+    //     foodList.add(foodDto);
 
-        return new ResponseEntity<>(foodList, HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(foodList, HttpStatus.OK);
+    // }
 
-    @Operation(summary = "member food List", description = "회원 음식 식단 리스트")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @GetMapping(value = "/member/food/list/{memberId}")
-    public ResponseEntity<List<FoodRecommendDto>> memberFoodList(
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
-    ) throws Exception {
+    // TODO : 민택님이 수정해서 사용하시면 될거같습니다
+    // @Operation(summary = "member food List", description = "회원 음식 식단 리스트")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @GetMapping(value = "/member/food/list/{memberId}")
+    // public ResponseEntity<List<FoodRecommendDto>> memberFoodList(
+    //     @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+    // ) throws Exception {
 
-        FoodRecommendDto foodRecommendDto = new FoodRecommendDto("한식", "된장찌개", "중식", "짬뽕",
-        "한식", "된장찌개", "중식", "짬뽕",
-        "한식", "된장찌개", "중식", "짬뽕",
-        "한식", "된장찌개", "중식", "짬뽕",
-        "한식", "된장찌개", "중식", "짬뽕",
-        "한식", "된장찌개", "중식", "짬뽕",
-        "한식", "된장찌개", "중식", "짬뽕");
+    //     FoodRecommendDto foodRecommendDto = new FoodRecommendDto("한식", "된장찌개", "중식", "짬뽕",
+    //     "한식", "된장찌개", "중식", "짬뽕",
+    //     "한식", "된장찌개", "중식", "짬뽕",
+    //     "한식", "된장찌개", "중식", "짬뽕",
+    //     "한식", "된장찌개", "중식", "짬뽕",
+    //     "한식", "된장찌개", "중식", "짬뽕",
+    //     "한식", "된장찌개", "중식", "짬뽕");
 
-        List<FoodRecommendDto> foodList = new ArrayList<>();
+    //     List<FoodRecommendDto> foodList = new ArrayList<>();
 
-        foodList.add(foodRecommendDto);
+    //     foodList.add(foodRecommendDto);
 
-        return new ResponseEntity<>(foodList, HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(foodList, HttpStatus.OK);
+    // }
 
 
     

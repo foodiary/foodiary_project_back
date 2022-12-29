@@ -3,7 +3,7 @@ package com.foodiary.member.service;
 import org.springframework.stereotype.Service;
 
 import com.foodiary.member.mapper.MemberMapper;
-import com.foodiary.member.model.MemberSignUpDto;
+import com.foodiary.member.model.MemberSignUpRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ public class MemberService {
 
     private final MemberMapper mapper;
 
-    public void createdMember(MemberSignUpDto memberSignUpDto) {
+    public void createdMember(MemberSignUpRequestDto memberSignUpDto) {
         mapper.saveMember(memberSignUpDto);
     }
 }

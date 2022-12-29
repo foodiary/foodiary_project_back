@@ -19,12 +19,12 @@ public class VaildExceptionHandler {
     
     @ExceptionHandler({BindException.class})
     public ResponseEntity<?> errorValid(BindException exception) {
-        List<VaildErrorDto> items = new ArrayList<>();
+        List<VaildErrorResponseDto> items = new ArrayList<>();
     
         for (ObjectError error : exception.getAllErrors()) {
             FieldError fieldError = (FieldError) error;
             items.add(
-                new VaildErrorDto(fieldError.getField(), fieldError.getDefaultMessage(), HttpStatus.BAD_REQUEST.value())
+                new VaildErrorResponseDto(fieldError.getField(), fieldError.getDefaultMessage(), HttpStatus.BAD_REQUEST.value())
                 );
         }
     

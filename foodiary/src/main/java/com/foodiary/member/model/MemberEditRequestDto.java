@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberEditDto {
+public class MemberEditRequestDto {
 
     // @ApiModelProperty(value="사용자 시퀀스", required = true)
     // private int memberId;

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberLoginDto {
+public class MemberLoginRequestDto {
     
     @ApiModelProperty(value="사용자 아이디", required = true)
     private String loginId;
