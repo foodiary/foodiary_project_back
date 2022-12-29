@@ -4,12 +4,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.foodiary.member.model.MemberDto;
-import com.foodiary.member.model.MemberSignUpDto;
+import com.foodiary.member.model.MemberSignUpRequestDto;
 
 @Mapper
 public interface MemberMapper {
 
-    void saveMember(MemberSignUpDto memberSignUpDto);
+    void saveMember(MemberSignUpRequestDto memberSignUpDto);
 
     MemberDto findByEmail(@Param("email") String email);
 

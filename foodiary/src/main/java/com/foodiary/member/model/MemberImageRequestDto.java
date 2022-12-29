@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberImageDto {
+public class MemberImageRequestDto {
 
     @ApiModelProperty(value="이미지 시퀀스", required = true)
     private String imageId;

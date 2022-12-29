@@ -3,3 +3,4 @@ foodiary.zip
 foodiary/src/main/resources/application-aws.yml
 foodiary/src/main/resources/application-oauth.yml
 foodiary/src/main/resources/application-server.yml
+foodiary/src/main/resources/application-smtp.yml

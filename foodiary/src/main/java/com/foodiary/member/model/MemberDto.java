@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// TODO : MemberDto는 Response인가요? Request인가요?
 @Data // TODO : setter 사용 지양, 수정 필요
 @NoArgsConstructor
 public class MemberDto {
