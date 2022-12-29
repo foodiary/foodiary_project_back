@@ -1,5 +1,6 @@
 package com.foodiary.member.controller;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.foodiary.common.email.EmailService;
 import com.foodiary.common.exception.VaildErrorDto;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.model.DailysDto;
@@ -48,7 +50,16 @@ public class MemberController {
     
     private final MemberService memberService;
 
+    private final EmailService emailService;
+
     private final S3Service s3Service;
+
+    @GetMapping("/email/test")
+    @ResponseBody
+    public String emailTest() throws IOException{
+        emailService.EmailSend();
+        return "OK";
+    }
 
     @Operation(summary = "member sign up", description = "회원 가입하기")
     @ApiResponses({ 

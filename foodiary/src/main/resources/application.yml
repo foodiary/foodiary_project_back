@@ -9,7 +9,7 @@ spring:
       matching-strategy: ant_path_matcher # 스웨거 설정, 안넣으면 시작에러남
 
   config:
-    import: classpath:/application-aws.yml, classpath:/application-oauth.yml, classpath:/application-sever.yml
+    import: classpath:/application-aws.yml, classpath:/application-oauth.yml, classpath:/application-sever.yml, classpath:/application-smtp.yml
     servlet:
       multipart:
         max-file-size: 10MB
