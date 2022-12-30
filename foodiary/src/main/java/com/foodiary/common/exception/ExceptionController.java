@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import java.io.IOException;
 import java.util.Date;
 
 @RestControllerAdvice
@@ -15,6 +16,11 @@ public class ExceptionController {
     public ResponseEntity<?> handleBusinessLogicException(BusinessLogicException exception, WebRequest request) {
         ExceptionResponseDto response = new ExceptionResponseDto(new Date(), exception.getMessage(), request.getDescription(false));
         return ResponseEntity.status(exception.getExceptionCode().getStatus()).body(response);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<?> handleJwtException(IOException exception) {
+        return ResponseEntity.status(400).body(exception.getMessage());
     }
 
     @ExceptionHandler(JwtException.class)
