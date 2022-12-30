@@ -19,4 +19,21 @@
         WHERE MEMBER_EMAIL = #{email} AND MEMBER_PASSWORD = #{pw}
     </select>
 
+    <select id="findByLoginId" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_LOGINID = #{loginId}
+    </select>
+
+    <select id="findById" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{id}
+    </select>
+
+    <select id="saveMemberImage">
+        INSERT INTO TB_MEMBER_IMAGE 
+        (MEMBER_ID, MEMBER_IMAGE_ORIGINAL_NAME, MEMBER_FILE_FULL_NAME, MEMBER_FILE_SAVE_NAME,
+        MEMBER_FILE_PATH, MEMBER_FILE_SIZE, MEMBER_FILE_TYPE, MEMBER_FILE_CREATE, MEMBER_FILE_UPDATE)
+        VALUES (#{memberId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
+    </select>
+
 </mapper>

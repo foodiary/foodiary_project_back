@@ -2,8 +2,11 @@ package com.foodiary.member.controller;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -25,10 +28,10 @@ import com.foodiary.common.email.EmailService;
 import com.foodiary.common.exception.VaildErrorResponseDto;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.model.DailysDto;
-import com.foodiary.main.model.FoodDtooo;
-import com.foodiary.main.model.FoodRecommendDto;
 import com.foodiary.member.model.MemberDetailsResponseDto;
+import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditRequestDto;
+import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
 import com.foodiary.member.model.MemberScrapResponseDto;
 import com.foodiary.member.model.MemberSerchResponseDto;
@@ -61,6 +64,96 @@ public class MemberController {
         return "OK";
     }
 
+    @Operation(summary = "member password Find", description = "비밀번호 찾기")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/find/password")
+    public ResponseEntity<?> memberFindPassword(
+        @RequestBody Map<String, String> emailMap
+    ) throws Exception {
+
+        MemberDto member = memberService.findmemberEmail(emailMap.get("email"));
+
+        if(member==null) {
+            return new ResponseEntity<>("해당 회원이 존재하지 않습니다", HttpStatus.OK);
+        }
+        // TODO: 메일 발송 로직 추가, 메일에 비밀번호를 변경할수 있는 링크를 보내야함
+
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member id Find", description = "아이디 찾기")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/find/id")
+    public ResponseEntity<?> memberFindId(
+        @RequestBody Map<String, String> emailMap
+    ) throws Exception {
+
+        MemberDto member = memberService.findmemberEmail(emailMap.get("email"));
+
+        if(member==null) {
+            return new ResponseEntity<>("해당 회원이 존재하지 않습니다", HttpStatus.OK);
+        }
+        // TODO: 메일 발송 로직 추가, id 정보를 메일로 발송
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+
+    @Operation(summary = "member id check", description = "아이디 중복 검사")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/check/loginid")
+    public ResponseEntity<?> memberCheckLoginId(
+        @RequestBody Map<String, String> idMap
+    ) throws Exception {
+
+        MemberDto memberDto = memberService.findMemberLoginId(idMap.get("loginId"));
+
+        if(memberDto==null) {
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("아이디가 중복입니다", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member email check", description = "이메일 중복 검사")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/check/email")
+    public ResponseEntity<?> memberCheckEmail(
+        @RequestBody Map<String, String> emailMap
+    ) throws Exception {
+
+        MemberDto memberDto = memberService.findmemberEmail(emailMap.get("email"));
+
+        if(memberDto==null) {
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("이메일이 중복입니다", HttpStatus.OK);
+    }
+
     @Operation(summary = "member sign up", description = "회원 가입하기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -84,9 +177,23 @@ public class MemberController {
         }
 
         memberService.createdMember(memberSignUpDto);
+
+        MemberDto memberDto = memberService.findMemberLoginId(memberSignUpDto.getLoginId());
+        // memberService.
+        String fileFullName = memberImage.getOriginalFilename();
+        String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+        System.out.println("파일 이름 : "+fileName);
+        String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+        System.out.println("확장자 : "+ext);
+
         if(memberImage!=null) {
-            System.out.println("체크 하기 : "+ System.getProperty("user.dir"));
-            // s3Service.upload(memberImage, "member");
+            // System.out.println("체크 하기 : "+ System.getProperty("user.dir"));
+            HashMap<String, String> fileMap = s3Service.upload(memberImage, "member");
+            
+            MemberImageDto memberImageDto = new MemberImageDto(memberDto.getMemberId(), fileName, fileFullName, fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
+            
+            memberService.createMemberImage(memberImageDto);
+            // System.out.println("memberImageDto : "+memberImageDto.toString());
         } 
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
