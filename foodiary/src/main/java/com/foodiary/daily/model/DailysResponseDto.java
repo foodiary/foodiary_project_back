@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailysDto {
+public class DailysResponseDto {
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;

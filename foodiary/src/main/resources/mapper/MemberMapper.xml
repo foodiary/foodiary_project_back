@@ -5,8 +5,8 @@
 
     <insert id="saveMember">
         INSERT INTO TB_MEMBER (MEMBER_LOGINID, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_NICKNAME,
-        MEMBER_PROFILE, MEMBER_CREATE, MEMBER_UPDATE)
-        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, now(), now());
+        MEMBER_PROFILE, MEMBER_PATH, MEMBER_CREATE, MEMBER_UPDATE)
+        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, now(), now());
 	</insert>
 
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
@@ -17,6 +17,129 @@
     <select id="findByEmailAndPw" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_EMAIL = #{email} AND MEMBER_PASSWORD = #{pw}
+    </select>
+
+    <select id="findByLoginId" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_LOGINID = #{loginId}
+    </select>
+
+    <select id="findById" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{id}
+    </select>
+
+    <select id="findByNickname" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_NICKNAME = #{nickname}
+    </select>
+
+    <select id="saveMemberImage">
+        INSERT INTO TB_MEMBER_IMAGE 
+        (MEMBER_ID, MEMBER_FILE_ORIGINAL_NAME, MEMBER_FILE_FULL_NAME, MEMBER_FILE_SAVE_NAME,
+        MEMBER_FILE_PATH, MEMBER_FILE_SIZE, MEMBER_FILE_TYPE, MEMBER_FILE_CREATE, MEMBER_FILE_UPDATE)
+        VALUES (#{memberId}, #{memberFileOriginalName}, #{memberFileFullName}, #{memberFileSaveName}, #{memberFilePath}, #{memberFileSize}, #{memberFileType}, now(), now());
+    </select>
+
+    <update id="updateMemberPassword">
+        UPDATE TB_MEMBER SET MEMBER_PASSWORD={password}
+        WHERE MEMBER_ID = #{id}
+    </update>
+
+    <update id="updateMemberInfo">
+        UPDATE TB_MEMBER SET 
+            MEMBER_UPDATE = NOW()
+        <if test="email!=null">
+            ,MEMBER_EMAIL=#{email}
+        </if>
+        <if test="nickName!=null">
+            ,MEMBER_NICKNAME=#{nickName}
+        </if>
+        <if test="profile!=null">
+            ,MEMBER_PROFILE=#{profile}
+        </if>
+        <if test="memberPath!=null">
+            ,MEMBER_PATH=#{memberPath}
+        </if>
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+    <delete id="deleteMemberImage">
+        DELETE FROM TB_MEMBER_IMAGE 
+            WHERE MEMBER_ID=#{id}
+    </delete>
+
+    <select id="findByIdFile" resultType="com.foodiary.member.model.MemberImageDto">
+        SELECT * FROM TB_MEMBER_IMAGE
+        WHERE MEMBER_ID = #{id}
+    </select>
+
+    <select id="findByDailyScrap" resultType="com.foodiary.member.model.MemberDailyScrapResponseDto">
+        SELECT tmsd.MEMBER_DAILY_SCRAP_ID AS MEMBER_DAILY_SCRAP_ID, 
+            tmsd.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, td.DAILY_VIEW ,td.DAILY_PATH, 
+	        (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS DAILY_COMMENT,
+	        (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE
+        from TB_MEMBER_SCRAP_DAILY tmsd 
+            right join TB_DAILY td 
+            ON tmsd.DAILY_ID = td.DAILY_ID
+        WHERE tmsd.MEMBER_ID = #{id}
+    </select>
+
+    <select id="findByRecipeScrap" resultType="com.foodiary.member.model.MemberRecipeScrapResponseDto">
+        SELECT tmsr.MEMBER_RECIPE_SCRAP_ID AS MEMBER_RECIPE_SCRAP_ID, 
+            tmsr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, 
+            tr.RECIPE_PATH1, tr.RECIPE_PATH2, tr.RECIPE_PATH3, 
+	        (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_COMMENT,
+	        (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_LIKE
+        from TB_MEMBER_SCRAP_RECIPE tmsr 
+            right join TB_RECIPE tr 
+            ON tmsr.RECIPE_ID = tr.RECIPE_ID
+        WHERE tmsr.MEMBER_ID = #{id}
+    </select>
+
+    <delete id="deleteDailyScrap">
+        DELETE FROM TB_MEMBER_SCRAP_DAILY 
+            WHERE MEMBER_DAILY_SCRAP_ID=#{scrapId} AND MEMBER_ID = #{memberId}
+    </delete>
+
+    <delete id="deleteRecipeScrap">
+        DELETE FROM TB_MEMBER_SCRAP_RECIPE 
+            WHERE MEMBER_RECIPE_SCRAP_ID=#{scrapId} AND MEMBER_ID = #{memberId}
+    </delete>
+
+    <select id="findByDailyLike" resultType="com.foodiary.member.model.MemberDailyLikeResponseDto">
+        SELECT tdl.DAILY_LIKE_ID, tdl.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, td.DAILY_VIEW, td.DAILY_PATH,
+            (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS DAILY_COMMENT,
+            (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE
+        FROM TB_DAILY_LIKE tdl 
+            right join TB_DAILY td 
+            ON tdl.DAILY_ID = td.DAILY_ID 
+        WHERE tdl.MEMBER_ID = #{id}
+    </select>
+
+    <select id="findByRecipeLike" resultType="com.foodiary.member.model.MemberRecipeLikeResponseDto">
+        SELECT trl.RECIPE_LIKE_ID, trl.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, tr.RECIPE_PATH1, tr.RECIPE_PATH2, tr.RECIPE_PATH3,
+            (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_COMMENT,
+            (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_LIKE
+        FROM TB_RECIPE_LIKE trl 
+            right join TB_RECIPE tr 
+            ON trl.RECIPE_ID = tr.RECIPE_ID  
+        WHERE trl.MEMBER_ID = #{id}
+    </select>
+
+    <delete id="deleteDailyLike">
+        DELETE FROM TB_DAILY_LIKE 
+            WHERE DAILY_LIKE_ID=#{likeId} AND MEMBER_ID = #{memberId}
+    </delete>
+
+    <delete id="deleteRecipeLike">
+        DELETE FROM TB_RECIPE_LIKE 
+            WHERE RECIPE_LIKE_ID=#{likeId} AND MEMBER_ID = #{memberId}
+    </delete>
+
+    <select id="findByMemberIdEdit" resultType="com.foodiary.member.model.MemberEditResponseDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{memberId}
     </select>
 
 </mapper>

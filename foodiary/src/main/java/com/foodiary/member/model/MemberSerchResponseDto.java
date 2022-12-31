@@ -3,7 +3,7 @@ package com.foodiary.member.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.foodiary.daily.model.DailysDto;
+import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.recipe.model.RecipesDto;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -18,7 +18,7 @@ public class MemberSerchResponseDto {
     
     // 그사람이 쓴 게시글, 프로필 이미지, 프로필 내용, 좋아요 받은수
     @ApiModelProperty(value="사용자 하루 식단 게시글")
-    private List<DailysDto> dailyList = new ArrayList<>();
+    private List<DailysResponseDto> dailyList = new ArrayList<>();
 
     @ApiModelProperty(value="사용자 레시피 공유 게시글")
     private List<RecipesDto> recipeList = new ArrayList<>();

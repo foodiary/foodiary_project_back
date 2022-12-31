@@ -1,0 +1,21 @@
+package com.foodiary.member.model;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class MemberEditPasswordRequestDto {
+
+    @NotBlank(message = "비밀번호가 비어있습니다")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,16}$", message = "비밀번호는 8~16자리 영문자, 숫자, 특수문자를 포함해야합니다.")
+    @ApiModelProperty(value="사용자 비밀번호", required = true)
+    private String password;
+    
+}

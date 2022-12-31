@@ -15,6 +15,8 @@ public class MemberDto {
     @Id
     private int memberId;
 
+    private String memberLoginId;
+
     private String memberEmail;
     
     private String memberPassword;
@@ -23,7 +25,7 @@ public class MemberDto {
 
     // private String memberFood;
 
-    private String memberImage;
+    // private String memberImage;
 
     private String memberProfile;
 

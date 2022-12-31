@@ -2,6 +2,8 @@ package com.foodiary.common.s3;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,7 +28,11 @@ public class S3Service {
 
     private final AmazonS3Client amazonS3Client;
 
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+    // dirName = 사진 저장할 폴더명
+    public HashMap<String, String> upload(MultipartFile multipartFile, String dirName) throws IOException {
+
+        // 파일 유효성 검사
+        
 
         File uploadFile = convert(multipartFile, dirName)
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
@@ -34,12 +40,19 @@ public class S3Service {
 
     }
 
-    private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();
+    private HashMap<String, String> upload(File uploadFile, String dirName) {
+        // fileName = 폴더명 / 파일명
+        String fileName = dirName + "/" + uploadFile.getName();
+        System.out.println("파일 이름 확인 : " + fileName);
         String uploadImageUrl = putS3(uploadFile, fileName);
+        System.out.println("업로드 url : "+ uploadImageUrl);
         removeNewFile(uploadFile);
 
-        return uploadImageUrl;
+        HashMap<String, String> fileMap = new HashMap<>();
+        fileMap.put("serverName", uploadFile.getName());
+        fileMap.put("url", uploadImageUrl);
+        
+        return fileMap;
     }
 
     private String putS3(File uploadFile, String fileName) {
@@ -64,6 +77,7 @@ public class S3Service {
 
         String originalFilename = multipartFile.getOriginalFilename();
         String storeFilename = createStoreFileName(originalFilename);
+        System.out.println("스토어 이름 확인 : " + storeFilename);
 
         File file = new File(System.getProperty("user.dir")+"/src/main/resources/static/"+filePath+"/"+storeFilename);
         // File file = new File(System.getProperty("user.dir")+"/src/main/resources/static/"+storeFilename);
@@ -73,14 +87,24 @@ public class S3Service {
         return Optional.of(file);
     }
 
+    // 서버에 저장되는 이름, uuid+밀리초
     private String createStoreFileName(String originalFilename) {
+        
         String ext = extractExt(originalFilename);
         String uuid = UUID.randomUUID().toString();
-        return uuid + "." + ext;
+        long currentMilliseconds = System.currentTimeMillis();
+
+        return uuid + currentMilliseconds  + "." + ext;
     }
 
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
-    }  
+    } 
+    
+    // 이미지 s3에서 삭제
+    public void deleteImage(String url) {
+        amazonS3Client.deleteObject(bucket, url);
+    }
+
 }
