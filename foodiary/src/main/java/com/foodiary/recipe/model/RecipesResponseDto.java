@@ -6,11 +6,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipesDto {
+public class RecipesResponseDto {
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int recipeId;
@@ -19,6 +20,7 @@ public class RecipesDto {
     private String title;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
+    @Setter
     private String path;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)

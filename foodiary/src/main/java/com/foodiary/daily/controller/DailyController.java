@@ -1,29 +1,24 @@
 package com.foodiary.daily.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
+import com.foodiary.common.s3.S3Service;
+import com.foodiary.daily.model.*;
+import com.foodiary.daily.service.DailyService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.foodiary.daily.model.DailyCommentDetailsDto;
-import com.foodiary.daily.model.DailyDetailsDto;
-import com.foodiary.daily.model.DailyEditDto;
-import com.foodiary.daily.model.DailyWriteDto;
-import com.foodiary.daily.model.DailysDto;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiParam;
@@ -32,8 +27,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-@Controller
+@RestController
+@RequiredArgsConstructor
+@Slf4j
 public class DailyController {
+
+    private final DailyService dailyService;
+
     
     @Operation(summary = "daily write", description = "하루 식단 게시글 작성")
     @ApiResponses({ 
@@ -42,23 +42,22 @@ public class DailyController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @PostMapping(value = "/daily")
-    public ResponseEntity<String> dailyWrite(
-        @RequestPart @Valid DailyWriteDto dailyWriteDto,
-        // @Parameter(description="회원 시퀀스", example = "3498", required = true)
-        // @RequestPart("memberId") String memberId, // int로 안받아져서 string으로 받음
-        // @Parameter(description="게시글 제목", example = "제목입니다", required = true)
-        // @RequestPart("title") String title,
-        // @Parameter(description="게시글 내용", example = "내용입니다", required = true)
-        // @RequestPart("content") String content,
+    public ResponseEntity<?> DailyWrite(
+        @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
     ) throws Exception {
 
+        dailyService.addDaily(dailyWriteRequestDto, dailyImage);
+
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
+
+
+
 
     @Operation(summary = "daily modify", description = "하루 식단 게시글 수정")
     @ApiResponses({ 
@@ -69,17 +68,22 @@ public class DailyController {
     })
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @PatchMapping(value = "/daily/{dailyId}/{memberId}")
-    public ResponseEntity<String> dailyModify(
+    @PostMapping(value = "/daily/{dailyId}/{memberId}")
+    public ResponseEntity<String> DailyModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
-        @RequestPart DailyEditDto dailyEditDto,
+        @RequestPart("dailyEdit") DailyEditRequestDto dailyEditRequestDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
     ) throws Exception {
-
+        dailyEditRequestDto.setDailyId(dailyId);
+        dailyEditRequestDto.setMemberId(memberId);
+        dailyService.modifyDaily(dailyEditRequestDto, dailyImage);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
+
+
+
 
     @Operation(summary = "daily list", description = "하루 식단 게시판 보기")
     @ApiResponses({ 
@@ -88,18 +92,17 @@ public class DailyController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ResponseBody
     @GetMapping(value = "/dailys")
-    public ResponseEntity<List<DailysDto>> dailys(
-        @ApiParam(value = "게시판 페이지", required = false) String pageNum
+    public ResponseEntity<?> Dailys(
+        @ApiParam(value = "게시판 페이지", required = false) int page,
+        @ApiParam(value = "게시판 페이지 사이즈", required = false) int size
     ) throws Exception {
-
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "이미지 경로입니다.", 1, 2, LocalDateTime.now(), 5);
-        List<DailysDto> dailyList = new ArrayList<>();
-
-        dailyList.add(dailysDto);
-
-        return new ResponseEntity<>(dailyList, HttpStatus.OK);
+        if(page <= 0 || size <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+        PageHelper.startPage(page, size);
+        List<DailysResponseDto> response = dailyService.findDailys();
+        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
 
     @Operation(summary = "daily list", description = "하루 식단 게시글 상세 보기")
@@ -110,25 +113,14 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @GetMapping(value = "/daily/details")
-    public ResponseEntity<List<DailyDetailsDto>> dailyDefails(
-        @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @ApiParam(value = "게시판 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
+    @GetMapping(value = "/daily/datils")
+    public ResponseEntity<DailyDetailsResponseDto> getDailyDetails (
+        @ApiParam(value = "게시글 시퀀스", required = true) int dailyId
     ) throws Exception {
 
-        DailyCommentDetailsDto dailyCommentDto = new DailyCommentDetailsDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
+        DailyDetailsResponseDto response = dailyService.findDaily(dailyId);
 
-        // List<DailyCommentDetailsDto> dailyCommentDtoList = new ArrayList<>();
-
-        // dailyCommentDtoList.add(dailyCommentDto);
-        
-        DailyDetailsDto dailyDto = new DailyDetailsDto(dailyId, 1, "제목입니다.", "내용입니다", "이미지경로입니다", 5, 7, LocalDateTime.now(), 5);
-
-        List<DailyDetailsDto> dailyDetailsDtoList = new ArrayList<>();
-
-        dailyDetailsDtoList.add(dailyDto);
-
-        return new ResponseEntity<>(dailyDetailsDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
@@ -141,11 +133,12 @@ public class DailyController {
     })
     @ResponseBody
     @DeleteMapping(value = "/daily/{dailyId}/{memberId}")
-    public ResponseEntity<String> dailyDelete(
+    public ResponseEntity<String> DailyDelete(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
     ) throws Exception {
 
+        dailyService.removeDaily(dailyId, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -158,14 +151,15 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @PostMapping(value = "/daily/comment/{dailyId}/{memberId}")
-    public ResponseEntity<String> dailyCommentWrite(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId,
-        @RequestBody @ApiParam(value = "댓글 내용", required = true) String content // TODO : 리퀘스트 바디 설명 안나옴, 수정필요
-    ) throws Exception {
+    @PostMapping(value = "/daily/comment")
+    public ResponseEntity<String> DailyCommentWrite(@RequestBody DailyCommentWriteRequestDto dailyCommentWriteRequestDto)
+            throws Exception {
+        dailyService.addDailyComment(dailyCommentWriteRequestDto);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
+
+
+
 
     @Operation(summary = "daily comment view", description = "하루 식단 게시글 댓글 조회")
     @ApiResponses({ 
@@ -176,14 +170,19 @@ public class DailyController {
     })
     @ResponseBody
     @GetMapping(value = "/daily/comment")
-    public ResponseEntity<List<DailyCommentDetailsDto>> dailyCommentDetails(
+    public ResponseEntity<?> DailyCommentDetails(
         @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @ApiParam(value = "댓글 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
+        @ApiParam(value = "댓글 페이지", required = true) int page,
+        @ApiParam(value = "댓글 갯수", required = true) int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
     ) throws Exception {
-        DailyCommentDetailsDto dailyCommentDetailsDto = new DailyCommentDetailsDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
-        List<DailyCommentDetailsDto> detailsDtos = new ArrayList<>();
-        detailsDtos.add(dailyCommentDetailsDto);
-        return new ResponseEntity<>(detailsDtos, HttpStatus.OK);
+        if(page <= 0 || size <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+
+        PageHelper.startPage(page, size);
+
+        List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId);
+        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
 
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
@@ -195,13 +194,17 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @PatchMapping(value = "/daily/comment/{dailyId}/{commentId}/{memberId}")
-    public ResponseEntity<String> dailyCommentModify(
+    @PatchMapping(value = "/daily/comment//{dailyId}/{memberId}/{commentId}")
+    public ResponseEntity<String> DailyCommentModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int commentId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId,
-        @RequestBody String content
+        @RequestBody DailyCommentEditRequestDto dailyCommentEditRequestDto
     ) throws Exception {
+        dailyCommentEditRequestDto.setDailyId(dailyId);
+        dailyCommentEditRequestDto.setMemberId(memberId);
+        dailyCommentEditRequestDto.setCommentId(commentId);
+        dailyService.modifyDailyComment(dailyCommentEditRequestDto);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -215,11 +218,12 @@ public class DailyController {
     })
     @ResponseBody
     @DeleteMapping(value = "/daily/comment/{dailyId}/{commentId}/{memberId}")
-    public ResponseEntity<String> dailyCommentDelete(
+    public ResponseEntity<String> dailyCommentRemove(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int commentId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
     ) throws Exception {
+        dailyService.removeDailyComment(dailyId, memberId, commentId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -237,6 +241,7 @@ public class DailyController {
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
     ) throws Exception {
+        dailyService.addDailyLike(memberId, dailyId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -249,12 +254,11 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @DeleteMapping(value = "/daily/like/{dailyId}/{dailyLikeId}/{memberId}")
+    @DeleteMapping(value = "/daily/like/{dailyLikeId}")
     public ResponseEntity<String> dailyLikeCancle(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyLikeId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyLikeId
     ) throws Exception {
+        dailyService.removeDailyLike(dailyLikeId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -272,7 +276,26 @@ public class DailyController {
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
     ) throws Exception {
+        dailyService.addDailyScrap(dailyId, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @Operation(summary = "daily scrap remove", description = "하루 식단 게시글 스크랩 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @DeleteMapping("/daily/scrap/{dailyId}/{memberId}/{scrapId}")
+    public ResponseEntity<String> dailyScrapRemove(
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId,
+        @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) int scrapId
+    ) throws Exception {
+        dailyService.removeDailyScrap(dailyId, memberId, scrapId);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
 }

@@ -13,6 +13,11 @@
         WHERE FOOD_ID = #{foodId}
     </select>
 
+    <select id="findMemberFoodByCreateAt" resultType="Integer">
+        SELECT MEMBER_FOOD_ID FROM TB_MEMBER_FOOD
+        WHERE MEMBER_FOOD_CREATE <![CDATA[>=]]> #{start} AND MEMBER_FOOD_CREATE <![CDATA[<=]]> #{end} AND MEMBER_ID = #{memberId};
+    </select>
+
     <insert id="saveMemberFood">
         INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_HATE, MEMBER_FOOD_CREATE)
         VALUES (#{memberId}, #{foodId}, 0, 0, now());

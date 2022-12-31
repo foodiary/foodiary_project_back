@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.common.exception.VaildErrorDto;
 import com.foodiary.common.s3.S3Service;
-import com.foodiary.daily.model.DailysDto;
+import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.main.model.FoodDtooo;
 import com.foodiary.main.model.FoodRecommendDto;
 import com.foodiary.member.model.MemberDetailsDto;
@@ -32,7 +32,7 @@ import com.foodiary.member.model.MemberScrapDto;
 import com.foodiary.member.model.MemberSerchDto;
 import com.foodiary.member.model.MemberSignUpDto;
 import com.foodiary.member.service.MemberService;
-import com.foodiary.recipe.model.RecipesDto;
+import com.foodiary.recipe.model.RecipesResponseDto;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiParam;
@@ -185,17 +185,17 @@ public class MemberController {
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<DailysDto> dailyList = new ArrayList<>();
+        List<DailysResponseDto> dailyList = new ArrayList<>();
 
-        dailyList.add(dailysDto);
+        dailyList.add(dailysResponseDto);
 
-        RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<RecipesDto> recipeList = new ArrayList<>();
+        List<RecipesResponseDto> recipeList = new ArrayList<>();
 
-        recipeList.add(recipesDto);
+        recipeList.add(recipesResponseDto);
 
         MemberSerchDto memberSerchDto = new MemberSerchDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
         
@@ -234,17 +234,17 @@ public class MemberController {
         @ApiParam(value = "memberId", required = true) int memberId
     ) throws Exception {
 
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<DailysDto> dailyList = new ArrayList<>();
+        List<DailysResponseDto> dailyList = new ArrayList<>();
 
-        dailyList.add(dailysDto);
+        dailyList.add(dailysResponseDto);
 
-        RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<RecipesDto> recipeList = new ArrayList<>();
+        List<RecipesResponseDto> recipeList = new ArrayList<>();
 
-        recipeList.add(recipesDto);
+        recipeList.add(recipesResponseDto);
 
         MemberScrapDto memberScrap = new MemberScrapDto(dailyList, recipeList);
         
