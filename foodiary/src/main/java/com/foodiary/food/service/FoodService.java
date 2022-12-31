@@ -15,7 +15,6 @@ import java.util.Random;
 public class FoodService {
 
     private final FoodMapper foodMapper;
-    private final MemberFoodMapper memberFoodMapper;
 
     public FoodDto randomFood(int memberId) {
 
@@ -23,7 +22,7 @@ public class FoodService {
         int randomIndex = random.nextInt(686);
         System.out.println(randomIndex);
         FoodDto foodRecommend = foodMapper.findById(randomIndex);
-        memberFoodMapper.saveMemberFood(memberId, foodRecommend.getFoodId());
+        foodMapper.saveMemberFood(memberId, foodRecommend.getFoodId());
 
         return foodRecommend;
     }

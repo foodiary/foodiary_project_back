@@ -13,4 +13,16 @@
         WHERE FOOD_ID = #{foodId}
     </select>
 
+    <insert id="saveMemberFood">
+        INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_HATE, MEMBER_FOOD_CREATE)
+        VALUES (#{memberId}, #{foodId}, 0, 0, now());
+    </insert>
+
 </mapper>
+
+
+
+
+
+
+

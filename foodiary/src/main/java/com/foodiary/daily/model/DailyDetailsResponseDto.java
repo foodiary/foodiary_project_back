@@ -1,7 +1,6 @@
 package com.foodiary.daily.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailyDetailsDto {
+public class DailyDetailsResponseDto {
     
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;

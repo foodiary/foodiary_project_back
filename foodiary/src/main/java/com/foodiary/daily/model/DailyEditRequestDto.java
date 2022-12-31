@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailyEditDto {
+public class DailyEditRequestDto {
     
     @ApiModelProperty(value="게시글 제목", required = false)
     private String title;

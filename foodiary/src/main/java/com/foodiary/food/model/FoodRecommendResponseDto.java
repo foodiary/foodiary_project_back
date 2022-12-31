@@ -4,10 +4,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Builder
-public class FoodResponseDto {
+public class FoodRecommendResponseDto {
 
     @ApiModelProperty(value="음식 시퀀스", required = true)
     private int foodId;
@@ -18,7 +17,7 @@ public class FoodResponseDto {
     @ApiModelProperty(value="음식 카테고리", required = true)
     private String foodCategory;
 
-    public FoodResponseDto(int foodId, String foodName, String foodCategory) {
+    public FoodRecommendResponseDto(int foodId, String foodName, String foodCategory) {
         this.foodId = foodId;
         this.foodName = foodName;
         this.foodCategory = foodCategory;
