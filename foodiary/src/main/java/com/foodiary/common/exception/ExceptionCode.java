@@ -16,7 +16,13 @@ public enum ExceptionCode {
     LIKE_EXISTS(409, "이미 좋아요 한 게시글입니다."),
     SCRAP_EXISTS(409, "이미 저장한 스크랩입니다."),
 
-    INTERNAL_SERVER_ERROR(500, "INTERNAL SERVER ERROR");
+    INTERNAL_SERVER_ERROR(500, "INTERNAL SERVER ERROR"),
+
+    FILE_BAD_REQUEST(400, "해당 파일의 확장자를 올릴수 없습니다."),
+    EMAIL_BAD_REQUEST(400, "이메일이 중복입니다"),
+    NICKNAME_BAD_REQUEST(400, "닉네임이 중복입니다"),
+    LOGINID_BAD_REQUEST(400, "아이디가 중복입니다")
+    ;
 
 
     private int status;

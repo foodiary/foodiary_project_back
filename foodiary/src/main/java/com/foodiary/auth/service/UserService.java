@@ -4,7 +4,8 @@ import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.model.*;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
-import com.foodiary.member.model.MemberLoginDto;
+import com.foodiary.member.model.MemberLoginRequestDto;
+
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.MessageDigest;
 import java.time.LocalDateTime;
 
 @Service
@@ -19,11 +21,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserService {
 
-
     private final OAuthService oAuthService;
     private final JwtProvider jwtProvider;
     private final MemberMapper memberMapper;
-
 
     public ResponseEntity<?> oauthLogin(String providerId, String code) throws Exception {
         ResponseEntity<String> accessTokenResponse = oAuthService.createPostRequest(providerId, code);
@@ -69,7 +69,7 @@ public class UserService {
         return tokenResponseDto;
     }
 
-    public TokenResponseDto createLoginTokenResponse(MemberLoginDto loginDto) throws Exception {
+    public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
         MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), loginDto.getPassword());
         log.info(member.getMemberEmail());
         TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(loginDto.getLoginId());
@@ -87,6 +87,21 @@ public class UserService {
         MemberDto member = memberMapper.findByEmail(googleUser.getEmail());
         log.info("Joined User: {}", member);
         return member == null;
+    }
+
+    public String encrypt(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] passBytes = s.getBytes();
+            md.reset();
+            byte[] digested = md.digest(passBytes);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < digested.length; i++)
+                sb.append(Integer.toString((digested[i] & 0xff) + 0x100, 16).substring(1));
+            return sb.toString();
+        } catch (Exception e) {
+            return s;
+        }
     }
 
 }

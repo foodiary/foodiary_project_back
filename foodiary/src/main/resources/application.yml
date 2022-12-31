@@ -8,13 +8,14 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher # 스웨거 설정, 안넣으면 시작에러남
 
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 9MB
 
   config:
-    import: classpath:/application-aws.yml, classpath:/application-server.yml, classpath:/application-oauth.yml
-    servlet:
-      multipart:
-        max-file-size: 10MB
-        max-request-size: 10MB
+    import: classpath:/application-aws.yml, classpath:/application-oauth.yml, classpath:/application-sever.yml, classpath:/application-smtp.yml
+    
 
 logging:
   level:
@@ -31,11 +32,6 @@ cloud:
       bucket: foodiary-bucket
     stack:
       auto: false
-
-  type-aliases-package: com.foodiary
-  mapper-locations: mapper/*.xml
-  configuration:
-    map-underscore-to-camel-case: true
 
 springdoc:
   swagger-ui:

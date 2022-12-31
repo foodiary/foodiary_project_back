@@ -105,7 +105,7 @@ public class DailyController {
         return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
 
-    @Operation(summary = "daily list", description = "하루 식단 게시글 상세 보기")
+    @Operation(summary = "daily list detail", description = "하루 식단 게시글 상세 보기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
