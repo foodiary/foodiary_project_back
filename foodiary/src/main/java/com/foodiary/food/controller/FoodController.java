@@ -1,8 +1,7 @@
 package com.foodiary.food.controller;
 
 import com.foodiary.food.model.FoodDto;
-import com.foodiary.food.model.FoodPostDto;
-import com.foodiary.food.model.FoodResponseDto;
+import com.foodiary.food.model.FoodRecommendResponseDto;
 import com.foodiary.food.service.FoodService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,9 +29,9 @@ public class FoodController {
     })
     // 랜덤 추천
     @GetMapping
-    public ResponseEntity<FoodResponseDto> FoodRecommend(@RequestParam int memberId) {
+    public ResponseEntity<FoodRecommendResponseDto> FoodRecommend(@RequestParam int memberId) {
         FoodDto food = foodService.randomFood(memberId);
-        FoodResponseDto response = FoodResponseDto.builder()
+        FoodRecommendResponseDto response = FoodRecommendResponseDto.builder()
                 .foodName(food.getFoodName())
                 .foodCategory(food.getFoodCategory())
                 .foodId(food.getFoodId())

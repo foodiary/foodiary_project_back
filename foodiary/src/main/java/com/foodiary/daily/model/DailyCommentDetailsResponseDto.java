@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailyCommentDetailsDto {
+public class DailyCommentDetailsResponseDto {
  
     @ApiModelProperty(value="댓글 시퀀스", required = true)
     private int commentId;
