@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberScrapResponseDto {
+public class MemberLikeResponseDto {
     
     @ApiModelProperty(value="사용자 하루 식단 게시글")
-    private List<MemberDailyScrapResponseDto> memberDailyScrapResponseDtoList = new ArrayList<>();
+    private List<MemberDailyLikeResponseDto> memberDailyLikeResponseDtoList = new ArrayList<>();
 
     @ApiModelProperty(value="사용자 레시피 공유 게시글")
-    private List<MemberRecipeScrapResponseDto> memberRecipeScrapResponseDtoList = new ArrayList<>();
+    private List<MemberRecipeLikeResponseDto> memberRecipeLikeResponseDtoList = new ArrayList<>();
+    
 }

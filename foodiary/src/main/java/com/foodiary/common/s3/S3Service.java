@@ -100,11 +100,11 @@ public class S3Service {
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
-    }  
-
-    // public ResponseEntity<?> checkFile(MultipartFile multipartFile) throws Exception {
-
-
-    // }
+    } 
+    
+    // 이미지 s3에서 삭제
+    public void deleteImage(String url) {
+        amazonS3Client.deleteObject(bucket, url);
+    }
 
 }

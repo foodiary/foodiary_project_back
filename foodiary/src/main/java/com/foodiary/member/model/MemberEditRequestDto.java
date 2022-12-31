@@ -1,6 +1,7 @@
 package com.foodiary.member.model;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -13,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberEditRequestDto {
 
-    // @ApiModelProperty(value="사용자 시퀀스", required = true)
-    // private int memberId;
+    @ApiModelProperty(value="사용자 시퀀스", required = false, hidden = true)
+    private int memberId;
 
     @Email(message = "이메일 형식에 부합하지 않습니다.")
     @ApiModelProperty(value="사용자 이메일", required = false)
@@ -26,5 +27,16 @@ public class MemberEditRequestDto {
 
     @ApiModelProperty(value="사용자 소개글", required = false)
     private String profile;
+
+    @ApiModelProperty(value="사용자 이미지 경로", required = false, hidden = true)
+    private String memberPath;
+
+    public void updatePath(String memberPath) {
+        this.memberPath = memberPath;
+    }
+
+    public void updateId(int memberId) {
+        this.memberId = memberId;
+    }
 
 }

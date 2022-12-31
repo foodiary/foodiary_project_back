@@ -16,7 +16,7 @@ public class VaildErrorResponseDto {
     @ApiModelProperty(value="에러 메세지", required = true)
     private String message;
 
-    @ApiModelProperty(value="상태 코드", required = true)
-    private int status;
+    // @ApiModelProperty(value="상태 코드", required = true)
+    // private int status;
  
 }

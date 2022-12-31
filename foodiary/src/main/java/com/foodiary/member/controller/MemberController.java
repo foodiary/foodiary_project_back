@@ -26,17 +26,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.auth.service.UserService;
 import com.foodiary.common.email.EmailService;
-import com.foodiary.common.exception.VaildErrorResponseDto;
 import com.foodiary.common.s3.S3Service;
-import com.foodiary.daily.model.DailysDto;
+import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
 import com.foodiary.member.model.MemberCheckIdRequestDto;
 import com.foodiary.member.model.MemberCheckNicknameRequestDto;
-import com.foodiary.member.model.MemberDetailsResponseDto;
-import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
-import com.foodiary.member.model.MemberImageDto;
+import com.foodiary.member.model.MemberEditResponseDto;
+import com.foodiary.member.model.MemberLikeResponseDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
 import com.foodiary.member.model.MemberScrapResponseDto;
 import com.foodiary.member.model.MemberSerchResponseDto;
@@ -67,7 +65,8 @@ public class MemberController {
     @GetMapping("/email/test")
     @ResponseBody
     public String emailTest() throws IOException{
-        emailService.EmailSend();
+        // emailService.EmailSend();
+        s3Service.deleteImage("member/1c7ff3c4-0a59-4d2a-91c0-4e85de9603381672406079088.png");
         return "OK";
     }
 
@@ -82,12 +81,10 @@ public class MemberController {
     @PatchMapping(value = "/member/password/{memberId}")
     public ResponseEntity<?> memberModifyPassword(
         @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
-        @RequestBody MemberEditPasswordRequestDto memberEditPasswordRequestDto
+        @RequestBody @Valid MemberEditPasswordRequestDto memberEditPasswordRequestDto
     ) throws Exception {
 
         memberService.EditMemberPassWord(memberEditPasswordRequestDto.getPassword(), memberId);
-
-        // TODO: 메일 발송 로직 추가, 메일에 비밀번호를 변경할수 있는 링크를 보내야함
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -105,13 +102,7 @@ public class MemberController {
         @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        MemberDto member = memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
-
-        if(member==null) {
-            return new ResponseEntity<>("해당 회원이 존재하지 않습니다", HttpStatus.OK);
-        }
-        // TODO: 메일 발송 로직 추가, 메일에 비밀번호를 변경할수 있는 링크를 보내야함
-
+        memberService.findmemberInfo(memberCheckEmailRequestDto.getEmail(), "password");
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -126,15 +117,10 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/find/id")
     public ResponseEntity<?> memberFindId(
-        @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
+        @RequestBody @Valid MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        MemberDto member = memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
-
-        if(member==null) {
-            return new ResponseEntity<>("해당 회원이 존재하지 않습니다", HttpStatus.OK);
-        }
-        // TODO: 메일 발송 로직 추가, id 정보를 메일로 발송
+        memberService.findmemberInfo(memberCheckEmailRequestDto.getEmail(), "id");
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -150,23 +136,12 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/check/loginid")
     public ResponseEntity<?> memberCheckLoginId(
-        // @RequestBody Map<String, String> idMap
-        @RequestBody MemberCheckIdRequestDto memberCheckIdRequestDto
+        @RequestBody @Valid MemberCheckIdRequestDto memberCheckIdRequestDto
     ) throws Exception {
 
-        if(memberCheckIdRequestDto.getLoginId()==null) {
-            return new ResponseEntity<>("아이디를 입력해주세요", HttpStatus.BAD_REQUEST);
-        } 
-        else if(memberCheckIdRequestDto.getLoginId().isEmpty()) {
-            return new ResponseEntity<>("아이디를 입력해주세요", HttpStatus.BAD_REQUEST);
-        }
+        memberService.findMemberLoginId(memberCheckIdRequestDto.getLoginId());
 
-        MemberDto memberDto = memberService.findMemberLoginId(memberCheckIdRequestDto.getLoginId());
-
-        if(memberDto==null) {
-            return new ResponseEntity<>("OK", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("아이디가 중복입니다", HttpStatus.OK);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     @Operation(summary = "member nickname check", description = "닉네임 중복 검사")
@@ -179,23 +154,12 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/check/nickname")
     public ResponseEntity<?> memberCheckNickname(
-        @RequestBody MemberCheckNicknameRequestDto memberCheckNicknameRequestDto
+        @RequestBody @Valid MemberCheckNicknameRequestDto memberCheckNicknameRequestDto
     ) throws Exception {
 
-        if(memberCheckNicknameRequestDto.getNickName()==null) {
-            return new ResponseEntity<>("닉네임을 입력해주세요", HttpStatus.BAD_REQUEST);
-        } 
-        else if(memberCheckNicknameRequestDto.getNickName().isEmpty()) {
-            return new ResponseEntity<>("닉네임을 입력해주세요", HttpStatus.BAD_REQUEST);
+        memberService.findmemberNickname(memberCheckNicknameRequestDto.getNickName());
 
-        }
-
-        MemberDto memberDto = memberService.findmemberNickname(memberCheckNicknameRequestDto.getNickName());
-
-        if(memberDto==null) {
-            return new ResponseEntity<>("OK", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("닉네임이 중복입니다", HttpStatus.OK);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     @Operation(summary = "member email check", description = "이메일 중복 검사")
@@ -208,22 +172,13 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/check/email")
     public ResponseEntity<?> memberCheckEmail(
-        @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
+        @RequestBody @Valid MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        if(memberCheckEmailRequestDto.getEmail()==null) {
-            return new ResponseEntity<>("이메일을 입력해주세요", HttpStatus.BAD_REQUEST);
-        } 
-        else if(memberCheckEmailRequestDto.getEmail().isEmpty()) {
-            return new ResponseEntity<>("이메일을 입력해주세요", HttpStatus.BAD_REQUEST);
-        }
+        memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
 
-        MemberDto memberDto = memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
-
-        if(memberDto==null) {
-            return new ResponseEntity<>("OK", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("이메일이 중복입니다", HttpStatus.OK);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+        
     }
 
     @Operation(summary = "member sign up", description = "회원 가입하기")
@@ -241,37 +196,7 @@ public class MemberController {
         @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
     ) throws Exception {
 
-        if(memberSignUpDto.getMore_password().equals(memberSignUpDto.getPassword())==false) {
-            
-            VaildErrorResponseDto vaildErrorDto = new VaildErrorResponseDto("more_password", "비밀번호가 일치하지 않습니다", 400);
-
-            return new ResponseEntity<>(vaildErrorDto, HttpStatus.BAD_REQUEST);
-        }
-
-        String newPassword = userService.encrypt(memberSignUpDto.getPassword());
-
-        memberSignUpDto.passwordUpdate(newPassword);
-
-        memberService.createdMember(memberSignUpDto);
-
-        if(memberImage!=null) {
-
-        MemberDto memberDto = memberService.findMemberLoginId(memberSignUpDto.getLoginId());
-        // memberService.
-        String fileFullName = memberImage.getOriginalFilename();
-        String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
-        System.out.println("파일 이름 : "+fileName);
-        String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
-        System.out.println("확장자 : "+ext);
-
-            // System.out.println("체크 하기 : "+ System.getProperty("user.dir"));
-            HashMap<String, String> fileMap = s3Service.upload(memberImage, "member");
-            
-            MemberImageDto memberImageDto = new MemberImageDto(memberDto.getMemberId(), fileName, fileFullName, fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
-            
-            memberService.createMemberImage(memberImageDto);
-            // System.out.println("memberImageDto : "+memberImageDto.toString());
-        } 
+        memberService.createdMember(memberSignUpDto, memberImage);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -293,7 +218,7 @@ public class MemberController {
         @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
     ) throws Exception {
 
-        // MemberEditDto memberEditDto = new MemberEditDto(email, nickName, profile, "이미지 경로");
+        memberService.updateMember(memberEditDto, memberId, memberImage);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -307,15 +232,15 @@ public class MemberController {
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member")
-    public ResponseEntity<MemberDetailsResponseDto> memberDetails(
+    public ResponseEntity<MemberEditResponseDto> memberDetails(
         @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         HttpServletRequest request
     ) throws Exception {
 
+        MemberEditResponseDto memberEditResponseDto = memberService.findByMemberIdInfo(memberId);
         // System.out.println("값 찍기 : "+request.getHeader("accessToken"));
-        MemberDetailsResponseDto memberDetails = new MemberDetailsResponseDto("사용자 아이디", "사용자 이메일", "사용자 닉네임", "사용자 소개글", "사용자 이미지 경로");
 
-        return new ResponseEntity<>(memberDetails, HttpStatus.OK);
+        return new ResponseEntity<>(memberEditResponseDto, HttpStatus.OK);
     }
     
     @Operation(summary = "member login", description = "로그인")
@@ -380,9 +305,9 @@ public class MemberController {
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysResponseDto dailysDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<DailysDto> dailyList = new ArrayList<>();
+        List<DailysResponseDto> dailyList = new ArrayList<>();
 
         dailyList.add(dailysDto);
 
@@ -430,21 +355,10 @@ public class MemberController {
         @ApiParam(value = "memberId", required = true) int memberId
     ) throws Exception {
 
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        // TODO : 좋아요, 조회수, 댓글수 모두 포함        
+        MemberScrapResponseDto memberScrapResponseDto = memberService.detailScrap(memberId);
 
-        List<DailysDto> dailyList = new ArrayList<>();
-
-        dailyList.add(dailysDto);
-
-        RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
-
-        List<RecipesDto> recipeList = new ArrayList<>();
-
-        recipeList.add(recipesDto);
-
-        MemberScrapResponseDto memberScrap = new MemberScrapResponseDto(dailyList, recipeList);
-        
-        return new ResponseEntity<>(memberScrap, HttpStatus.OK);
+        return new ResponseEntity<>(memberScrapResponseDto, HttpStatus.OK);
     }
 
     @Operation(summary = "member daily scrap delete", description = "회원 하루식단 스크랩 삭제")
@@ -461,6 +375,8 @@ public class MemberController {
         @PathVariable @ApiParam(value = "스크랩 시퀀스", required = true) int scrapId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
+
+        memberService.deleteScrapDaily(scrapId, memberId);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -479,6 +395,68 @@ public class MemberController {
         @PathVariable @ApiParam(value = "스크랩 시퀀스", required = true) int scrapId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
+
+        memberService.deleteScrapRecipe(scrapId, memberId);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member like list", description = "회원(본인) 좋아요 한 글 조회")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @GetMapping(value = "/member/like")
+    public ResponseEntity<MemberLikeResponseDto> likes(
+        @ApiParam(value = "멤버 시퀀스", required = true) int memberId
+    ) throws Exception {
+
+        // TODO : 좋아요, 조회수, 댓글수 모두 포함        
+        MemberLikeResponseDto memberLikeResponseDto = memberService.detailLike(memberId);
+
+        return new ResponseEntity<>(memberLikeResponseDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "member daily like delete", description = "회원 하루식단 좋아요 삭제")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @DeleteMapping(value = "/member/like/daily/{likeId}/{memberId}")
+    public ResponseEntity<String> likeDailyDelete(
+        @PathVariable @ApiParam(value = "좋아요 시퀀스", required = true) int likeId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    ) throws Exception {
+
+        memberService.deleteLikeDaily(likeId, memberId);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member recipe like delete", description = "회원 레시피 좋아요 삭제")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @DeleteMapping(value = "/member/like/recipe/{likeId}/{memberId}")
+    public ResponseEntity<String> likeRecipeDelete(
+        @PathVariable @ApiParam(value = "좋아요 시퀀스", required = true) int likeId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    ) throws Exception {
+
+        memberService.deleteLikeRecipe(likeId, memberId);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }

@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.foodiary.daily.model.DailyCommentDetailsDto;
-import com.foodiary.daily.model.DailyDetailsDto;
-import com.foodiary.daily.model.DailyEditDto;
-import com.foodiary.daily.model.DailyWriteDto;
-import com.foodiary.daily.model.DailysDto;
+import com.foodiary.daily.model.DailyCommentDetailsResponseDto;
+import com.foodiary.daily.model.DailyDetailsResponseDto;
+import com.foodiary.daily.model.DailyEditRequestDto;
+import com.foodiary.daily.model.DailyWriteRequestDto;
+import com.foodiary.daily.model.DailysResponseDto;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiParam;
@@ -46,7 +46,7 @@ public class DailyController {
     @ResponseBody
     @PostMapping(value = "/daily")
     public ResponseEntity<String> dailyWrite(
-        @RequestPart @Valid DailyWriteDto dailyWriteDto,
+        @RequestPart @Valid DailyWriteRequestDto dailyWriteDto,
         // @Parameter(description="회원 시퀀스", example = "3498", required = true)
         // @RequestPart("memberId") String memberId, // int로 안받아져서 string으로 받음
         // @Parameter(description="게시글 제목", example = "제목입니다", required = true)
@@ -73,7 +73,7 @@ public class DailyController {
     public ResponseEntity<String> dailyModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
-        @RequestPart DailyEditDto dailyEditDto,
+        @RequestPart DailyEditRequestDto dailyEditDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
     ) throws Exception {
@@ -90,12 +90,12 @@ public class DailyController {
     })
     @ResponseBody
     @GetMapping(value = "/dailys")
-    public ResponseEntity<List<DailysDto>> dailys(
+    public ResponseEntity<List<DailysResponseDto>> dailys(
         @ApiParam(value = "게시판 페이지", required = false) String pageNum
     ) throws Exception {
 
-        DailysDto dailysDto = new DailysDto(1, "제목입니다.", "이미지 경로입니다.", 1, 2, LocalDateTime.now(), 5);
-        List<DailysDto> dailyList = new ArrayList<>();
+        DailysResponseDto dailysDto = new DailysResponseDto(1, "제목입니다.", "이미지 경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        List<DailysResponseDto> dailyList = new ArrayList<>();
 
         dailyList.add(dailysDto);
 
@@ -111,20 +111,20 @@ public class DailyController {
     })
     @ResponseBody
     @GetMapping(value = "/daily/details")
-    public ResponseEntity<List<DailyDetailsDto>> dailyDefails(
+    public ResponseEntity<List<DailyDetailsResponseDto>> dailyDefails(
         @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @ApiParam(value = "게시판 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
     ) throws Exception {
 
-        DailyCommentDetailsDto dailyCommentDto = new DailyCommentDetailsDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
+        DailyCommentDetailsResponseDto dailyCommentDto = new DailyCommentDetailsResponseDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
 
         // List<DailyCommentDetailsDto> dailyCommentDtoList = new ArrayList<>();
 
         // dailyCommentDtoList.add(dailyCommentDto);
         
-        DailyDetailsDto dailyDto = new DailyDetailsDto(dailyId, 1, "제목입니다.", "내용입니다", "이미지경로입니다", 5, 7, LocalDateTime.now(), 5);
+        DailyDetailsResponseDto dailyDto = new DailyDetailsResponseDto(dailyId, 1, "제목입니다.", "내용입니다", "이미지경로입니다", 5, 7, LocalDateTime.now(), 5);
 
-        List<DailyDetailsDto> dailyDetailsDtoList = new ArrayList<>();
+        List<DailyDetailsResponseDto> dailyDetailsDtoList = new ArrayList<>();
 
         dailyDetailsDtoList.add(dailyDto);
 
@@ -176,12 +176,12 @@ public class DailyController {
     })
     @ResponseBody
     @GetMapping(value = "/daily/comment")
-    public ResponseEntity<List<DailyCommentDetailsDto>> dailyCommentDetails(
+    public ResponseEntity<List<DailyCommentDetailsResponseDto>> dailyCommentDetails(
         @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
         @ApiParam(value = "댓글 페이지", required = false) String pageNum // string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
     ) throws Exception {
-        DailyCommentDetailsDto dailyCommentDetailsDto = new DailyCommentDetailsDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
-        List<DailyCommentDetailsDto> detailsDtos = new ArrayList<>();
+        DailyCommentDetailsResponseDto dailyCommentDetailsDto = new DailyCommentDetailsResponseDto(1, dailyId, 1, "댓글 작성자", "댓글 내용입니다.");
+        List<DailyCommentDetailsResponseDto> detailsDtos = new ArrayList<>();
         detailsDtos.add(dailyCommentDetailsDto);
         return new ResponseEntity<>(detailsDtos, HttpStatus.OK);
     }
