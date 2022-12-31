@@ -29,11 +29,21 @@
         WHERE MEMBER_ID = #{id}
     </select>
 
+    <select id="findByNickname" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_NICKNAME = #{nickname}
+    </select>
+
     <select id="saveMemberImage">
         INSERT INTO TB_MEMBER_IMAGE 
         (MEMBER_ID, MEMBER_IMAGE_ORIGINAL_NAME, MEMBER_FILE_FULL_NAME, MEMBER_FILE_SAVE_NAME,
         MEMBER_FILE_PATH, MEMBER_FILE_SIZE, MEMBER_FILE_TYPE, MEMBER_FILE_CREATE, MEMBER_FILE_UPDATE)
         VALUES (#{memberId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
     </select>
+
+    <update id="updateMemberPassword">
+        UPDATE TB_MEMBER SET MEMBER_PASSWORD={password}
+        WHERE MEMBER_ID = {id}
+    </update>
 
 </mapper>

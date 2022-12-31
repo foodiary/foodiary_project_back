@@ -20,8 +20,12 @@ public interface MemberMapper {
 
     MemberDto findByLoginId(@Param("loginId") String loginId);
 
+    MemberDto findByNickname(@Param("nickname") String nickname);
+
     MemberDto findById(@Param("id") String id);
 
     void saveMemberImage(MemberImageDto memberImageDto);
+
+    void updateMemberPassword(@Param("password") String password, @Param("id") int id);
 
 }

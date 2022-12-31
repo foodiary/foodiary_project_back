@@ -24,12 +24,17 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.foodiary.auth.service.UserService;
 import com.foodiary.common.email.EmailService;
 import com.foodiary.common.exception.VaildErrorResponseDto;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.model.DailysDto;
+import com.foodiary.member.model.MemberCheckEmailRequestDto;
+import com.foodiary.member.model.MemberCheckIdRequestDto;
+import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberDetailsResponseDto;
 import com.foodiary.member.model.MemberDto;
+import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
@@ -53,6 +58,8 @@ public class MemberController {
     
     private final MemberService memberService;
 
+    private final UserService userService;
+
     private final EmailService emailService;
 
     private final S3Service s3Service;
@@ -62,6 +69,27 @@ public class MemberController {
     public String emailTest() throws IOException{
         emailService.EmailSend();
         return "OK";
+    }
+
+    @Operation(summary = "member password edit", description = "비밀번호 수정하기")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PatchMapping(value = "/member/password/{memberId}")
+    public ResponseEntity<?> memberModifyPassword(
+        @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
+        @RequestBody MemberEditPasswordRequestDto memberEditPasswordRequestDto
+    ) throws Exception {
+
+        memberService.EditMemberPassWord(memberEditPasswordRequestDto.getPassword(), memberId);
+
+        // TODO: 메일 발송 로직 추가, 메일에 비밀번호를 변경할수 있는 링크를 보내야함
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     @Operation(summary = "member password Find", description = "비밀번호 찾기")
@@ -74,10 +102,10 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/find/password")
     public ResponseEntity<?> memberFindPassword(
-        @RequestBody Map<String, String> emailMap
+        @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        MemberDto member = memberService.findmemberEmail(emailMap.get("email"));
+        MemberDto member = memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
 
         if(member==null) {
             return new ResponseEntity<>("해당 회원이 존재하지 않습니다", HttpStatus.OK);
@@ -98,10 +126,10 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/find/id")
     public ResponseEntity<?> memberFindId(
-        @RequestBody Map<String, String> emailMap
+        @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        MemberDto member = memberService.findmemberEmail(emailMap.get("email"));
+        MemberDto member = memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
 
         if(member==null) {
             return new ResponseEntity<>("해당 회원이 존재하지 않습니다", HttpStatus.OK);
@@ -122,15 +150,52 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/check/loginid")
     public ResponseEntity<?> memberCheckLoginId(
-        @RequestBody Map<String, String> idMap
+        // @RequestBody Map<String, String> idMap
+        @RequestBody MemberCheckIdRequestDto memberCheckIdRequestDto
     ) throws Exception {
 
-        MemberDto memberDto = memberService.findMemberLoginId(idMap.get("loginId"));
+        if(memberCheckIdRequestDto.getLoginId()==null) {
+            return new ResponseEntity<>("아이디를 입력해주세요", HttpStatus.BAD_REQUEST);
+        } 
+        else if(memberCheckIdRequestDto.getLoginId().isEmpty()) {
+            return new ResponseEntity<>("아이디를 입력해주세요", HttpStatus.BAD_REQUEST);
+        }
+
+        MemberDto memberDto = memberService.findMemberLoginId(memberCheckIdRequestDto.getLoginId());
 
         if(memberDto==null) {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
         return new ResponseEntity<>("아이디가 중복입니다", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member nickname check", description = "닉네임 중복 검사")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/check/nickname")
+    public ResponseEntity<?> memberCheckNickname(
+        @RequestBody MemberCheckNicknameRequestDto memberCheckNicknameRequestDto
+    ) throws Exception {
+
+        if(memberCheckNicknameRequestDto.getNickName()==null) {
+            return new ResponseEntity<>("닉네임을 입력해주세요", HttpStatus.BAD_REQUEST);
+        } 
+        else if(memberCheckNicknameRequestDto.getNickName().isEmpty()) {
+            return new ResponseEntity<>("닉네임을 입력해주세요", HttpStatus.BAD_REQUEST);
+
+        }
+
+        MemberDto memberDto = memberService.findmemberNickname(memberCheckNicknameRequestDto.getNickName());
+
+        if(memberDto==null) {
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("닉네임이 중복입니다", HttpStatus.OK);
     }
 
     @Operation(summary = "member email check", description = "이메일 중복 검사")
@@ -143,10 +208,17 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/check/email")
     public ResponseEntity<?> memberCheckEmail(
-        @RequestBody Map<String, String> emailMap
+        @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        MemberDto memberDto = memberService.findmemberEmail(emailMap.get("email"));
+        if(memberCheckEmailRequestDto.getEmail()==null) {
+            return new ResponseEntity<>("이메일을 입력해주세요", HttpStatus.BAD_REQUEST);
+        } 
+        else if(memberCheckEmailRequestDto.getEmail().isEmpty()) {
+            return new ResponseEntity<>("이메일을 입력해주세요", HttpStatus.BAD_REQUEST);
+        }
+
+        MemberDto memberDto = memberService.findmemberEmail(memberCheckEmailRequestDto.getEmail());
 
         if(memberDto==null) {
             return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -176,7 +248,13 @@ public class MemberController {
             return new ResponseEntity<>(vaildErrorDto, HttpStatus.BAD_REQUEST);
         }
 
+        String newPassword = userService.encrypt(memberSignUpDto.getPassword());
+
+        memberSignUpDto.passwordUpdate(newPassword);
+
         memberService.createdMember(memberSignUpDto);
+
+        if(memberImage!=null) {
 
         MemberDto memberDto = memberService.findMemberLoginId(memberSignUpDto.getLoginId());
         // memberService.
@@ -186,7 +264,6 @@ public class MemberController {
         String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
         System.out.println("확장자 : "+ext);
 
-        if(memberImage!=null) {
             // System.out.println("체크 하기 : "+ System.getProperty("user.dir"));
             HashMap<String, String> fileMap = s3Service.upload(memberImage, "member");
             
@@ -459,12 +536,6 @@ public class MemberController {
 
     //     return new ResponseEntity<>(foodList, HttpStatus.OK);
     // }
-
-
-    
-
-    
-
 
 
 }

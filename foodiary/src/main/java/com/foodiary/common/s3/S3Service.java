@@ -3,6 +3,7 @@ package com.foodiary.common.s3;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +30,9 @@ public class S3Service {
 
     // dirName = 사진 저장할 폴더명
     public HashMap<String, String> upload(MultipartFile multipartFile, String dirName) throws IOException {
+
+        // 파일 유효성 검사
+        
 
         File uploadFile = convert(multipartFile, dirName)
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
@@ -97,4 +101,10 @@ public class S3Service {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
     }  
+
+    // public ResponseEntity<?> checkFile(MultipartFile multipartFile) throws Exception {
+
+
+    // }
+
 }

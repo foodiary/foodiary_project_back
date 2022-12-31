@@ -62,6 +62,10 @@ public class MemberSignUpRequestDto {
         // this.memberImage = memberImage;
     }
 
+    public void passwordUpdate(String newPassword) {
+        this.password = newPassword;
+    }
+
     // public MemberSignUpDto(
     //         @NotBlank(message = "아이디가 비어있습니다") @Pattern(regexp = "^[a-z0-9]{5,20}$", message = "아이디는 6~13자리 영문소문자, 숫자만 가능합니다") String loginId,
     //         @NotBlank(message = "비밀번호가 비어있습니다") @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,16}$", message = "비밀번호는 8~16자리 대문자, 소문자, 특수문자를 포함해야합니다.") String password,
