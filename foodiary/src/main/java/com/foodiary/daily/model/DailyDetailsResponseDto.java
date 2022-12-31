@@ -25,9 +25,11 @@ public class DailyDetailsResponseDto {
     @ApiModelProperty(value="게시글 내용", required = true)
     private String dailyBody;
 
-    @Setter
+    @ApiModelProperty(value="게시글 작성자", required = true)
+    private String dailyWrite;
+
     @ApiModelProperty(value="게시글 이미지 경로", required = false)
-    private String path;
+    private String dailyPath;
 
     @Setter
     @ApiModelProperty(value="게시글 좋아요 수", required = true)

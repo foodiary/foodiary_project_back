@@ -3,6 +3,8 @@ package com.foodiary.recipe.service;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.common.s3.S3Service;
+import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberDto;
 import com.foodiary.recipe.mapper.RecipeMapper;
 import com.foodiary.recipe.model.*;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +25,11 @@ import java.util.stream.Collectors;
 public class RecipeService {
 
     private final RecipeMapper recipeMapper;
+    private final MemberMapper memberMapper;
     private final S3Service s3Service;
 
     // 레시피 게시글 추가
-    public void addRecipe(RecipeWriteRequestDto RecipeWriteRequestDto, MultipartFile recipeImage) throws IOException {
-        recipeMapper.saveRecipe(RecipeWriteRequestDto);
+    public void addRecipe(RecipeWriteRequestDto recipeWriteRequestDto, MultipartFile recipeImage) throws IOException {
 
         String originalFilename = recipeImage.getOriginalFilename();
         String saveName = UUID.randomUUID().toString();
@@ -42,9 +44,17 @@ public class RecipeService {
 //                size,
 //                contentType);
 
+        MemberDto member = memberMapper.findById(recipeWriteRequestDto.getMemberId());
+        if(member == null) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        recipeWriteRequestDto.setWrite(member.getMemberNickName());
+
+        recipeMapper.saveRecipe(recipeWriteRequestDto);
+
         // 임시 이미지 저장용
-        RecipeImageDto imageDto = of(RecipeWriteRequestDto.getRecipeId(),
-                RecipeWriteRequestDto.getMemberId(),
+        RecipeImageDto imageDto = of(recipeWriteRequestDto.getRecipeId(),
+                recipeWriteRequestDto.getMemberId(),
                 "dddddd",
                 "ssssss",
                 "dddddddddddddddddddddddt554547476474747",

@@ -6,6 +6,8 @@ import com.foodiary.common.s3.Image;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.mapper.DailyMapper;
 import com.foodiary.daily.model.*;
+import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class DailyService {
 
     private final DailyMapper dailyMapper;
+    private final MemberMapper memberMapper;
     private final S3Service s3Service;
 
     // 하루 식단 게시글 추가
@@ -36,14 +39,13 @@ public class DailyService {
         String contentType = dailyImage.getContentType();
         long size = dailyImage.getSize();
 
-//        ImageDto imageDto = of(dailyWriteRequestDto.getDailyId(),
-//                dailyWriteRequestDto.getMemberId(),
-//                originalFilename,
-//                saveName,
-//                "dd",
-//                size,
-//                contentType);
+        MemberDto member = memberMapper.findById(dailyWriteRequestDto.getMemberId());
+        if(member == null) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        dailyWriteRequestDto.setWrite(member.getMemberNickName());
 
+        dailyMapper.saveDaily(dailyWriteRequestDto);
         DailyImageDto imageDto = of(dailyWriteRequestDto.getDailyId(),
                 dailyWriteRequestDto.getMemberId(),
                 "dddddd",
@@ -132,14 +134,12 @@ public class DailyService {
         //댓글 수
         int daiyCommentCount = dailyMapper.findAllDailyComment(dailyId).size();
 
-        //이미지 경로
-        String dailyImage = dailyMapper.findByDailyImage(dailyId);
+        //게시글 조회수 업데이트
         dailyMapper.updateDailyView(dailyId);
 
         DailyDetailsResponseDto dailyResponse = dailyMapper.findByDailyId(dailyId);
         dailyResponse.setLike(dailyLikeCount);
         dailyResponse.setComment(daiyCommentCount);
-        dailyResponse.setPath(dailyImage);
 
         return dailyResponse;
     }

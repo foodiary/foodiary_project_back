@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -25,5 +26,12 @@ public class RecipeWriteRequestDto {
     @NotBlank(message = "내용이 비어있습니다.")
     @ApiModelProperty(value="게시글 내용", required = true)
     private String content;
+
+    @ApiModelProperty(value="게시글 작성자", required = true)
+    @Setter
+    private String write;
+
+    @ApiModelProperty(value="이미지 경로", required = true)
+    @Setter private String path;
 
 }

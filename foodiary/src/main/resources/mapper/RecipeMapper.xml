@@ -7,8 +7,8 @@
 
     <!--    게시글 추가-->
     <insert id="saveRecipe" useGeneratedKeys="true" keyProperty="recipeId" keyColumn="RECIPE_ID">
-        INSERT INTO TB_RECIPE (MEMBER_ID, RECIPE_TITLE, RECIPE_BODY, RECIPE_VIEW, RECIPE_CREATE, RECIPE_UPDATE)
-        VALUES (#{memberId}, #{title}, #{content}, 0, now(), now());
+        INSERT INTO TB_RECIPE (MEMBER_ID, RECIPE_TITLE, RECIPE_BODY, RECIPE_WRITE, RECIPE_VIEW, RECIPE_PATH1, RECIPE_PATH2, RECIPE_PATH3 RECIPE_CREATE, RECIPE_UPDATE)
+        VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path1}, #{path2}, #{path3}, now(), now());
     </insert>
 
 

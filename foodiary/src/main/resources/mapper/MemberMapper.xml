@@ -9,6 +9,11 @@
         VALUES (#{email}, #{password}, #{nickName}, #{profile}, now(), now());
 	</insert>
 
+    <select id="findById" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_Id = #{memberId}
+    </select>
+
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER 
         WHERE MEMBER_EMAIL = #{email}

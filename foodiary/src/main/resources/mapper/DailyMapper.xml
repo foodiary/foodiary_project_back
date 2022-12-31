@@ -7,8 +7,8 @@
 
 <!--    게시글 추가-->
     <insert id="saveDaily" useGeneratedKeys="true" keyProperty="dailyId" keyColumn="DAILY_ID">
-        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_VIEW, DAILY_CREATE, DAILY_UPDATE)
-        VALUES (#{memberId}, #{title}, #{content}, 0, now(), now());
+        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_WRITE, DAILY_VIEW, DAILY_PATH, DAILY_CREATE, DAILY_UPDATE)
+        VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path}, now(), now());
     </insert>
 
 
