@@ -53,8 +53,6 @@ public class MemberController {
     
     private final MemberService memberService;
 
-    private final UserService userService;
-
     private final EmailService emailService;
 
     private final S3Service s3Service;
