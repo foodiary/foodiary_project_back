@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
@@ -81,8 +82,8 @@ public class RecipeController {
         @ResponseBody
         @PostMapping(value = "/recipe/{recipeId}/{memberId}")
         public ResponseEntity<String> RecipeModify(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
                 @RequestPart(value = "recipeEdit") RecipeEditRequestDto recipeEditRequestDto,
                 @Parameter(description = "사진 이미지")
                 @RequestPart(value = "recipeImage", required = false) List<MultipartFile> recipeImage
@@ -126,7 +127,7 @@ public class RecipeController {
         @ResponseBody
         @GetMapping(value = "/recipe/datils")
         public ResponseEntity<RecipeDetailsResponseDto> getRecipeDetails (
-                @ApiParam(value = "게시글 시퀀스", required = true) int recipeId
+                @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId
         ) throws Exception {
 
                 RecipeDetailsResponseDto response = recipeService.findRecipe(recipeId);
@@ -144,8 +145,8 @@ public class RecipeController {
         @ResponseBody
         @DeleteMapping(value = "/recipe/{recipeId}/{memberId}")
         public ResponseEntity<String> RecipeDelete(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
         ) throws Exception {
 
                 recipeService.removeRecipe(recipeId, memberId);
@@ -181,9 +182,9 @@ public class RecipeController {
         @ResponseBody
         @GetMapping(value = "/recipe/comment")
         public ResponseEntity<?> RecipeCommentDetails(
-                @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @ApiParam(value = "댓글 페이지", required = true) int page,
-                @ApiParam(value = "댓글 갯수", required = true) int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
+                @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @ApiParam(value = "댓글 페이지", required = true) @Positive int page,
+                @ApiParam(value = "댓글 갯수", required = true) @Positive int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
         ) throws Exception {
                 if(page <= 0 || size <= 0){
                         throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
@@ -206,9 +207,9 @@ public class RecipeController {
         @ResponseBody
         @PatchMapping(value = "/recipe/comment//{recipeId}/{memberId}/{commentId}")
         public ResponseEntity<String> RecipeCommentModify(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
-                @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int commentId,
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
+                @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) @Positive int commentId,
                 @RequestBody RecipeCommentEditRequestDto recipeCommentEditRequestDto
         ) throws Exception {
                 recipeCommentEditRequestDto.setRecipeId(recipeId);
@@ -229,9 +230,9 @@ public class RecipeController {
         @ResponseBody
         @DeleteMapping(value = "/recipe/comment/{recipeId}/{commentId}/{memberId}")
         public ResponseEntity<String> recipeCommentRemove(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int commentId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) @Positive int commentId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
         ) throws Exception {
                 recipeService.removeRecipeComment(recipeId, memberId, commentId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -248,8 +249,8 @@ public class RecipeController {
         @ResponseBody
         @PostMapping(value = "/recipe/like/{recipeId}/{memberId}")
         public ResponseEntity<String> recipeLike(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
         ) throws Exception {
                 recipeService.addRecipeLike(memberId, recipeId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -266,7 +267,7 @@ public class RecipeController {
         @ResponseBody
         @DeleteMapping(value = "/recipe/like/{recipeLikeId}")
         public ResponseEntity<String> recipeLikeCancle(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeLikeId
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeLikeId
         ) throws Exception {
                 recipeService.removeRecipeLike(recipeLikeId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -283,8 +284,8 @@ public class RecipeController {
         @ResponseBody
         @PostMapping(value = "/recipe/scrap/{recipeId}/{memberId}")
         public ResponseEntity<String> recipeScrap(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
         ) throws Exception {
                 recipeService.addRecipeScrap(recipeId, memberId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -301,9 +302,9 @@ public class RecipeController {
         @ResponseBody
         @DeleteMapping("/recipe/scrap/{recipeId}/{memberId}/{scrapId}")
         public ResponseEntity<String> recipeScrapRemove(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
-                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId,
-                @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) int scrapId
+                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
+                @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
+                @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) @Positive int scrapId
         ) throws Exception {
                 recipeService.removeRecipeScrap(recipeId, memberId, scrapId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);

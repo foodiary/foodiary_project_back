@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
@@ -70,8 +71,8 @@ public class DailyController {
     @ResponseBody
     @PostMapping(value = "/daily/{dailyId}/{memberId}")
     public ResponseEntity<String> DailyModify(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
         @RequestPart("dailyEdit") DailyEditRequestDto dailyEditRequestDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
@@ -94,8 +95,8 @@ public class DailyController {
     })
     @GetMapping(value = "/dailys")
     public ResponseEntity<?> Dailys(
-        @ApiParam(value = "게시판 페이지", required = false) int page,
-        @ApiParam(value = "게시판 페이지 사이즈", required = false) int size
+        @ApiParam(value = "게시판 페이지", required = false) @Positive int page,
+        @ApiParam(value = "게시판 페이지 사이즈", required = false) @Positive int size
     ) throws Exception {
         if(page <= 0 || size <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
@@ -115,7 +116,7 @@ public class DailyController {
     @ResponseBody
     @GetMapping(value = "/daily/datils")
     public ResponseEntity<DailyDetailsResponseDto> getDailyDetails (
-        @ApiParam(value = "게시글 시퀀스", required = true) int dailyId
+        @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId
     ) throws Exception {
 
         DailyDetailsResponseDto response = dailyService.findDaily(dailyId);
@@ -134,8 +135,8 @@ public class DailyController {
     @ResponseBody
     @DeleteMapping(value = "/daily/{dailyId}/{memberId}")
     public ResponseEntity<String> DailyDelete(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
     ) throws Exception {
 
         dailyService.removeDaily(dailyId, memberId);
@@ -171,9 +172,9 @@ public class DailyController {
     @ResponseBody
     @GetMapping(value = "/daily/comment")
     public ResponseEntity<?> DailyCommentDetails(
-        @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @ApiParam(value = "댓글 페이지", required = true) int page,
-        @ApiParam(value = "댓글 갯수", required = true) int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
+        @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @ApiParam(value = "댓글 페이지", required = true) @Positive int page,
+        @ApiParam(value = "댓글 갯수", required = true) @Positive int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
     ) throws Exception {
         if(page <= 0 || size <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
@@ -196,9 +197,9 @@ public class DailyController {
     @ResponseBody
     @PatchMapping(value = "/daily/comment//{dailyId}/{memberId}/{commentId}")
     public ResponseEntity<String> DailyCommentModify(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
-        @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int commentId,
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
+        @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) @Positive int commentId,
         @RequestBody DailyCommentEditRequestDto dailyCommentEditRequestDto
     ) throws Exception {
         dailyCommentEditRequestDto.setDailyId(dailyId);
@@ -219,9 +220,9 @@ public class DailyController {
     @ResponseBody
     @DeleteMapping(value = "/daily/comment/{dailyId}/{commentId}/{memberId}")
     public ResponseEntity<String> dailyCommentRemove(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int commentId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) @Positive int commentId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
     ) throws Exception {
         dailyService.removeDailyComment(dailyId, memberId, commentId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -238,8 +239,8 @@ public class DailyController {
     @ResponseBody
     @PostMapping(value = "/daily/like/{dailyId}/{memberId}")
     public ResponseEntity<String> dailyLike(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true)@Positive  int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive  int memberId
     ) throws Exception {
         dailyService.addDailyLike(memberId, dailyId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -256,7 +257,7 @@ public class DailyController {
     @ResponseBody
     @DeleteMapping(value = "/daily/like/{dailyLikeId}")
     public ResponseEntity<String> dailyLikeCancle(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyLikeId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyLikeId
     ) throws Exception {
         dailyService.removeDailyLike(dailyLikeId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -273,8 +274,8 @@ public class DailyController {
     @ResponseBody
     @PostMapping(value = "/daily/scrap/{dailyId}/{memberId}")
     public ResponseEntity<String> dailyScrap(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
     ) throws Exception {
         dailyService.addDailyScrap(dailyId, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -291,9 +292,9 @@ public class DailyController {
     @ResponseBody
     @DeleteMapping("/daily/scrap/{dailyId}/{memberId}/{scrapId}")
     public ResponseEntity<String> dailyScrapRemove(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId,
-        @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) int scrapId
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
+        @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) @Positive int scrapId
     ) throws Exception {
         dailyService.removeDailyScrap(dailyId, memberId, scrapId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
