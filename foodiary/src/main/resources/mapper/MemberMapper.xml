@@ -48,7 +48,9 @@
     </select>
 
     <update id="updateMemberPassword">
-        UPDATE TB_MEMBER SET MEMBER_PASSWORD={password}
+        UPDATE TB_MEMBER SET 
+        MEMBER_UPDATE = NOW(),
+        MEMBER_PASSWORD= #{password}
         WHERE MEMBER_ID = #{id}
     </update>
 
@@ -94,7 +96,7 @@
     <select id="findByRecipeScrap" resultType="com.foodiary.member.model.MemberRecipeScrapResponseDto">
         SELECT tmsr.MEMBER_RECIPE_SCRAP_ID AS MEMBER_RECIPE_SCRAP_ID, 
             tmsr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, 
-            tr.RECIPE_PATH1, tr.RECIPE_PATH2, tr.RECIPE_PATH3, 
+            tr.RECIPE_PATH1,
 	        (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_COMMENT,
 	        (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_LIKE
         from TB_MEMBER_SCRAP_RECIPE tmsr 
@@ -124,7 +126,7 @@
     </select>
 
     <select id="findByRecipeLike" resultType="com.foodiary.member.model.MemberRecipeLikeResponseDto">
-        SELECT trl.RECIPE_LIKE_ID, trl.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, tr.RECIPE_PATH1, tr.RECIPE_PATH2, tr.RECIPE_PATH3,
+        SELECT trl.RECIPE_LIKE_ID, trl.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, tr.RECIPE_PATH1,
             (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_COMMENT,
             (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_LIKE
         FROM TB_RECIPE_LIKE trl 
@@ -147,5 +149,19 @@
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_ID = #{memberId}
     </select>
+
+    <update id="updateMemberImage">
+        UPDATE TB_MEMBER SET 
+        MEMBER_UPDATE = NOW(),
+        MEMBER_PATH=NULL
+        WHERE MEMBER_ID = #{memberId}
+    </update>
+
+    <update id="deleteMember">
+        UPDATE TB_MEMBER SET 
+            MEMBER_DELETE = NOW(),
+            MEMBER_YN='Y'
+        WHERE MEMBER_ID = #{id}
+    </update>
 
 </mapper>

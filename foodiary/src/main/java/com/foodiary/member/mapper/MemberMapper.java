@@ -59,4 +59,9 @@ public interface MemberMapper {
     void deleteRecipeLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
 
     MemberEditResponseDto findByMemberIdEdit(@Param("memberId") int memberId);
+
+    void updateMemberImage(@Param("memberId") int memberId);
+
+    void deleteMember(@Param("id") int id);
+
 }

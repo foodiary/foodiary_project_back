@@ -2,11 +2,8 @@ package com.foodiary.member.controller;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -55,8 +52,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
     
     private final MemberService memberService;
-
-    private final UserService userService;
 
     private final EmailService emailService;
 
@@ -181,6 +176,25 @@ public class MemberController {
         
     }
 
+    @Operation(summary = "member email send, identity verification", description = "이메일 발송 본인 인증")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/email/send")
+    public ResponseEntity<?> memberEmailSend(
+        @RequestBody @Valid MemberCheckEmailRequestDto memberCheckEmailRequestDto
+    ) throws Exception {
+
+        memberService.mailSend(memberCheckEmailRequestDto);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+        
+    }
+
+
     @Operation(summary = "member sign up", description = "회원 가입하기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -289,6 +303,8 @@ public class MemberController {
         @PathVariable @ApiParam(value = "회원 시퀀스")int memberId
     ) throws Exception {
 
+        memberService.deleteMember(memberId);
+        
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -320,6 +336,25 @@ public class MemberController {
         MemberSerchResponseDto memberSerchDto = new MemberSerchResponseDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
         
         return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
+    }
+
+    @Operation(summary = "member image delete", description = "회원 이미지 삭제")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @DeleteMapping(value = "/member/image/{memberId}")
+    public ResponseEntity<String> memberImageDelete(
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    ) throws Exception {
+
+        memberService.deleteMemberImage(memberId);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     // TODO : 토큰 재발큽 코드는 어떻게 진행할것인가?

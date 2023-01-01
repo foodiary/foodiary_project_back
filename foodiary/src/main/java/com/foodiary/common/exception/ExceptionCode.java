@@ -21,7 +21,8 @@ public enum ExceptionCode {
     FILE_BAD_REQUEST(400, "해당 파일의 확장자를 올릴수 없습니다."),
     EMAIL_BAD_REQUEST(400, "이메일이 중복입니다"),
     NICKNAME_BAD_REQUEST(400, "닉네임이 중복입니다"),
-    LOGINID_BAD_REQUEST(400, "아이디가 중복입니다")
+    LOGINID_BAD_REQUEST(400, "아이디가 중복입니다"),
+    SEARCH_NOT_FOUND(404, "검색어와 일치하는 게시글이 없습니다."),
     ;
 
 

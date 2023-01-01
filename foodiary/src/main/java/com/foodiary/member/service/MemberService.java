@@ -13,6 +13,7 @@ import com.foodiary.common.exception.MorePasswordException;
 import com.foodiary.common.exception.VaildErrorResponseDto;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberCheckEmailRequestDto;
 import com.foodiary.member.model.MemberDailyLikeResponseDto;
 import com.foodiary.member.model.MemberDailyScrapResponseDto;
 import com.foodiary.member.model.MemberDto;
@@ -109,6 +110,9 @@ public class MemberService {
     }
 
     private void deleteImage(int id) {
+        MemberImageDto memberImageDto = mapper.findByIdFile(id);
+        String url = "member/"+memberImageDto.getMemberFileSaveName();
+        s3Service.deleteImage(url);
         mapper.deleteMemberImage(id);
     }
 
@@ -147,7 +151,9 @@ public class MemberService {
     }
 
     public void EditMemberPassWord(String password, int id) {
-        mapper.updateMemberPassword(password, id);
+        String newPassword = userService.encrypt(password);
+
+        mapper.updateMemberPassword(newPassword, id);
     }
 
     public void findmemberInfo(String email, String type) {
@@ -219,6 +225,26 @@ public class MemberService {
     public MemberEditResponseDto findByMemberIdInfo(int memberId) {
         
         return mapper.findByMemberIdEdit(memberId);
+    }
+
+    public void deleteMemberImage(int memberId) {
+        
+        deleteImage(memberId);
+        mapper.updateMemberImage(memberId);
+
+    }
+
+    public void deleteMember(int memberId) {
+        
+        mapper.deleteMember(memberId);
+
+    }
+
+    public void mailSend(MemberCheckEmailRequestDto memberCheckEmailRequestDto) {
+        
+        // TODO : 이메일 인증 번호 생성 및 redis 저장, 시간 제한 5분
+        //TODO : 이메일 발송 로직
+        
     }
 
 }
