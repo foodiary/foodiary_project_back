@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.foodiary.search.mapper.SearchMapper">
+
+    <select id="findbyTitle" resultType="com.foodiary.search.model.SearchResponseDto">
+        SELECT tr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
+            tr.RECIPE_PATH1, tr.RECIPE_VIEW, tr.RECIPE_BODY,
+            (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_LIKE,
+            (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_COMMENT
+        FROM TB_RECIPE tr WHERE tr.RECIPE_TITLE LIKE CONCAT('%', #{keyword}, '%') OR tr.RECIPE_BODY LIKE CONCAT('%', #{keyword}, '%') 
+    </select>
+
+</mapper>
