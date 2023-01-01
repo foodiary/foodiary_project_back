@@ -9,10 +9,6 @@
         VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, now(), now());
 	</insert>
 
-    <select id="findById" resultType="com.foodiary.member.model.MemberDto">
-        SELECT * FROM TB_MEMBER
-        WHERE MEMBER_Id = #{memberId}
-    </select>
 
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER 
@@ -32,6 +28,11 @@
     <select id="findById" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_ID = #{id}
+    </select>
+
+    <select id="findByMemberId" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{memberId}
     </select>
 
     <select id="findByNickname" resultType="com.foodiary.member.model.MemberDto">

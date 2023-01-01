@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class RecipeImageDto {
 
     @ApiModelProperty(value="레시피 게시판 시퀀스", required = true)
-    private int recipeId;
+    @Setter private int recipeId;
 
     @ApiModelProperty(value="사용자 시퀀스", required = true)
     private int memberId;

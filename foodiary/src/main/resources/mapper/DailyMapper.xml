@@ -7,7 +7,7 @@
 
 <!--    게시글 추가-->
     <insert id="saveDaily" useGeneratedKeys="true" keyProperty="dailyId" keyColumn="DAILY_ID">
-        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_WRITE, DAILY_VIEW, DAILY_PATH, DAILY_CREATE, DAILY_UPDATE)
+        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_WRITER, DAILY_VIEW, DAILY_PATH, DAILY_CREATE, DAILY_UPDATE)
         VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path}, now(), now());
     </insert>
 
@@ -33,7 +33,7 @@
     </insert>
 
     <insert id="saveImage">
-        INSERT INTO TB_DAILY_IMAGE (MEMBER_ID, DAILY_ID, DAILY_IMAGE_ORIGINAL_NAME, DAILY_FILE_FULL_NAME, DAILY_FILE_SAVE_NAME, DAILY_FILE_PATH, DAILY_FILE_SIZE, DAILY_FILE_EXT, DAILY_FILE_CREATE, DAILY_FILE_UPDATE)
+        INSERT INTO TB_DAILY_IMAGE (MEMBER_ID, DAILY_ID, DAILY_FILE_ORIGINAL_NAME, DAILY_FILE_FULL_NAME, DAILY_FILE_SAVE_NAME, DAILY_FILE_PATH, DAILY_FILE_SIZE, DAILY_FILE_EXT, DAILY_FILE_CREATE, DAILY_FILE_UPDATE)
         VALUES (#{memberId}, #{dailyId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
     </insert>
 
@@ -168,6 +168,11 @@
     <delete id="deleteDailyScrap">
         DELETE FROM TB_MEMBER_BOARDSCRAP_DAILY
         WHERE DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId} AND MEMBER_DAILY_BOARDSCRAP_ID = #{scrapId}
+    </delete>
+
+    <delete id="deleteDailyImage">
+        DELETE FROM TB_DAILY_IMAGE
+        WHERE DAILY_ID = #{dailyId} AND DAILY_FILE_PATH = #{path}
     </delete>
 
 </mapper>

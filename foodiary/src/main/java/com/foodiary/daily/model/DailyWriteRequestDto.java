@@ -31,11 +31,5 @@ public class DailyWriteRequestDto {
     @Setter private String write;
 
     @ApiModelProperty(value="이미지 경로1", required = true)
-    @Setter private String path1;
-
-    @ApiModelProperty(value="이미지 경로2", required = true)
-    @Setter private String path2;
-
-    @ApiModelProperty(value="이미지 경로3", required = true)
-    @Setter private String path3;
+    @Setter private String path;
 }

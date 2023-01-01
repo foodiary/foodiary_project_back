@@ -32,6 +32,8 @@ public interface RecipeMapper {
 
     void updateRecipeView(@Param("recipeId") int recipeId);
 
+    void updateRecipeId(@Param("recipeId") int recipeId, @Param("path") String path);
+
 
 
     // =================== SELECT ====================
@@ -45,6 +47,12 @@ public interface RecipeMapper {
     Integer findByRecipeLikeId(@Param("recipeLikeId") int recipeLikeId);
 
     Integer findByMemberIdAndRecipeId(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
+
+    Integer findByRecipeId1(@Param("path1") String path);
+
+    Integer findByRecipeId2(@Param("path2") String path);
+
+    Integer findByRecipeId3(@Param("path3") String path);
 
     String findByRecipeImage(@Param("recipeId") int recipeId);
 
@@ -65,4 +73,8 @@ public interface RecipeMapper {
     void deleteRecipeComment(@Param("recipeId") int recipeId, @Param("memberId") int memberId, @Param("commentId") int commentId);
 
     void deleteRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId, @Param("scrapId") int scrapId);
+
+    void deleteRecipeImage(@Param("recipeId") int recipeId, @Param("path") String path);
+
+
 }

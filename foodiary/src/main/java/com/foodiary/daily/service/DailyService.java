@@ -8,6 +8,7 @@ import com.foodiary.daily.mapper.DailyMapper;
 import com.foodiary.daily.model.*;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
+import com.foodiary.daily.model.DailyImageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,30 +33,43 @@ public class DailyService {
 
     // 하루 식단 게시글 추가
     public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile dailyImage) throws IOException {
-        dailyMapper.saveDaily(dailyWriteRequestDto);
-        System.out.println(dailyWriteRequestDto.getDailyId());
 
-        String originalFilename = dailyImage.getOriginalFilename();
-        String saveName = UUID.randomUUID().toString();
-        String contentType = dailyImage.getContentType();
-        long size = dailyImage.getSize();
-
-        MemberDto member = memberMapper.findById(dailyWriteRequestDto.getMemberId());
+        MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId());
         if(member == null) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
-        dailyWriteRequestDto.setWrite(member.getMemberNickName());
+        if(dailyImage == null) {
+            dailyWriteRequestDto.setWrite(member.getMemberNickName());
+            dailyMapper.saveDaily(dailyWriteRequestDto);
+        } else {
+            fileCheck(dailyImage);
+            try {
+                HashMap<String, String> fileMap = s3Service.upload(dailyImage, "daily");
 
-        dailyMapper.saveDaily(dailyWriteRequestDto);
-        DailyImageDto imageDto = of(dailyWriteRequestDto.getDailyId(),
-                dailyWriteRequestDto.getMemberId(),
-                "dddddd",
-                "ssssss",
-                "dddddddddddddddddddddddt554547476474747",
-                "ddddddddddd",
-                100,
-                "jpg");
-        dailyMapper.saveImage(imageDto);
+                String fileFullName = dailyImage.getOriginalFilename();
+                String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+                String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+                dailyWriteRequestDto.setPath(fileMap.get("url"));
+                DailyImageDto saveImage = DailyImageDto.builder()
+                        .memberId(dailyWriteRequestDto.getMemberId())
+                        .originalName(fileName)
+                        .originalFullName(fileFullName)
+                        .saveName(fileMap.get("serverName"))
+                        .path(fileMap.get("url"))
+                        .size(dailyImage.getSize())
+                        .ext(ext).build();
+                dailyWriteRequestDto.setWrite(member.getMemberNickName());
+                dailyMapper.saveDaily(dailyWriteRequestDto);
+                saveImage.setDailyId(dailyWriteRequestDto.getDailyId());
+                dailyMapper.saveImage(saveImage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+
+        }
+
+
     }
 
     // 하루 식단 댓글 추가
@@ -169,6 +184,12 @@ public class DailyService {
         if(verifyDaily == null) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
+
+        if(verifyDaily.getDailyPath() != null) {
+            s3Service.deleteImage(verifyDaily.getDailyPath());
+            dailyMapper.deleteDailyImage(dailyId, verifyDaily.getDailyPath());
+        }
+
         dailyMapper.deleteDaily(dailyId, memberId);
     }
 
@@ -202,6 +223,17 @@ public class DailyService {
                     .size(size)
                     .ext(ext)
                     .build();
+    }
+
+    //이미지 확장자 체크
+    public void fileCheck(MultipartFile image) {
+        String ext = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+
+        if(ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png")) {
+        }
+        else {
+            throw new BusinessLogicException(ExceptionCode.FILE_BAD_REQUEST);
+        }
     }
 
 

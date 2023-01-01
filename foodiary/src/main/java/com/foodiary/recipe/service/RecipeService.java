@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,39 +31,81 @@ public class RecipeService {
     private final S3Service s3Service;
 
     // 레시피 게시글 추가
-    public void addRecipe(RecipeWriteRequestDto recipeWriteRequestDto, MultipartFile recipeImage) throws IOException {
+    public void addRecipe(RecipeWriteRequestDto recipeWriteRequestDto, List<MultipartFile> recipeImage) throws IOException {
 
-        String originalFilename = recipeImage.getOriginalFilename();
-        String saveName = UUID.randomUUID().toString();
-        String contentType = recipeImage.getContentType();
-        long size = recipeImage.getSize();
-
-//        ImageDto imageDto = of(recipeWriteRequestDto.getRecipeId(),
-//                recipeWriteRequestDto.getMemberId(),
-//                originalFilename,
-//                saveName,
-//                "dd",
-//                size,
-//                contentType);
-
-        MemberDto member = memberMapper.findById(recipeWriteRequestDto.getMemberId());
+        MemberDto member = memberMapper.findByMemberId(recipeWriteRequestDto.getMemberId());
         if(member == null) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
-        recipeWriteRequestDto.setWrite(member.getMemberNickName());
+        if(recipeImage == null) {
+            recipeWriteRequestDto.setWrite(member.getMemberNickName());
+            recipeMapper.saveRecipe(recipeWriteRequestDto);
+        } else {
+            // 파일 url 담을 리스트
+            List<String> fileUrlList = new ArrayList<>();
 
-        recipeMapper.saveRecipe(recipeWriteRequestDto);
+            for(int i=0; i < recipeImage.size(); i++) {
+                MultipartFile file = recipeImage.get(i);
+                fileCheck(file);
+                HashMap<String, String> fileMap = s3Service.upload(file, "daily");
+                fileUrlList.add(fileMap.get("url"));
 
-        // 임시 이미지 저장용
-        RecipeImageDto imageDto = of(recipeWriteRequestDto.getRecipeId(),
-                recipeWriteRequestDto.getMemberId(),
-                "dddddd",
-                "ssssss",
-                "dddddddddddddddddddddddt554547476474747",
-                "dddddddddd",
-                10000,
-                "jpg");
-        recipeMapper.saveImage(imageDto);
+                    String fileFullName = file.getOriginalFilename();
+                    String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+                    String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+                    RecipeImageDto saveImage = RecipeImageDto.builder()
+                            .memberId(recipeWriteRequestDto.getMemberId())
+                            .originalName(fileName)
+                            .originalFullName(fileFullName)
+                            .saveName(fileMap.get("serverName"))
+                            .path(fileMap.get("url"))
+                            .size(file.getSize())
+                            .ext(ext).build();
+                    saveImage.setRecipeId(recipeWriteRequestDto.getRecipeId());
+                    recipeMapper.saveImage(saveImage);
+            }
+            //파일 갯수
+            log.info(Integer.toString(fileUrlList.size()));
+
+            switch(fileUrlList.size()){
+                case 1 :
+                    recipeWriteRequestDto.setPath1(fileUrlList.get(0));
+                    break;
+                case 2 :
+                    recipeWriteRequestDto.setPath1(fileUrlList.get(0));
+                    recipeWriteRequestDto.setPath2(fileUrlList.get(1));
+                    break;
+                case 3 :
+                    recipeWriteRequestDto.setPath1(fileUrlList.get(0));
+                    recipeWriteRequestDto.setPath2(fileUrlList.get(1));
+                    recipeWriteRequestDto.setPath3(fileUrlList.get(2));
+                    break;
+            }
+            recipeWriteRequestDto.setWrite(member.getMemberNickName());
+            recipeMapper.saveRecipe(recipeWriteRequestDto);
+
+            switch(fileUrlList.size()){
+                case 1 :
+                    // 이미지테이블의 dailyId 업데이
+                    int recipeId01 = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
+                    recipeMapper.updateRecipeId(recipeId01, recipeWriteRequestDto.getPath1());
+                    break;
+                case 2 :
+                    int recipeId001 = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
+                    int recipeId002 = recipeMapper.findByRecipeId2(recipeWriteRequestDto.getPath2());
+                    recipeMapper.updateRecipeId(recipeId001, recipeWriteRequestDto.getPath1());
+                    recipeMapper.updateRecipeId(recipeId002, recipeWriteRequestDto.getPath2());
+                    break;
+                case 3 :
+                    int recipeId0001 = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
+                    int recipeId0002 = recipeMapper.findByRecipeId2(recipeWriteRequestDto.getPath2());
+                    int recipeId0003 = recipeMapper.findByRecipeId3(recipeWriteRequestDto.getPath3());
+                    recipeMapper.updateRecipeId(recipeId0001, recipeWriteRequestDto.getPath1());
+                    recipeMapper.updateRecipeId(recipeId0002, recipeWriteRequestDto.getPath2());
+                    recipeMapper.updateRecipeId(recipeId0003, recipeWriteRequestDto.getPath3());
+                    break;
+            }
+        }
     }
 
     // 레시피 식단 댓글 추가
@@ -91,18 +135,25 @@ public class RecipeService {
         RecipeDetailsResponseDto verifyRecipe = recipeMapper.findByRecipeId(recipeId);
         if(verifyRecipeScrap != null) {
             throw new BusinessLogicException(ExceptionCode.SCRAP_EXISTS);
-        } else if (verifyRecipe == null) {
+        }
+        if (verifyRecipe == null) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
         recipeMapper.saveRecipeScrap(recipeId, memberId);
     }
 
     // 레시피 식단 게시글 수정
-    public void modifyRecipe(RecipeEditRequestDto recipeEditRequestDto, MultipartFile recipeImage) {
+    public void modifyRecipe(RecipeEditRequestDto recipeEditRequestDto, List<MultipartFile> recipeImage) {
         RecipeDetailsResponseDto verifyRecipe = recipeMapper.findByRecipeId(recipeEditRequestDto.getRecipeId());
+        MemberDto member = memberMapper.findByMemberId(recipeEditRequestDto.getMemberId());
+        if(member == null) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
         if (verifyRecipe == null) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
+//        int fileCount = recipeImage.size();
+//        verifyRecipe.
         recipeMapper.updateRecipe(recipeEditRequestDto);
     }
 
@@ -148,7 +199,7 @@ public class RecipeService {
         RecipeDetailsResponseDto recipeResponse = recipeMapper.findByRecipeId(recipeId);
         recipeResponse.setLike(recipeLikeCount);
         recipeResponse.setComment(recipeCommentCount);
-        recipeResponse.setPath1(recipeImage);
+        recipeResponse.setRecipePath1(recipeImage);
 
         return recipeResponse;
     }
@@ -178,6 +229,19 @@ public class RecipeService {
         if(verifyRecipe == null) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
+        if(verifyRecipe.getRecipePath1() != null) {
+            s3Service.deleteImage(verifyRecipe.getRecipePath1());
+            recipeMapper.deleteRecipeImage(recipeId, verifyRecipe.getRecipePath1());
+        }
+        if(verifyRecipe.getRecipePath2() != null) {
+            s3Service.deleteImage(verifyRecipe.getRecipePath2());
+            recipeMapper.deleteRecipeImage(recipeId, verifyRecipe.getRecipePath2());
+        }
+        if(verifyRecipe.getRecipePath3() != null) {
+            s3Service.deleteImage(verifyRecipe.getRecipePath3());
+            recipeMapper.deleteRecipeImage(recipeId, verifyRecipe.getRecipePath3());
+        }
+
         recipeMapper.deleteRecipe(recipeId, memberId);
     }
 
@@ -212,6 +276,16 @@ public class RecipeService {
                     .size(size)
                     .ext(ext)
                     .build();
+    }
+
+    public void fileCheck(MultipartFile image) {
+        String ext = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+
+        if(ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png")) {
+        }
+        else {
+            throw new BusinessLogicException(ExceptionCode.FILE_BAD_REQUEST);
+        }
     }
 
 

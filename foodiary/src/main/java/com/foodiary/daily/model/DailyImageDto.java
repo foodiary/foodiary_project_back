@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class DailyImageDto {
 
     @ApiModelProperty(value="하루식단 게시판 시퀀스", required = true)
-    private int dailyId;
+    @Setter private int dailyId;
 
     @ApiModelProperty(value="사용자 시퀀스", required = true)
     private int memberId;

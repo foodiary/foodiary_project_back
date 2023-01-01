@@ -3,15 +3,15 @@ package com.foodiary.recipe.model;
 import javax.validation.constraints.NotBlank;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.List;
+
+@Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeWriteRequestDto {
+public class    RecipeWriteRequestDto {
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int recipeId;
@@ -31,7 +31,13 @@ public class RecipeWriteRequestDto {
     @Setter
     private String write;
 
-    @ApiModelProperty(value="이미지 경로", required = true)
-    @Setter private String path;
+    @ApiModelProperty(value="이미지 경로1", required = true)
+    @Setter private String path1;
+
+    @ApiModelProperty(value="이미지 경로2", required = true)
+    @Setter private String path2;
+
+    @ApiModelProperty(value="이미지 경로3", required = true)
+    @Setter private String path3;
 
 }

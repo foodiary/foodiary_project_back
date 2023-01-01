@@ -68,4 +68,6 @@ public interface DailyMapper {
     void deleteDailyComment(@Param("dailyId") int dailyId, @Param("memberId") int memberId, @Param("commentId") int commentId);
 
     void deleteDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId, @Param("scrapId") int scrapId);
+
+    void deleteDailyImage(@Param("dailyId") int dailyId, @Param("path") String path);
 }

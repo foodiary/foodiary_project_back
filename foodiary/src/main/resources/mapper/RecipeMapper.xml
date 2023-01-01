@@ -7,7 +7,7 @@
 
     <!--    게시글 추가-->
     <insert id="saveRecipe" useGeneratedKeys="true" keyProperty="recipeId" keyColumn="RECIPE_ID">
-        INSERT INTO TB_RECIPE (MEMBER_ID, RECIPE_TITLE, RECIPE_BODY, RECIPE_WRITE, RECIPE_VIEW, RECIPE_PATH1, RECIPE_PATH2, RECIPE_PATH3 RECIPE_CREATE, RECIPE_UPDATE)
+        INSERT INTO TB_RECIPE (MEMBER_ID, RECIPE_TITLE, RECIPE_BODY, RECIPE_WRITER, RECIPE_VIEW, RECIPE_PATH1, RECIPE_PATH2, RECIPE_PATH3, RECIPE_CREATE, RECIPE_UPDATE)
         VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path1}, #{path2}, #{path3}, now(), now());
     </insert>
 
@@ -66,6 +66,11 @@ SET RECIPE_VIEW = TB_RECIPE.RECIPE_VIEW + 1, RECIPE_UPDATE = now()
 WHERE RECIPE_ID = #{recipeId};
 </update>
 
+<update id="updateRecipeId">
+    UPDATE TB_RECIPE_IMAGE
+    SET RECIPE_ID = #{recipeId}, RECIPE_FILE_UPDATE = now()
+    WHERE RECIPE_FILE_PATH = #{path};
+</update>
 
 
 
@@ -137,6 +142,24 @@ WHERE  RECIPE_ID = #{recipeId}
 </select>
 
 
+        <!--    게시글 id 가져오기-->
+<select id="findByRecipeId1" resultType="Integer">
+    SELECT RECIPE_ID FROM TB_RECIPE
+    WHERE  RECIPE_PATH1 = #{path1}
+</select>
+
+<select id="findByRecipeId2" resultType="Integer">
+    SELECT RECIPE_ID FROM TB_RECIPE
+    WHERE  RECIPE_PATH2 = #{path2}
+</select>
+
+<select id="findByRecipeId3" resultType="Integer">
+    SELECT RECIPE_ID FROM TB_RECIPE
+    WHERE  RECIPE_PATH3 = #{path3}
+</select>
+
+
+
 
 
 
@@ -165,11 +188,16 @@ WHERE RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId} AND RECIPE_COMMENT_ID 
 </delete>
 
 <delete id="deleteRecipeScrap">
-DELETE FROM TB_MEMBER_BOARDSCRAP_RECIPE
+DELETE FROM TB_MEMBER_SCRAP_RECIPE
 WHERE RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId} AND MEMBER_RECIPE_BOARDSCRAP_ID = #{scrapId}
 </delete>
 
-        </mapper>
+<delete id="deleteRecipeImage">
+    DELETE FROM TB_RECIPE_IMAGE
+    WHERE RECIPE_ID = #{recipeId} AND RECIPE_FILE_PATH = #{path}
+</delete>
+
+</mapper>
 
 
 

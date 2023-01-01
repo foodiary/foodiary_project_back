@@ -60,7 +60,7 @@ public class RecipeController {
         public ResponseEntity<?> RecipeWrite(
                 @RequestPart(value = "recipeWrite") @Valid RecipeWriteRequestDto recipeWriteRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage", required = false) MultipartFile recipeImage
+                @RequestPart(value = "recipeImage", required = false) List<MultipartFile> recipeImage
         ) throws Exception {
 
                 recipeService.addRecipe(recipeWriteRequestDto, recipeImage);
@@ -85,7 +85,7 @@ public class RecipeController {
                 @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
                 @RequestPart(value = "recipeEdit") RecipeEditRequestDto recipeEditRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage", required = false) MultipartFile recipeImage
+                @RequestPart(value = "recipeImage", required = false) List<MultipartFile> recipeImage
         ) throws Exception {
                 recipeEditRequestDto.setRecipeId(recipeId);
                 recipeEditRequestDto.setMemberId(memberId);

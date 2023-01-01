@@ -22,7 +22,7 @@ public interface MemberMapper {
 
     MemberDto findByEmail(@Param("email") String email);
 
-    MemberDto findById(@Param("memberId") int memberId);
+    MemberDto findByMemberId(@Param("memberId") int memberId);
 
     MemberDto findByEmailAndPw(@Param("email") String email,@Param("pw") String pw);
 
