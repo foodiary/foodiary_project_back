@@ -3,4 +3,32 @@
 
 <mapper namespace="com.foodiary.rank.mapper.RankMapper">
 
+    <select id="rankWeekList" resultType="com.foodiary.rank.model.RanksResponseDto">
+        SELECT tr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
+            tr.RECIPE_PATH1, RECIPE_LIKE, tr.RECIPE_VIEW, 
+            RANK() OVER (ORDER BY RECIPE_LIKE DESC) AS RECIPE_RANK
+        FROM (
+            SELECT RECIPE_ID, COUNT(*) AS RECIPE_LIKE 
+            FROM TB_RECIPE_LIKE trl 
+            GROUP BY RECIPE_ID 
+        ) AS counts RIGHT JOIN TB_RECIPE tr 
+        ON counts.RECIPE_ID = tr.RECIPE_ID 
+        WHERE NOT RECIPE_LIKE is NULL AND tr.RECIPE_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK ) AND NOW()
+        LIMIT 20;
+    </select>
+
+    <select id="rankMonthList" resultType="com.foodiary.rank.model.RanksResponseDto">
+        SELECT tr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
+            tr.RECIPE_PATH1, RECIPE_LIKE, tr.RECIPE_VIEW, 
+            RANK() OVER (ORDER BY RECIPE_LIKE DESC) AS RECIPE_RANK
+        FROM (
+            SELECT RECIPE_ID, COUNT(*) AS RECIPE_LIKE 
+            FROM TB_RECIPE_LIKE trl 
+            GROUP BY RECIPE_ID 
+        ) AS counts RIGHT JOIN TB_RECIPE tr 
+        ON counts.RECIPE_ID = tr.RECIPE_ID 
+        WHERE NOT RECIPE_LIKE is NULL AND tr.RECIPE_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 MONTH ) AND NOW()
+        LIMIT 20;
+    </select>
+
 </mapper>
