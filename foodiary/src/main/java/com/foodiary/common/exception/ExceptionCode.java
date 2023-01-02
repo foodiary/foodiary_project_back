@@ -18,6 +18,7 @@ public enum ExceptionCode {
     NICKNAME_BAD_REQUEST(400, "닉네임이 중복입니다"),
     LOGINID_BAD_REQUEST(400, "아이디가 중복입니다"),
     SEARCH_NOT_FOUND(404, "검색어와 일치하는 게시글이 없습니다."),
+    LAST_SEARCH_NOT_FOUND(404, "최근 검색어가 없습니다.")
     ;
 
 

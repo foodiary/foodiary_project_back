@@ -60,8 +60,8 @@ public class MemberController {
     @GetMapping("/email/test")
     @ResponseBody
     public String emailTest() throws IOException{
+
         // emailService.EmailSend();
-        s3Service.deleteImage("member/1c7ff3c4-0a59-4d2a-91c0-4e85de9603381672406079088.png");
         return "OK";
     }
 
