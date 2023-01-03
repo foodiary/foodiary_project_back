@@ -63,21 +63,21 @@ public class JwtProvider {
         return expiration;
     }
 
-    public TokenResponseDto createTokensByLogin(String email) throws Exception {
+    public TokenResponseDto createTokensByLogin(MemberDto member) throws Exception {
 
-        String atk = "Bearer " + delegateAccessToken(email);
-        String rtk = delegateRefreshToken(email);
-        redisDao.setValues(email, rtk, Duration.ofMinutes((long) refreshTokenExpirationMinutes));
+        String atk = "Bearer " + delegateAccessToken(member);
+        String rtk = delegateRefreshToken(member.getMemberEmail());
+        redisDao.setValues(member.getMemberEmail(), rtk, Duration.ofMinutes((long) refreshTokenExpirationMinutes));
         return new TokenResponseDto(atk, rtk, "bearer", false);
     }
 
 
-    public String delegateAccessToken(String email) throws Exception {
+    public String delegateAccessToken(MemberDto member) throws Exception {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", email);
-        claims.put("memberId", email);
+        claims.put("email", member.getMemberEmail());
+        claims.put("memberId", member.getMemberId());
 
-        String subject = email;
+        String subject = member.getMemberNickName();
         Date expiration = getTokenExpiration(accessTokenExpirationMinutes);
 
         return generateAccessToken(claims, subject, expiration);
@@ -159,7 +159,7 @@ public class JwtProvider {
             throw new JwtException("인증 정보가 만료되었습니다.");
         }
 
-        String atk = delegateAccessToken(member.getMemberEmail());
+        String atk = delegateAccessToken(member);
         return new TokenResponseDto(atk, null, "bearer", false);
     }
 
