@@ -38,11 +38,13 @@ public class RecipeService {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
         if(recipeImage == null) {
-            recipeWriteRequestDto.setWrite(member.getMemberNickName());
+            recipeWriteRequestDto.setWriter(member.getMemberNickName());
             recipeMapper.saveRecipe(recipeWriteRequestDto);
         } else {
             // 파일 url 담을 리스트
             List<String> fileUrlList = new ArrayList<>();
+
+            List<RecipeImageDto> saveImageList = new ArrayList<>();
 
             for(int i=0; i < recipeImage.size(); i++) {
                 MultipartFile file = recipeImage.get(i);
@@ -50,60 +52,41 @@ public class RecipeService {
                 HashMap<String, String> fileMap = s3Service.upload(file, "daily");
                 fileUrlList.add(fileMap.get("url"));
 
-                    String fileFullName = file.getOriginalFilename();
-                    String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
-                    String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
-                    RecipeImageDto saveImage = RecipeImageDto.builder()
-                            .memberId(recipeWriteRequestDto.getMemberId())
-                            .originalName(fileName)
-                            .originalFullName(fileFullName)
-                            .saveName(fileMap.get("serverName"))
-                            .path(fileMap.get("url"))
-                            .size(file.getSize())
-                            .ext(ext).build();
-                    saveImage.setRecipeId(recipeWriteRequestDto.getRecipeId());
-                    recipeMapper.saveImage(saveImage);
+                String fileFullName = file.getOriginalFilename();
+                String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+                String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+                RecipeImageDto saveImage = RecipeImageDto.builder()
+                        .memberId(recipeWriteRequestDto.getMemberId())
+                        .originalName(fileName)
+                        .originalFullName(fileFullName)
+                        .saveName(fileMap.get("serverName"))
+                        .path(fileMap.get("url"))
+                        .size(file.getSize())
+                        .ext(ext).build();
+                saveImage.setRecipeId(recipeWriteRequestDto.getRecipeId());
+                saveImageList.add(saveImage);
             }
             //파일 갯수
             log.info(Integer.toString(fileUrlList.size()));
 
-            switch(fileUrlList.size()){
-                case 1 :
-                    recipeWriteRequestDto.setPath1(fileUrlList.get(0));
-                    break;
-                case 2 :
-                    recipeWriteRequestDto.setPath1(fileUrlList.get(0));
-                    recipeWriteRequestDto.setPath2(fileUrlList.get(1));
-                    break;
-                case 3 :
-                    recipeWriteRequestDto.setPath1(fileUrlList.get(0));
-                    recipeWriteRequestDto.setPath2(fileUrlList.get(1));
+            // 게시글 경로
+            recipeWriteRequestDto.setPath1(fileUrlList.get(0));
+
+            if(fileUrlList.size()>1) {
+                recipeWriteRequestDto.setPath2(fileUrlList.get(1));
+                if(fileUrlList.size()>2) {
                     recipeWriteRequestDto.setPath3(fileUrlList.get(2));
-                    break;
+                }
             }
-            recipeWriteRequestDto.setWrite(member.getMemberNickName());
+
+            recipeWriteRequestDto.setWriter(member.getMemberNickName());
             recipeMapper.saveRecipe(recipeWriteRequestDto);
 
-            switch(fileUrlList.size()){
-                case 1 :
-                    // 이미지테이블의 dailyId 업데이
-                    int recipeId01 = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
-                    recipeMapper.updateRecipeId(recipeId01, recipeWriteRequestDto.getPath1());
-                    break;
-                case 2 :
-                    int recipeId001 = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
-                    int recipeId002 = recipeMapper.findByRecipeId2(recipeWriteRequestDto.getPath2());
-                    recipeMapper.updateRecipeId(recipeId001, recipeWriteRequestDto.getPath1());
-                    recipeMapper.updateRecipeId(recipeId002, recipeWriteRequestDto.getPath2());
-                    break;
-                case 3 :
-                    int recipeId0001 = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
-                    int recipeId0002 = recipeMapper.findByRecipeId2(recipeWriteRequestDto.getPath2());
-                    int recipeId0003 = recipeMapper.findByRecipeId3(recipeWriteRequestDto.getPath3());
-                    recipeMapper.updateRecipeId(recipeId0001, recipeWriteRequestDto.getPath1());
-                    recipeMapper.updateRecipeId(recipeId0002, recipeWriteRequestDto.getPath2());
-                    recipeMapper.updateRecipeId(recipeId0003, recipeWriteRequestDto.getPath3());
-                    break;
+            int recipeId = recipeMapper.findByRecipeId1(recipeWriteRequestDto.getPath1());
+
+            for (int i = 0; i < saveImageList.size(); i++) {
+                saveImageList.get(i).setRecipeId(recipeId);
+                recipeMapper.saveImage(saveImageList.get(i));
             }
         }
     }

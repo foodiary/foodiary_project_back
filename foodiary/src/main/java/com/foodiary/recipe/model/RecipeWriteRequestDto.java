@@ -29,7 +29,7 @@ public class    RecipeWriteRequestDto {
 
     @ApiModelProperty(value="게시글 작성자", required = true)
     @Setter
-    private String write;
+    private String writer;
 
     @ApiModelProperty(value="이미지 경로1", required = true)
     @Setter private String path1;
