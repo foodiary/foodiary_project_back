@@ -18,14 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.recipe.model.RecipeCommentDetailsResponseDto;
@@ -43,7 +36,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RequiredArgsConstructor
 @Slf4j
-@Controller
+@RestController
 public class RecipeController {
 
         private final RecipeService recipeService;
@@ -55,7 +48,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @PostMapping(value = "/recipe")
         public ResponseEntity<?> RecipeWrite(
@@ -65,7 +58,7 @@ public class RecipeController {
         ) throws Exception {
 
                 recipeService.addRecipe(recipeWriteRequestDto, recipeImage);
-                return new ResponseEntity<>("OK", HttpStatus.OK);
+                return new ResponseEntity<>("OK", HttpStatus.CREATED);
         }
 
 
@@ -79,7 +72,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
         @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-        @ResponseBody
+        
         @PostMapping(value = "/recipe/{recipeId}/{memberId}")
         public ResponseEntity<String> RecipeModify(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -124,7 +117,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @GetMapping(value = "/recipe/datils")
         public ResponseEntity<RecipeDetailsResponseDto> getRecipeDetails (
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId
@@ -142,7 +135,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @DeleteMapping(value = "/recipe/{recipeId}/{memberId}")
         public ResponseEntity<String> RecipeDelete(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -161,7 +154,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @PostMapping(value = "/recipe/comment")
         public ResponseEntity<String> RecipeCommentWrite(@RequestBody RecipeCommentWriteRequestDto recipeCommentWriteRequestDto)
                 throws Exception {
@@ -179,7 +172,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @GetMapping(value = "/recipe/comment")
         public ResponseEntity<?> RecipeCommentDetails(
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -204,7 +197,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @PatchMapping(value = "/recipe/comment//{recipeId}/{memberId}/{commentId}")
         public ResponseEntity<String> RecipeCommentModify(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -227,7 +220,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @DeleteMapping(value = "/recipe/comment/{recipeId}/{commentId}/{memberId}")
         public ResponseEntity<String> recipeCommentRemove(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -246,7 +239,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @PostMapping(value = "/recipe/like/{recipeId}/{memberId}")
         public ResponseEntity<String> recipeLike(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -264,7 +257,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @DeleteMapping(value = "/recipe/like/{recipeLikeId}")
         public ResponseEntity<String> recipeLikeCancle(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeLikeId
@@ -281,7 +274,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @PostMapping(value = "/recipe/scrap/{recipeId}/{memberId}")
         public ResponseEntity<String> recipeScrap(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
@@ -299,7 +292,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ResponseBody
+        
         @DeleteMapping("/recipe/scrap/{recipeId}/{memberId}/{scrapId}")
         public ResponseEntity<String> recipeScrapRemove(
                 @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,

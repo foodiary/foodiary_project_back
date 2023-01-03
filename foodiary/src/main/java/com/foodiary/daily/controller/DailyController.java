@@ -54,7 +54,7 @@ public class DailyController {
 
         dailyService.addDaily(dailyWriteRequestDto, dailyImage);
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
 
 
