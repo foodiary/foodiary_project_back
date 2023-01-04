@@ -53,12 +53,26 @@ public class FoodController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "food like", description = "음식 추천 좋아요")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
     @PatchMapping("/like/{member-id}/{member-food-id}")
     public ResponseEntity<String> foodLike(@PathVariable("member-id") int memberId, @PathVariable("member-food-id") int memberFoodId) {
         foodService.patchLikeFood(memberFoodId, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
+    @Operation(summary = "food hate", description = "음식 추천 싫어요")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
     @PatchMapping("/hate/{member-id}/{member-food-id}")
     public ResponseEntity<String> foodHate(@PathVariable("member-id") int memberId, @PathVariable("member-food-id") int memberFoodId) {
         foodService.patchHateFood(memberFoodId, memberId);
