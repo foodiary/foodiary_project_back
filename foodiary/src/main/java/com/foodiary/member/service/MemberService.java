@@ -231,6 +231,8 @@ public class MemberService {
         
         deleteImage(memberId);
         mapper.updateMemberImage(memberId);
+        int a = mapper.updateMemberImage(memberId);
+        System.out.println("int : "+a);
 
     }
 

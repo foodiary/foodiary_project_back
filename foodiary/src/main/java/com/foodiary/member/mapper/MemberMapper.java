@@ -58,7 +58,7 @@ public interface MemberMapper {
 
     MemberEditResponseDto findByMemberIdEdit(@Param("memberId") int memberId);
 
-    void updateMemberImage(@Param("memberId") int memberId);
+    int updateMemberImage(@Param("memberId") int memberId);
 
     void deleteMember(@Param("id") int id);
 
