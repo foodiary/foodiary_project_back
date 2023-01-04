@@ -1,9 +1,6 @@
 package com.foodiary.food.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.joda.time.DateTime;
 
 @Getter
@@ -12,9 +9,9 @@ import org.joda.time.DateTime;
 @Builder
 public class MenuRecommendRequestDto {
 
-    private int memberId;
+    @Setter private int menuId;
 
-    private DateTime menuDay;
+    private int memberId;
 
     private String menuMonLunchCategory;
 

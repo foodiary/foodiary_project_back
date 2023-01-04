@@ -18,7 +18,7 @@ public class MenuRecommendResponseDto {
 
     private int memberId;
 
-    private DateTime menuDay;
+    private LocalDateTime menuDay;
     
     private String menuMonLunchCategory;
     
