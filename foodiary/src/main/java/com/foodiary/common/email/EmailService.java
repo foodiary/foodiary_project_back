@@ -17,16 +17,33 @@ public class EmailService {
     @Value("${smtp.password}")
     private String secretKey;
 
-    public void EmailSend() throws IOException {
+    public void EmailSend(String email, String info, String type) throws IOException {
 
-        Email from = new Email("alwn04016@gmail.com");
-        String subject = "gogogogogo";
-        // Email to = new Email("alwn04016@naver.com");
-        Email to = new Email("myjyu123@gmail.com");
+      Email to = new Email(email);
+      Email from = new Email("alwn04016@gmail.com");
+      Mail mail = new Mail();
+        String subject;
+        if(type.equals("id")) {
+          subject = "foodiary 아이디 찾기 안내 메일입니다.";
+          mail.setFrom(new Email("alwn04016@gmail.com"));
+          Personalization personalization = new Personalization();
+          personalization.addDynamicTemplateData("member_loginId", info);
+          personalization.addTo(new Email(email));
+          mail.addPersonalization(personalization);
+          mail.setTemplateId("d-86fc008182ff46a28e28b8adfc7dcf86");
+        }
+        else if(type.equals("pw")) {
+          subject = "foodiary 비밀번호 찾기 안내 메일입니다.";
+          mail.personalization.get(0).addSubstitution("member_loginId", info);
+          mail.setTemplateId("d-e0ae8ffef4a74bdea87a1417d02b16c1");
+        }
+        else {
+          // 회원가입
+          subject = "foodiary 회원 인증 안내 메일입니다.";
+          mail.personalization.get(0).addSubstitution("member_loginId", info);
+          mail.setTemplateId("d-65943ccdc1c14282bfb8923a94020638");
+        }
         
-        Content content = new Content("text/plain", "dsfsdfsd and easy to do anywhere, even with Java");
-        Mail mail = new Mail(from, subject, to, content);
-    
         SendGrid sg = new SendGrid(secretKey);
         Request request = new Request();
         try {
