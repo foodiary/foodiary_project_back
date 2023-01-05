@@ -61,6 +61,7 @@
         WHERE DAILY_COMMENT_ID = #{commentId} AND MEMBER_ID = #{memberId} AND DAILY_ID = #{dailyId};
     </update>
 
+<!--    조회수 증가-->
     <update id="updateDailyView">
         UPDATE TB_DAILY
         SET DAILY_VIEW = TB_DAILY.DAILY_VIEW + 1, DAILY_UPDATE = now()
@@ -78,13 +79,20 @@
 
 <!--    게시판 조회-->
     <select id="findAll" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT * FROM TB_DAILY
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
     </select>
 
 
 <!--    게시글 조회-->
     <select id="findByDailyId" resultType="com.foodiary.daily.model.DailyDetailsResponseDto">
-        SELECT * FROM TB_DAILY
+        SELECT d.DAILY_ID, d.MEMBER_ID, d.DAILY_TITLE, d.DAILY_BODY, d.DAILY_WRITER,
+               d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
         WHERE DAILY_ID = #{dailyId} AND DAILY_YN = 'N'
     </select>
 

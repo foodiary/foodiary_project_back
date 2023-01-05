@@ -100,13 +100,12 @@ public class RecipeController {
         })
         @GetMapping(value = "/recipes")
         public ResponseEntity<?> Recipes(
-                @ApiParam(value = "게시판 페이지", required = false) int page,
-                @ApiParam(value = "게시판 페이지 사이즈", required = false) int size
+                @ApiParam(value = "게시판 페이지", required = false) int page
         ) throws Exception {
-                if(page <= 0 || size <= 0){
+                if(page <= 0){
                         throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
                 }
-                PageHelper.startPage(page, size);
+                PageHelper.startPage(page, 10);
                 List<RecipesResponseDto> response = recipeService.findRecipes();
                 return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
         }
@@ -181,14 +180,13 @@ public class RecipeController {
         @GetMapping(value = "/recipe/comment")
         public ResponseEntity<?> RecipeCommentDetails(
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
-                @ApiParam(value = "댓글 페이지", required = true) @Positive int page,
-                @ApiParam(value = "댓글 갯수", required = true) @Positive int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
+                @ApiParam(value = "댓글 페이지", required = true) @Positive int page
         ) throws Exception {
-                if(page <= 0 || size <= 0){
+                if(page <= 0){
                         throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
                 }
 
-                PageHelper.startPage(page, size);
+                PageHelper.startPage(page, 10);
 
                 List<RecipeCommentDetailsResponseDto> response = recipeService.findRecipeComments(recipeId);
                 return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);

@@ -48,7 +48,7 @@ public class DailyController {
     @ResponseBody
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @PostMapping(value = "/daily")
-    public ResponseEntity<?> DailyWrite(
+    public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
@@ -72,7 +72,7 @@ public class DailyController {
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @PostMapping(value = "/daily/{dailyId}/{memberId}")
-    public ResponseEntity<String> DailyModify(
+    public ResponseEntity<String> dailyModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
         @RequestPart("dailyEdit") DailyEditRequestDto dailyEditRequestDto,
@@ -96,14 +96,13 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping(value = "/dailys")
-    public ResponseEntity<?> Dailys(
-        @ApiParam(value = "게시판 페이지", required = false) @Positive int page,
-        @ApiParam(value = "게시판 페이지 사이즈", required = false) @Positive int size
+    public ResponseEntity<?> dailys(
+        @ApiParam(value = "게시판 페이지", required = false) @Positive int page
     ) throws Exception {
-        if(page <= 0 || size <= 0){
+        if(page <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
-        PageHelper.startPage(page, size);
+        PageHelper.startPage(page, 10);
         List<DailysResponseDto> response = dailyService.findDailys();
         return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
@@ -136,7 +135,7 @@ public class DailyController {
     })
     @ResponseBody
     @DeleteMapping(value = "/daily/{dailyId}/{memberId}")
-    public ResponseEntity<String> DailyDelete(
+    public ResponseEntity<String> dailyDelete(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
     ) throws Exception {
@@ -154,7 +153,7 @@ public class DailyController {
     })
     @ResponseBody
     @PostMapping(value = "/daily/comment")
-    public ResponseEntity<String> DailyCommentWrite(@RequestBody DailyCommentWriteRequestDto dailyCommentWriteRequestDto)
+    public ResponseEntity<String> dailyCommentWrite(@RequestBody DailyCommentWriteRequestDto dailyCommentWriteRequestDto)
             throws Exception {
         dailyService.addDailyComment(dailyCommentWriteRequestDto);
         return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -172,16 +171,15 @@ public class DailyController {
     })
     @ResponseBody
     @GetMapping(value = "/daily/comment")
-    public ResponseEntity<?> DailyCommentDetails(
+    public ResponseEntity<?> dailyCommentDetails(
         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
-        @ApiParam(value = "댓글 페이지", required = true) @Positive int page,
-        @ApiParam(value = "댓글 갯수", required = true) @Positive int size// string으로 받고 interger로 변환 필요, int로 받으면 null 값일떄 에러남
+        @ApiParam(value = "댓글 페이지", required = true) @Positive int page
     ) throws Exception {
-        if(page <= 0 || size <= 0){
+        if(page <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
 
-        PageHelper.startPage(page, size);
+        PageHelper.startPage(page, 10);
 
         List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId);
         return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
@@ -197,7 +195,7 @@ public class DailyController {
     })
     @ResponseBody
     @PatchMapping(value = "/daily/comment//{dailyId}/{memberId}/{commentId}")
-    public ResponseEntity<String> DailyCommentModify(
+    public ResponseEntity<String> dailyCommentModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
         @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) @Positive int commentId,

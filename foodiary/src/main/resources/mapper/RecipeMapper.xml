@@ -82,14 +82,21 @@ WHERE RECIPE_ID = #{recipeId};
 
         <!--    게시판 조회-->
 <select id="findAll" resultType="com.foodiary.recipe.model.RecipesResponseDto">
-SELECT * FROM TB_RECIPE
+    SELECT r.RECIPE_ID, r.RECIPE_TITLE, r.RECIPE_PATH1, r.RECIPE_VIEW, r.RECIPE_CREATE,
+           (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
+           (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
+    FROM TB_RECIPE AS r
 </select>
 
 
         <!--    게시글 조회-->
 <select id="findByRecipeId" resultType="com.foodiary.recipe.model.RecipeDetailsResponseDto">
-SELECT * FROM TB_RECIPE
-WHERE RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N'
+    SELECT r.RECIPE_ID, r.MEMBER_ID, r.RECIPE_TITLE, r.RECIPE_BODY, r.RECIPE_WRITER,
+           r.RECIPE_PATH1, r.RECIPE_PATH2, r.RECIPE_PATH3, r.RECIPE_VIEW, r.RECIPE_CREATE,
+           (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
+           (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
+    FROM TB_RECIPE AS r
+    WHERE RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N';
 </select>
 
 

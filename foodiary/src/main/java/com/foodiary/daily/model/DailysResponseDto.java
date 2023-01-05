@@ -20,7 +20,7 @@ public class DailysResponseDto {
     private String dailyTitle;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    @Setter private String dailyFilePath;
+    private String dailyPath;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
     private int dailyLike;
@@ -32,6 +32,6 @@ public class DailysResponseDto {
     private LocalDateTime dailyCreate;
 
     @ApiModelProperty(value="댓글 수", required = true)
-    private int comment;
+    private int dailyComment;
 
 }

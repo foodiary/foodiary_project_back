@@ -157,28 +157,16 @@ public class DailyService {
     //하루식단 게시판 조회
     public List<DailysResponseDto> findDailys() {
         List<DailysResponseDto> dailys = dailyMapper.findAll();
-        return dailys.stream()
-                    .map(d -> {
-                        d.setDailyFilePath(dailyMapper.findByDailyImage(d.getDailyId()));
-                        return d;})
-                    .collect(Collectors.toList());
+        return dailys;
     }
 
     //하루식단 게시글 조회
     public DailyDetailsResponseDto findDaily(int dailyId) {
 
-        verifyDailyPost(dailyId);
-
-        //좋아요 수
-        int dailyLikeCount = dailyMapper.findAllDailyId(dailyId).size();
-
-        //댓글 수
-        int daiyCommentCount = dailyMapper.findAllDailyComment(dailyId).size();
-
         //게시글 조회수 업데이트
         dailyMapper.updateDailyView(dailyId);
 
-        DailyDetailsResponseDto dailyResponse = dailyMapper.findByDailyId(dailyId).get();
+        DailyDetailsResponseDto dailyResponse = verifyDailyPost(dailyId);
 
         dailyResponse.setUserCheck(userService.verifyUser(dailyResponse.getMemberId()));
 

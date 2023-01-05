@@ -40,7 +40,7 @@ public class RecipeDetailsResponseDto {
 
     @Setter
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
-    private int like;
+    private int recipeLike;
 
     @ApiModelProperty(value="게시글 조회 수", required = true)
     private int recipeView;
@@ -50,7 +50,7 @@ public class RecipeDetailsResponseDto {
 
     @Setter
     @ApiModelProperty(value="댓글 수", required = true)
-    private int comment;
+    private int recipeComment;
 
     @Setter
     @ApiModelProperty(value="본인 인증", required = true)

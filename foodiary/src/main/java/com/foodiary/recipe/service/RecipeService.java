@@ -195,27 +195,15 @@ public class RecipeService {
     //레시피 게시판 조회
     public List<RecipesResponseDto> findRecipes() {
         List<RecipesResponseDto> recipes = recipeMapper.findAll();
-        return recipes.stream()
-                    .map(d -> {
-                        d.setPath(recipeMapper.findByRecipeImage(d.getRecipeId()));
-                        return d;})
-                    .collect(Collectors.toList());
+        return recipes;
     }
 
     //레시피 게시글 조회
     public RecipeDetailsResponseDto findRecipe(int recipeId) {
 
-        RecipeDetailsResponseDto recipeResponse = verifyRecipePost(recipeId);
-        //좋아요 수
-        int recipeLikeCount = recipeMapper.findAllRecipeId(recipeId).size();
-
-        //댓글 수
-        int recipeCommentCount = recipeMapper.findAllRecipeComment(recipeId).size();
-
         recipeMapper.updateRecipeView(recipeId);
+        RecipeDetailsResponseDto recipeResponse = verifyRecipePost(recipeId);
 
-        recipeResponse.setLike(recipeLikeCount);
-        recipeResponse.setComment(recipeCommentCount);
         recipeResponse.setUserCheck(userService.verifyUser(recipeResponse.getMemberId()));
 
         return recipeResponse;
