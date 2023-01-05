@@ -1,5 +1,7 @@
 package com.foodiary.auth.jwt;
 
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,8 +20,9 @@ public class MemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-        MemberDto member = memberMapper
-                .findByEmail(userEmail);
-         return new MemberDetails(member);
+        MemberDto member = memberMapper.findByEmail(userEmail).
+                orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+        return new CustomUserDetails(member);
     }
 }

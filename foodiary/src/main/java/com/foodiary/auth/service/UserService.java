@@ -1,7 +1,10 @@
 package com.foodiary.auth.service;
 
+import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.model.*;
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberLoginRequestDto;
@@ -11,10 +14,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -61,9 +67,9 @@ public class UserService {
         return null;
     }
     private TokenResponseDto createTokenResponse(String email) throws Exception {
-        MemberDto member = memberMapper.findByEmail(email);
+        MemberDto member = verifyMember(email);
         log.info(member.getMemberEmail());
-        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(email);
+        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;
@@ -72,7 +78,7 @@ public class UserService {
     public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
         MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), loginDto.getPassword());
         log.info(member.getMemberEmail());
-        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(loginDto.getLoginId());
+        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;
@@ -84,7 +90,7 @@ public class UserService {
 
 
     private boolean isJoinedUser(GoogleUserDto googleUser) {
-        MemberDto member = memberMapper.findByEmail(googleUser.getEmail());
+        MemberDto member = verifyMember(googleUser.email);
         log.info("Joined User: {}", member);
         return member == null;
     }
@@ -103,5 +109,29 @@ public class UserService {
             return s;
         }
     }
+
+    private MemberDto verifyMember(String email) {
+        return memberMapper.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    }
+
+    public boolean checkUser(int memberId) {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("userId : {}", principal.getUsername());
+        int id = Integer.parseInt(principal.getUsername());
+        if(memberId != id) {
+            throw new BusinessLogicException(ExceptionCode.NOT_AUTHORIZED);
+        } else return true;
+    }
+
+    public boolean verifyUser(int memberId) {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("userId : {}", principal.getUsername());
+        int id = Integer.parseInt(principal.getUsername());
+        if(memberId == id) {
+            return true;
+        } else return false;
+    }
+
 
 }

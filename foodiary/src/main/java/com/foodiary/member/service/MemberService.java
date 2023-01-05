@@ -127,7 +127,8 @@ public class MemberService {
 
     public void findmemberEmail(String email) {
 
-        MemberDto memberDto = mapper.findByEmail(email);
+        MemberDto memberDto = mapper.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         
         if(memberDto!=null) {
             throw new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST);
@@ -158,7 +159,8 @@ public class MemberService {
 
     public void findmemberInfo(String email, String type) {
 
-        MemberDto memberDto = mapper.findByEmail(email);
+        MemberDto memberDto = mapper.findByEmail(email)
+                .orElseThrow(() ->  new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         
         if(memberDto==null) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);

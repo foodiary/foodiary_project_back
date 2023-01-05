@@ -26,14 +26,14 @@ public class DailyDetailsResponseDto {
     private String dailyBody;
 
     @ApiModelProperty(value="게시글 작성자", required = true)
-    private String dailyWrite;
+    private String dailyWriter;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = false)
     private String dailyPath;
 
     @Setter
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
-     private Integer like;
+     private Integer dailyLike;
 
     @ApiModelProperty(value="게시글 조회 수", required = true)
     private Integer dailyView;
@@ -43,7 +43,11 @@ public class DailyDetailsResponseDto {
 
     @Setter
     @ApiModelProperty(value="댓글 수", required = true)
-    private int comment;
+    private int dailyComment;
+
+    @Setter
+    @ApiModelProperty(value="본인 인증", required = true)
+    private boolean userCheck;
 
     // @ApiModelProperty(value="댓글 리스트", required = true)
     // List<DailyCommentDetailsDto> dailyCommentDtoList;

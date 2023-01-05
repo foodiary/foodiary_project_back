@@ -376,36 +376,36 @@ public class MemberController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    // @Operation(summary = "member scrap list", description = "회원(본인) 스크랩 조회")
-    // @ApiResponses({ 
-    //         @ApiResponse(responseCode = "200", description = "OK"),
-    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    // })
-    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    // @ResponseBody
-    // @GetMapping(value = "/member/scrap")
-    // public ResponseEntity<MemberScrapResponseDto> scraps(
-    //     @ApiParam(value = "memberId", required = true) int memberId
-    // ) throws Exception {
-
-    //     DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
-
-    //     List<DailysResponseDto> dailyList = new ArrayList<>();
-
-    //     dailyList.add(dailysResponseDto);
-
-    //     RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
-
-    //     List<RecipesResponseDto> recipeList = new ArrayList<>();
-
-    //     recipeList.add(recipesResponseDto);
-
-    //     MemberScrapDto memberScrap = new MemberScrapDto(dailyList, recipeList);
-        
-    //     return new ResponseEntity<>(memberScrap, HttpStatus.OK);
-    // }
+//     @Operation(summary = "member scrap list", description = "회원(본인) 스크랩 조회")
+//     @ApiResponses({
+//             @ApiResponse(responseCode = "200", description = "OK"),
+//             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+//             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+//             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+//     })
+//     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+//     @ResponseBody
+//     @GetMapping(value = "/member/scrap")
+//     public ResponseEntity<MemberScrapResponseDto> scraps(
+//         @ApiParam(value = "memberId", required = true) int memberId
+//     ) throws Exception {
+//
+//         DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+//
+//         List<DailysResponseDto> dailyList = new ArrayList<>();
+//
+//         dailyList.add(dailysResponseDto);
+//
+//         RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+//
+//         List<RecipesResponseDto> recipeList = new ArrayList<>();
+//
+//         recipeList.add(recipesResponseDto);
+//
+//         MemberScrapDto memberScrap = new MemberScrapDto(dailyList, recipeList);
+//
+//         return new ResponseEntity<>(memberScrap, HttpStatus.OK);
+//     }
 
     @Operation(summary = "member daily scrap delete", description = "회원 하루식단 스크랩 삭제")
     @ApiResponses({ 

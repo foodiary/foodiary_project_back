@@ -1,6 +1,7 @@
 package com.foodiary.member.mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -20,7 +21,7 @@ public interface MemberMapper {
 
     void saveMember(MemberSignUpRequestDto memberSignUpDto);
 
-    MemberDto findByEmail(@Param("email") String email);
+    Optional<MemberDto> findByEmail(@Param("email") String email);
 
     MemberDto findByMemberId(@Param("memberId") int memberId);
 
