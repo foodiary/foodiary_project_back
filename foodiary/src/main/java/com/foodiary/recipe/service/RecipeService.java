@@ -32,10 +32,9 @@ public class RecipeService {
     // 레시피 게시글 추가
     public void addRecipe(RecipeWriteRequestDto recipeWriteRequestDto, List<MultipartFile> recipeImage) throws IOException {
 
-        MemberDto member = memberMapper.findByMemberId(recipeWriteRequestDto.getMemberId());
-        if(member == null) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        }
+        MemberDto member = memberMapper.findByMemberId(recipeWriteRequestDto.getMemberId())
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
         if(recipeImage == null) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
@@ -123,10 +122,8 @@ public class RecipeService {
     public void modifyRecipe(RecipeEditRequestDto recipeEditRequestDto, List<MultipartFile> recipeImage) throws IOException {
         userService.checkUser(recipeEditRequestDto.getMemberId());
         verifyRecipePost(recipeEditRequestDto.getRecipeId());
-        MemberDto member = memberMapper.findByMemberId(recipeEditRequestDto.getMemberId());
-        if (member == null) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        }
+            memberMapper.findByMemberId(recipeEditRequestDto.getMemberId())
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         if(recipeImage == null) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {

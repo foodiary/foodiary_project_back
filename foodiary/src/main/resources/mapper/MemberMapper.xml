@@ -47,6 +47,10 @@
         VALUES (#{memberId}, #{memberFileOriginalName}, #{memberFileFullName}, #{memberFileSaveName}, #{memberFilePath}, #{memberFileSize}, #{memberFileType}, now(), now());
     </select>
 
+    <select id="findAll" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+    </select>
+
     <update id="updateMemberPassword">
         UPDATE TB_MEMBER SET 
         MEMBER_UPDATE = NOW(),

@@ -37,7 +37,8 @@ public class DailyService {
     // 하루 식단 게시글 추가
     public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile dailyImage) throws IOException {
 
-        MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId());
+        MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         if(member == null) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }

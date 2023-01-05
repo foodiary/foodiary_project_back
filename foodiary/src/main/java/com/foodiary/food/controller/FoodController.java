@@ -37,7 +37,7 @@ public class FoodController {
                 .foodCategory(food.getFoodCategory())
                 .foodId(food.getFoodId())
                 .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(summary = "menu recommend", description = "식단 추천")
@@ -48,8 +48,21 @@ public class FoodController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("/menu")
-    public ResponseEntity<MenuRecommendResponseDto> findWeekMenu(@RequestParam int memberId) {
+    public ResponseEntity<MenuRecommendResponseDto> recommendWeekMenu(@RequestParam int memberId) {
         MenuRecommendResponseDto response = foodService.weekRecommendMenu(memberId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(summary = "verify menu recommend", description = "식단 확인")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/menu/week")
+    public ResponseEntity<MenuRecommendResponseDto> findWeekMenu(@RequestParam int memberId) {
+        MenuRecommendResponseDto response = foodService.findMenuRecommendWeek(memberId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

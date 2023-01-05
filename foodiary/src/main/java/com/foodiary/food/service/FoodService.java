@@ -1,17 +1,17 @@
 package com.foodiary.food.service;
 
-import com.foodiary.auth.service.UserService;
+
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.food.mapper.FoodMapper;
 import com.foodiary.food.model.FoodDto;
 
-import com.foodiary.food.model.FoodRecommendResponseDto;
-import com.foodiary.food.model.MenuRecommendRequestDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
+import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,8 +23,11 @@ import java.util.Random;
 @Service
 public class FoodService {
 
+
     private final FoodMapper foodMapper;
-    private final UserService userService;
+    private final RedisTemplate redisTemplate;
+    private final MemberMapper memberMapper;
+
 
     public FoodDto randomFood(int memberId) {
 
@@ -80,7 +83,7 @@ public class FoodService {
                 }
             }
         }
-        MenuRecommendRequestDto recommendMenu = MenuRecommendRequestDto.builder()
+        MenuRecommendResponseDto recommendMenu = MenuRecommendResponseDto.builder()
                 .memberId(memberId)
                 .menuMonLunchCategory(list.get(0).getFoodCategory()).menuMonLunch(list.get(0).getFoodName())
                 .menuMonDinnerCategory(list.get(1).getFoodCategory()).menuMonDinner(list.get(1).getFoodName())
@@ -98,8 +101,19 @@ public class FoodService {
                 .menuSunDinnerCategory(list.get(13).getFoodCategory()).menuSunDinner(list.get(13).getFoodName())
                 .build();
 
-        foodMapper.saveWeekRecommendMenu(recommendMenu);
-        return foodMapper.findByMenu(recommendMenu.getMenuId(), recommendMenu.getMemberId());
+
+        MemberDto member = memberMapper.findByMemberId(memberId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        redisTemplate.opsForValue().set(member.getMemberNickName(), recommendMenu);
+
+        MenuRecommendResponseDto result =  (MenuRecommendResponseDto)redisTemplate.opsForValue().get(member.getMemberNickName());
+        return result;
+    }
+
+    public MenuRecommendResponseDto findMenuRecommendWeek(int memberId) {
+        MemberDto member = memberMapper.findByMemberId(memberId)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        return (MenuRecommendResponseDto) redisTemplate.opsForValue().get(member.getMemberNickName());
     }
 
     public void patchLikeFood(int memberFoodId, int memberId){
@@ -116,7 +130,7 @@ public class FoodService {
         foodMapper.updateFoodHate(memberFoodId);
     }
     
-    private FoodDto recommendFood() {
+    public FoodDto recommendFood() {
         Random random = new Random();
         Integer randomIndex = random.nextInt(685) + 1;
         return foodMapper.findById(randomIndex);

@@ -3,6 +3,7 @@ package com.foodiary.member.mapper;
 import java.util.List;
 import java.util.Optional;
 
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -23,7 +24,7 @@ public interface MemberMapper {
 
     Optional<MemberDto> findByEmail(@Param("email") String email);
 
-    MemberDto findByMemberId(@Param("memberId") int memberId);
+    Optional<MemberDto> findByMemberId(@Param("memberId") int memberId);
 
     MemberDto findByEmailAndPw(@Param("email") String email,@Param("pw") String pw);
 
@@ -32,6 +33,8 @@ public interface MemberMapper {
     MemberDto findByNickname(@Param("nickname") String nickname);
 
     MemberDto findById(@Param("id") String id);
+
+    List<MemberDto> findAll();
 
     void saveMemberImage(MemberImageDto memberImageDto);
 
