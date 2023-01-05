@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.auth.service.UserService;
+import com.foodiary.common.email.EmailService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.common.exception.MorePasswordException;
@@ -37,6 +38,8 @@ public class MemberService {
     private final UserService userService;
 
     private final S3Service s3Service;
+
+    private final EmailService emailService;
 
     public void createdMember(MemberSignUpRequestDto memberSignUpDto, MultipartFile memberImage) throws Exception{
         
@@ -156,7 +159,7 @@ public class MemberService {
         mapper.updateMemberPassword(newPassword, id);
     }
 
-    public void findmemberInfo(String email, String type) {
+    public void findmemberInfo(String email, String type) throws Exception{
 
         MemberDto memberDto = mapper.findByEmail(email);
         
@@ -166,10 +169,11 @@ public class MemberService {
         else {
             if(type.equals("id")) {
                 // TODO: 메일 발송 로직 추가, id 정보를 메일로 발송
+                emailService.EmailSend(email, memberDto.getMemberLoginId(), type);
             }
             else {
                 // TODO: 메일 발송 로직 추가, 비밀번호를 새로 바꿀수 있는 링크(토큰 만들어서, 토큰 디비저장) 발송
-
+                emailService.EmailSend(email, memberDto.getMemberLoginId(), type);
             }
 
         }
