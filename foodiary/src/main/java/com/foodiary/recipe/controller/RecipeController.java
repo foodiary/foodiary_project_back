@@ -79,7 +79,8 @@ public class RecipeController {
                 @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
                 @RequestPart(value = "recipeEdit") RecipeEditRequestDto recipeEditRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage", required = false) List<MultipartFile> recipeImage
+                @RequestPart(value = "recipeImage", required = true) List<MultipartFile> recipeImage
+
         ) throws Exception {
                 recipeEditRequestDto.setRecipeId(recipeId);
                 recipeEditRequestDto.setMemberId(memberId);
@@ -135,6 +136,8 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
+
+
         
         @DeleteMapping(value = "/recipe/{recipeId}/{memberId}")
         public ResponseEntity<String> RecipeDelete(
@@ -145,6 +148,8 @@ public class RecipeController {
                 recipeService.removeRecipe(recipeId, memberId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
         }
+
+
 
         @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe comment write", description = "레시피 게시글 댓글 작성")
@@ -249,22 +254,6 @@ public class RecipeController {
                 return new ResponseEntity<>("OK", HttpStatus.OK);
         }
 
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-        @Operation(summary = "recipe like cancle", description = "레시피 게시글 좋아요 취소")
-        @ApiResponses({
-                @ApiResponse(responseCode = "200", description = "OK"),
-                @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-                @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-                @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-        })
-        
-        @DeleteMapping(value = "/recipe/like/{recipeLikeId}")
-        public ResponseEntity<String> recipeLikeCancle(
-                @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeLikeId
-        ) throws Exception {
-                recipeService.removeRecipeLike(recipeLikeId);
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-        }
 
         @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe scrap", description = "레시피 게시글 스크랩")

@@ -25,4 +25,12 @@ public class RecipeEditRequestDto {
     @ApiModelProperty(value="게시글 내용", required = true)
     private String content;
 
+    @ApiModelProperty(value="이미지 경로1", required = true)
+    @Setter private String path1;
+
+    @ApiModelProperty(value="이미지 경로2", required = true)
+    @Setter private String path2;
+
+    @ApiModelProperty(value="이미지 경로3", required = true)
+    @Setter private String path3;
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
+import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.common.s3.S3Service;
@@ -34,6 +35,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class DailyController {
 
     private final DailyService dailyService;
+
 
     
     @Operation(summary = "daily write", description = "하루 식단 게시글 작성")
@@ -138,7 +140,6 @@ public class DailyController {
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId
     ) throws Exception {
-
         dailyService.removeDaily(dailyId, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -246,22 +247,6 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @Operation(summary = "daily like cancle", description = "하루 식단 게시글 좋아요 취소")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ResponseBody
-    @DeleteMapping(value = "/daily/like/{dailyLikeId}")
-    public ResponseEntity<String> dailyLikeCancle(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyLikeId
-    ) throws Exception {
-        dailyService.removeDailyLike(dailyLikeId);
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
 
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily scrap", description = "하루 식단 게시글 스크랩")

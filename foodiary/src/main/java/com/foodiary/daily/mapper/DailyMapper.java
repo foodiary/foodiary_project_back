@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface DailyMapper {
@@ -39,15 +40,15 @@ public interface DailyMapper {
 
 // =================== SELECT ====================
 
-    DailyDetailsResponseDto findByDailyId(@Param("dailyId") int dailyId);
+    Optional<DailyDetailsResponseDto> findByDailyId(@Param("dailyId") int dailyId);
 
-    DailyCommentDetailsResponseDto findByDailyComment(@Param("commentId") int commentId);
+    Optional<DailyCommentDetailsResponseDto> findByDailyComment(@Param("commentId") int commentId);
 
-    Integer findByDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
+    Optional<Integer> findByDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
-    Integer findByDailyLikeId(@Param("dailyLikeId") int dailyLikeId);
+    Optional<Integer> findByDailyLikeId(@Param("dailyLikeId") int dailyLikeId);
 
-    Integer findByMemberIdAndDailyId(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
+    Optional<Integer> findByMemberIdAndDailyId(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
 
     String findByDailyImage(@Param("dailyId") int dailyId);
 
@@ -61,7 +62,7 @@ public interface DailyMapper {
 
 // =================== DELETE ====================
 
-    void deleteDailyLike(@Param("dailyLikeId") int dailyLikeId);
+    void deleteDailyLike(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
     void deleteDaily(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface RecipeMapper {
@@ -38,21 +39,17 @@ public interface RecipeMapper {
 
     // =================== SELECT ====================
 
-    RecipeDetailsResponseDto findByRecipeId(@Param("recipeId") int recipeId);
+    Optional<RecipeDetailsResponseDto> findByRecipeId(@Param("recipeId") int recipeId);
 
-    RecipeCommentDetailsResponseDto findByRecipeComment(@Param("commentId") int commentId);
+    Optional<RecipeCommentDetailsResponseDto> findByRecipeComment(@Param("commentId") int commentId);
 
-    Integer findByRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
+    Optional<Integer> findByRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
 
-    Integer findByRecipeLikeId(@Param("recipeLikeId") int recipeLikeId);
+    Optional<Integer> findByRecipeLikeId(@Param("recipeLikeId") int recipeLikeId);
 
-    Integer findByMemberIdAndRecipeId(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
+    Optional<Integer> findByMemberIdAndRecipeId(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
 
-    Integer findByRecipeId1(@Param("path1") String path);
-
-    Integer findByRecipeId2(@Param("path2") String path);
-
-    Integer findByRecipeId3(@Param("path3") String path);
+    Optional<Integer> findByRecipeId1(@Param("path1") String path);
 
     String findByRecipeImage(@Param("recipeId") int recipeId);
 
@@ -66,7 +63,7 @@ public interface RecipeMapper {
 
     // =================== DELETE ====================
 
-    void deleteRecipeLike(@Param("recipeLikeId") int recipeLikeId);
+    void deleteRecipeLike(@Param("recipeId") int recipeLikeId, @Param("memberId") int memberId);
 
     void deleteRecipe(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
 

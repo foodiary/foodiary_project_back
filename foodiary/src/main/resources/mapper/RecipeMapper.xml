@@ -8,7 +8,7 @@
     <!--    게시글 추가-->
     <insert id="saveRecipe" useGeneratedKeys="true" keyProperty="recipeId" keyColumn="RECIPE_ID">
         INSERT INTO TB_RECIPE (MEMBER_ID, RECIPE_TITLE, RECIPE_BODY, RECIPE_WRITER, RECIPE_VIEW, RECIPE_PATH1, RECIPE_PATH2, RECIPE_PATH3, RECIPE_CREATE, RECIPE_UPDATE)
-        VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path1}, #{path2}, #{path3}, now(), now());
+        VALUES (#{memberId}, #{title}, #{content}, #{writer}, 0, #{path1}, #{path2}, #{path3}, now(), now());
     </insert>
 
 
@@ -33,7 +33,7 @@
     </insert>
 
     <insert id="saveImage">
-        INSERT INTO TB_RECIPE_IMAGE (MEMBER_ID, RECIPE_ID, RECIPE_IMAGE_ORIGINAL_NAME, RECIPE_FILE_FULL_NAME, RECIPE_FILE_SAVE_NAME, RECIPE_FILE_PATH, RECIPE_FILE_SIZE, RECIPE_FILE_EXT, RECIPE_FILE_CREATE, RECIPE_FILE_UPDATE)
+        INSERT INTO TB_RECIPE_IMAGE (MEMBER_ID, RECIPE_ID, RECIPE_FILE_ORIGINAL_NAME, RECIPE_FILE_FULL_NAME, RECIPE_FILE_SAVE_NAME, RECIPE_FILE_PATH, RECIPE_FILE_SIZE, RECIPE_FILE_TYPE, RECIPE_FILE_CREATE, RECIPE_FILE_UPDATE)
         VALUES (#{memberId}, #{recipeId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
     </insert>
 
@@ -47,7 +47,7 @@
     <!--    게시글 수정-->
 <update id="updateRecipe">
     UPDATE TB_RECIPE
-    SET RECIPE_TITLE = #{title}, RECIPE_BODY = #{content}, RECIPE_UPDATE = now()
+    SET RECIPE_TITLE = #{title}, RECIPE_BODY = #{content}, RECIPE_PATH1 = #{path1}, RECIPE_PATH2 = #{path2}, RECIPE_PATH3 = #{path3}, RECIPE_UPDATE = now()
     WHERE  MEMBER_ID = #{memberId} AND RECIPE_ID = #{recipeId};
 </update>
 
@@ -89,7 +89,7 @@ SELECT * FROM TB_RECIPE
         <!--    게시글 조회-->
 <select id="findByRecipeId" resultType="com.foodiary.recipe.model.RecipeDetailsResponseDto">
 SELECT * FROM TB_RECIPE
-WHERE RECIPE_ID = #{recipeId}
+WHERE RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N'
 </select>
 
 
@@ -170,15 +170,16 @@ WHERE  RECIPE_ID = #{recipeId}
         <!--    좋아요 취소-->
 <delete id="deleteRecipeLike">
 DELETE FROM TB_RECIPE_LIKE
-WHERE RECIPE_LIKE_ID = #{recipeLikeId}
+WHERE RECIPE_LIKE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
 </delete>
 
 
         <!--    게시글 삭제-->
-<delete id="deleteRecipe">
-DELETE FROM TB_RECIPE
+<update id="deleteRecipe">
+UPDATE TB_RECIPE
+SET RECIPE_YN = 'Y', RECIPE_DELETE = now()
 WHERE RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
-</delete>
+</update>
 
 
         <!--    댓글 삭제-->

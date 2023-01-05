@@ -23,4 +23,10 @@ public class DailyEditRequestDto {
     @ApiModelProperty(value="게시글 내용", required = false)
     private String content;
 
+    @ApiModelProperty(value="이미지 경로", required = false)
+    @Setter private String path;
+
+    @ApiModelProperty(value="이미지 수정 여부", required = true)
+    private char imageDelete;
+
 }

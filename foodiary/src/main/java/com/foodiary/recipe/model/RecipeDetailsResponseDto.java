@@ -52,34 +52,10 @@ public class RecipeDetailsResponseDto {
     @ApiModelProperty(value="댓글 수", required = true)
     private int comment;
 
-//    // 이미지 1개일때
-//    public RecipeDetailsResponseDto(int recipeId, int memberId, String title, String content, String path1, int like, int view,
-//                                    LocalDateTime create, int comment) {
-//        this.recipeId = recipeId;
-//        this.memberId = memberId;
-//        this.recipeTitle = title;
-//        this.recipeBody = content;
-//        this.path1 = path1;
-//        this.like = like;
-//        this.recipeView = view;
-//        this.recipeCreate = create;
-//        this.comment = comment;
-//    }
-//
-//    // 이미지 2개일때
-//    public RecipeDetailsResponseDto(int recipeId, int memberId, String title, String content, String path1, String path2,
-//                                    int like, int view, LocalDateTime create, int comment) {
-//        this.recipeId = recipeId;
-//        this.memberId = memberId;
-//        this.recipeTitle = title;
-//        this.recipeBody = content;
-//        this.path1 = path1;
-//        this.path2 = path2;
-//        this.like = like;
-//        this.recipeView = view;
-//        this.recipeCreate = create;
-//        this.comment = comment;
-//    }
+    @Setter
+    @ApiModelProperty(value="본인 인증", required = true)
+    private boolean userCheck;
+
 
     
     
