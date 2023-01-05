@@ -13,4 +13,10 @@ public interface RankMapper {
 
     List<RanksResponseDto> rankMonthList();
 
+    void weekWrite();
+
+    void monthWrite();
+
+    void rankDelete();
+
 }

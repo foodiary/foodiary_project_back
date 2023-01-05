@@ -3,9 +3,7 @@ package com.foodiary.rank.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.recipe.model.RecipesResponseDto;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
