@@ -22,6 +22,8 @@ public interface MemberMapper {
 
     MemberDto findByEmail(@Param("email") String email);
 
+    MemberDto findByEmailAndId(@Param("email") String email, @Param("loginId") String loginId);
+
     MemberDto findByEmailAndPw(@Param("email") String email, @Param("pw") String pw);
 
     MemberDto findByLoginId(@Param("loginId") String loginId);
@@ -61,5 +63,7 @@ public interface MemberMapper {
     void updateMemberImage(@Param("memberId") int memberId);
 
     void deleteMember(@Param("id") int id);
+    
+    int updateMemberPw(@Param("email") String email, @Param("pw") String pw);
 
 }
