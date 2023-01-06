@@ -47,6 +47,10 @@ public class MemberService {
             throw new MorePasswordException(vaildErrorDto);
         }
 
+        if (memberSignUpDto.getRequiredTerms().equals("N")) {
+            throw new BusinessLogicException(ExceptionCode.TERMS_ERROR);
+        }
+
         String newPassword = userService.encrypt(memberSignUpDto.getPassword());
 
         memberSignUpDto.passwordUpdate(newPassword);

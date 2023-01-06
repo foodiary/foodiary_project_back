@@ -5,8 +5,8 @@
 
     <insert id="saveMember">
         INSERT INTO TB_MEMBER (MEMBER_LOGINID, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_NICKNAME,
-        MEMBER_PROFILE, MEMBER_PATH, MEMBER_CREATE, MEMBER_UPDATE)
-        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, now(), now());
+        MEMBER_PROFILE, MEMBER_PATH, MEMBER_REQUIRED_TREMS, MEMBER_CHOICE_TERMS, MEMBER_CREATE, MEMBER_UPDATE)
+        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, #{requiredTerms}, #{choiceTerms}, now(), now());
 	</insert>
 
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
