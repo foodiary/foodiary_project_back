@@ -67,15 +67,21 @@ public class MemberService {
         memberSignUpDto.passwordUpdate(newPassword);
 
         if (memberImage == null) {
-            mapper.saveMember(memberSignUpDto);
+            int saveCheck =mapper.saveMember(memberSignUpDto);
+            if(saveCheck < 1) {
+                throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
+            }
         } else {
             fileCheck(memberImage);
             HashMap<String, String> fileMap = s3Service.upload(memberImage, "member");
 
             memberSignUpDto.pathUpdate(fileMap.get("url"));
-            mapper.saveMember(memberSignUpDto);
+            int saveCheck = mapper.saveMember(memberSignUpDto);
 
-            MemberDto memberDto = mapper.findByLoginId(memberSignUpDto.getLoginId());
+            if(saveCheck < 1) {
+                throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
+            }
+            MemberDto memberDto = mapper.findByLoginId(memberSignUpDto.getLoginId()).orElseThrow(() -> new BusinessLogicException(ExceptionCode.INTERNAL_SERVER_ERROR));
 
             String fileFullName = memberImage.getOriginalFilename();
             String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
@@ -131,73 +137,61 @@ public class MemberService {
         mapper.deleteMemberImage(id);
     }
 
+    // 아이디 중복 검사
     public void findMemberLoginId(String loginId) {
 
-        MemberDto memberDto = mapper.findByLoginId(loginId);
+        mapper.findByLoginId(loginId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.LOGINID_BAD_REQUEST));
 
-        if (memberDto != null) {
-            throw new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST);
-        }
     }
 
+    // 이메일 중복 검사
     public void findmemberEmail(String email) {
 
-        MemberDto memberDto = mapper.findByEmail(email);
-
-        if (memberDto != null) {
-            throw new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST);
-        }
+        mapper.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST));
     }
 
-    public MemberDto findmemberId(String id) {
-        return mapper.findById(id);
-    }
-
+    // 닉네임 중복 검사
     public void findmemberNickname(String nickname) {
 
-        MemberDto memberDto = mapper.findByNickname(nickname);
-        if (memberDto != null) {
-            throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
-        }
+        mapper.findByNickname(nickname).orElseThrow(() -> new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST));
     }
 
     public void createMemberImage(MemberImageDto memberImageDto) {
-        mapper.saveMemberImage(memberImageDto);
+        int saveCheck = mapper.saveMemberImage(memberImageDto);
+        if(saveCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
+        }
     }
 
     public void EditMemberPassWord(String password, int id) {
         String newPassword = userService.encrypt(password);
 
-        mapper.updateMemberPassword(newPassword, id);
+        int updateChack = mapper.updateMemberPassword(newPassword, id);
+        if(updateChack < 1) {
+            throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+        }
     }
 
+    // 아이디 찾기
     public void findmemberInfoId(String email, String type) throws Exception {
 
-        MemberDto memberDto = mapper.findByEmail(email);
+        MemberDto memberDto = mapper.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        if (memberDto == null) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        } else {
-            emailService.EmailSend(email, memberDto.getMemberLoginId(), type);
-        }
+        emailService.EmailSend(email, memberDto.getMemberLoginId(), type);
     }
 
     public void findmemberInfoPw(String email, String loginId, String type) throws Exception {
 
-        MemberDto memberDto = mapper.findByEmailAndId(email, loginId);
+        MemberDto memberDto = mapper.findByEmailAndId(email, loginId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        if (memberDto == null) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        } else {
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("email", email);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", email);
 
-            String subject = email;
-            Date expiration = jwtProvider.getTokenExpiration(30);
+        String subject = email;
+        Date expiration = jwtProvider.getTokenExpiration(30);
 
-            String jwt = jwtProvider.generateAccessToken(claims, subject, expiration);
-            emailService.EmailSend(email, jwt, type);
-        }
+        String jwt = jwtProvider.generateAccessToken(claims, subject, expiration);
+        emailService.EmailSend(email, jwt, type);
     }
 
     public void memberPwConfirm(MemberCheckPwJwtRequestDto memberCheckPwJwtRequestDto) {

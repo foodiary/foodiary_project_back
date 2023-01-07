@@ -1,6 +1,7 @@
 package com.foodiary.member.mapper;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,23 +19,23 @@ import com.foodiary.member.model.MemberSignUpRequestDto;
 @Mapper
 public interface MemberMapper {
 
-    void saveMember(MemberSignUpRequestDto memberSignUpDto);
+    int saveMember(MemberSignUpRequestDto memberSignUpDto);
 
-    MemberDto findByEmail(@Param("email") String email);
+    Optional<MemberDto> findByEmail(@Param("email") String email);
 
-    MemberDto findByEmailAndId(@Param("email") String email, @Param("loginId") String loginId);
+    Optional<MemberDto> findByEmailAndId(@Param("email") String email, @Param("loginId") String loginId);
 
     MemberDto findByEmailAndPw(@Param("email") String email, @Param("pw") String pw);
 
-    MemberDto findByLoginId(@Param("loginId") String loginId);
+    Optional<MemberDto> findByLoginId(@Param("loginId") String loginId);
 
-    MemberDto findByNickname(@Param("nickname") String nickname);
+    Optional<MemberDto> findByNickname(@Param("nickname") String nickname);
 
-    MemberDto findById(@Param("id") String id);
+    Optional<MemberDto> findById(@Param("id") String id);
 
-    void saveMemberImage(MemberImageDto memberImageDto);
+    int saveMemberImage(MemberImageDto memberImageDto);
 
-    void updateMemberPassword(@Param("password") String password, @Param("id") int id);
+    int updateMemberPassword(@Param("password") String password, @Param("id") int id);
 
     void updateMemberInfo(MemberEditRequestDto memberEditDto);
 
