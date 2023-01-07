@@ -28,6 +28,7 @@ public class MemberSignUpRequestDto {
     private String password;
 
     @NotBlank(message = "비밀번호를 한번 더 입력하세요")
+    @ApiModelProperty(value="사용자 비밀번호 확인", required = true)
     private String more_password;
 
     @NotBlank(message = "이메일이 비어있습니다")
