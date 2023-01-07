@@ -30,10 +30,13 @@ import com.foodiary.member.model.MemberCheckIdEmailRequestDto;
 import com.foodiary.member.model.MemberCheckIdRequestDto;
 import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
+import com.foodiary.member.model.MemberCommentRequestDto;
+import com.foodiary.member.model.MemberCommentResponseDto;
+import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
-import com.foodiary.member.model.MemberEditResponseDto;
 import com.foodiary.member.model.MemberLikeResponseDto;
+import com.foodiary.member.model.MemberPostResponseDto;
 import com.foodiary.member.model.MemberScrapResponseDto;
 import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
@@ -73,6 +76,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @PatchMapping(value = "/member/password/{memberId}")
     public ResponseEntity<?> memberModifyPassword(
@@ -281,35 +285,31 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member")
-    public ResponseEntity<MemberEditResponseDto> memberDetails(
-        @ApiParam(value = "회원 시퀀스", required = true)int memberId,
+    @PostMapping(value = "/member/{memberId}")
+    public ResponseEntity<MemberDto> memberDetails(
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         HttpServletRequest request
     ) throws Exception {
 
-        MemberEditResponseDto memberEditResponseDto = memberService.findByMemberIdInfo(memberId);
-        // System.out.println("값 찍기 : "+request.getHeader("accessToken"));
-
-        return new ResponseEntity<>(memberEditResponseDto, HttpStatus.OK);
+        MemberDto memberdto = memberService.findByMemberIdInfo(memberId);
+        return new ResponseEntity<>(memberdto, HttpStatus.OK);
     }
-    
 
+    // @Operation(summary = "member logout", description = "로그아웃")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @PostMapping(value = "/member/logout")
+    // public ResponseEntity<String> memberLogout(
+    // ) throws Exception {
 
-    @Operation(summary = "member logout", description = "로그아웃")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @PostMapping(value = "/member/logout")
-    public ResponseEntity<String> memberLogout(
-    ) throws Exception {
-
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>("OK", HttpStatus.OK);
+    // }
 
     @Operation(summary = "member delete", description = "회원 탈퇴")
     @ApiResponses({ 
@@ -330,6 +330,7 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
+    // TODO : 다른 사람 프로필 조회할경우 멤버 시퀀스 값을 어떻게 받을것인가?
     @Operation(summary = "member search", description = "회원 정보 조회(다른 사람 및 본인 프로필 조회)")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -360,6 +361,25 @@ public class MemberController {
         return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
     }
 
+    @Operation(summary = "member post view", description = "본인이 쓴 게시글 조회")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @GetMapping(value = "/member/post/{memberId}")
+    public ResponseEntity<MemberPostResponseDto> memberViewPosts(
+        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    ) throws Exception {
+
+        MemberPostResponseDto memberPostResponseDto = memberService.postFind(memberId);
+
+        return new ResponseEntity<>(memberPostResponseDto, HttpStatus.OK);
+    }
+
     @Operation(summary = "member image delete", description = "회원 이미지 삭제")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -379,25 +399,6 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    // TODO : 토큰 재발큽 코드는 어떻게 진행할것인가?
-    @Operation(summary = "member reissue", description = "회원 토큰 재발급")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @PostMapping(value = "/member/reissue")
-    public ResponseEntity<String> memberReissue() throws Exception {
-
-        // 토큰 재발급해서 저장하고 토큰 반환
-        String token = "토큰입니다";
-        
-        return new ResponseEntity<>(token, HttpStatus.OK);
-    }
-
     @Operation(summary = "member scrap list", description = "회원(본인) 스크랩 조회")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -407,9 +408,9 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/scrap")
+    @GetMapping(value = "/member/scrap/{memberId}")
     public ResponseEntity<MemberScrapResponseDto> scraps(
-        @ApiParam(value = "memberId", required = true) int memberId
+        @PathVariable @ApiParam(value = "memberId", required = true) int memberId
     ) throws Exception {
 
         // TODO : 좋아요, 조회수, 댓글수 모두 포함        
@@ -418,45 +419,45 @@ public class MemberController {
         return new ResponseEntity<>(memberScrapResponseDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "member daily scrap delete", description = "회원 하루식단 스크랩 삭제")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @DeleteMapping(value = "/member/scrap/daily/{scrapId}/{memberId}")
-    public ResponseEntity<String> scrapDailyDelete(
-        @PathVariable @ApiParam(value = "스크랩 시퀀스", required = true) int scrapId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
-    ) throws Exception {
+    // @Operation(summary = "member daily scrap delete", description = "회원 하루식단 스크랩 삭제")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @DeleteMapping(value = "/member/scrap/daily/{scrapId}/{memberId}")
+    // public ResponseEntity<String> scrapDailyDelete(
+    //     @PathVariable @ApiParam(value = "스크랩 시퀀스", required = true) int scrapId,
+    //     @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    // ) throws Exception {
 
-        memberService.deleteScrapDaily(scrapId, memberId);
+    //     memberService.deleteScrapDaily(scrapId, memberId);
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>("OK", HttpStatus.OK);
+    // }
 
-    @Operation(summary = "member recipe scrap delete", description = "회원 레시피 스크랩 삭제")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @DeleteMapping(value = "/member/scrap/recipe/{scrapId}/{memberId}")
-    public ResponseEntity<String> scrapRecipeDelete(
-        @PathVariable @ApiParam(value = "스크랩 시퀀스", required = true) int scrapId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
-    ) throws Exception {
+    // @Operation(summary = "member recipe scrap delete", description = "회원 레시피 스크랩 삭제")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @DeleteMapping(value = "/member/scrap/recipe/{scrapId}/{memberId}")
+    // public ResponseEntity<String> scrapRecipeDelete(
+    //     @PathVariable @ApiParam(value = "스크랩 시퀀스", required = true) int scrapId,
+    //     @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    // ) throws Exception {
 
-        memberService.deleteScrapRecipe(scrapId, memberId);
+    //     memberService.deleteScrapRecipe(scrapId, memberId);
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>("OK", HttpStatus.OK);
+    // }
 
     @Operation(summary = "member like list", description = "회원(본인) 좋아요 한 글 조회")
     @ApiResponses({ 
@@ -467,9 +468,9 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/like")
+    @GetMapping(value = "/member/like/{memberId}")
     public ResponseEntity<MemberLikeResponseDto> likes(
-        @ApiParam(value = "멤버 시퀀스", required = true) int memberId
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId
     ) throws Exception {
 
         // TODO : 좋아요, 조회수, 댓글수 모두 포함        
@@ -478,7 +479,7 @@ public class MemberController {
         return new ResponseEntity<>(memberLikeResponseDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "member daily like delete", description = "회원 하루식단 좋아요 삭제")
+    @Operation(summary = "member comment list", description = "회원(본인)이 쓴 댓글 조회")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -487,18 +488,17 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @DeleteMapping(value = "/member/like/daily/{likeId}/{memberId}")
-    public ResponseEntity<String> likeDailyDelete(
-        @PathVariable @ApiParam(value = "좋아요 시퀀스", required = true) int likeId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    @GetMapping(value = "/member/comment/{memberId}")
+    public ResponseEntity<MemberCommentResponseDto> comments(
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId
     ) throws Exception {
 
-        memberService.deleteLikeDaily(likeId, memberId);
+        MemberCommentResponseDto memberCommentResponseDto = memberService.commentList(memberId);
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+        return new ResponseEntity<>(memberCommentResponseDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "member recipe like delete", description = "회원 레시피 좋아요 삭제")
+    @Operation(summary = "member comment list", description = "데일리 회원(본인)이 쓴 댓글 수정")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -507,16 +507,118 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @DeleteMapping(value = "/member/like/recipe/{likeId}/{memberId}")
-    public ResponseEntity<String> likeRecipeDelete(
-        @PathVariable @ApiParam(value = "좋아요 시퀀스", required = true) int likeId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    @PatchMapping(value = "/member/comment/daily/{dailyCommentId}/{memberId}")
+    public ResponseEntity<String> dailyCommentsEdit(
+        @PathVariable @ApiParam(value = "데일리 댓글 시퀀스", required = true) int dailyCommentId,
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
+        @RequestBody MemberCommentRequestDto memberCommentRequestDto
     ) throws Exception {
 
-        memberService.deleteLikeRecipe(likeId, memberId);
+        memberService.commentDailyEdit(memberId, dailyCommentId, memberCommentRequestDto);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
+
+    @Operation(summary = "member comment list", description = "레시피 회원(본인)이 쓴 댓글 수정")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @PatchMapping(value = "/member/comment/recipe/{recipeCommentId}/{memberId}")
+    public ResponseEntity<String> recipeCommentsEdit(
+        @PathVariable @ApiParam(value = "레피시 댓글 시퀀스", required = true) int recipeComments,
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
+        @RequestBody MemberCommentRequestDto memberCommentRequestDto
+    ) throws Exception {
+
+        memberService.commentRecipeEdit(memberId, recipeComments, memberCommentRequestDto);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member comment list", description = "데일리 회원(본인)이 쓴 댓글 삭제")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @DeleteMapping(value = "/member/comment/daily/{dailyCommentId}/{memberId}")
+    public ResponseEntity<String> dailyCommentsDelete(
+        @PathVariable @ApiParam(value = "데일리 댓글 시퀀스", required = true) int dailyCommentId,
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId
+    ) throws Exception {
+
+        memberService.commentDailyDelete(memberId, dailyCommentId);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member comment list", description = "레시피 회원(본인)이 쓴 댓글 삭제")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @DeleteMapping(value = "/member/comment/recipe/{recipeCommentId}/{memberId}")
+    public ResponseEntity<String> recipeCommentsDelete(
+        @PathVariable @ApiParam(value = "레피시 댓글 시퀀스", required = true) int recipeComments,
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId
+    ) throws Exception {
+
+        memberService.commentRecipeDelete(memberId, recipeComments);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    // @Operation(summary = "member daily like delete", description = "회원 하루식단 좋아요 삭제")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @DeleteMapping(value = "/member/like/daily/{likeId}/{memberId}")
+    // public ResponseEntity<String> likeDailyDelete(
+    //     @PathVariable @ApiParam(value = "좋아요 시퀀스", required = true) int likeId,
+    //     @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    // ) throws Exception {
+
+    //     memberService.deleteLikeDaily(likeId, memberId);
+
+    //     return new ResponseEntity<>("OK", HttpStatus.OK);
+    // }
+
+    // @Operation(summary = "member recipe like delete", description = "회원 레시피 좋아요 삭제")
+    // @ApiResponses({ 
+    //         @ApiResponse(responseCode = "200", description = "OK"),
+    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    // })
+    // @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    // @ResponseBody
+    // @DeleteMapping(value = "/member/like/recipe/{likeId}/{memberId}")
+    // public ResponseEntity<String> likeRecipeDelete(
+    //     @PathVariable @ApiParam(value = "좋아요 시퀀스", required = true) int likeId,
+    //     @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    // ) throws Exception {
+
+    //     memberService.deleteLikeRecipe(likeId, memberId);
+
+    //     return new ResponseEntity<>("OK", HttpStatus.OK);
+    // }
 
     // TODO : 민택님이 수정해서 사용하시면 될거같습니다
     // @Operation(summary = "member food recommend", description = "회원 음식 추천 목록")
