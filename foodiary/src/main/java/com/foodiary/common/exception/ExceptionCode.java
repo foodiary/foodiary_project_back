@@ -18,6 +18,14 @@ public enum ExceptionCode {
     NICKNAME_BAD_REQUEST(400, "닉네임이 중복입니다"),
     LOGINID_BAD_REQUEST(400, "아이디가 중복입니다"),
     SEARCH_NOT_FOUND(404, "검색어와 일치하는 게시글이 없습니다."),
+    NUM_BAD_REQUEST(400, "인증번호가 일치하지 않습니다."),
+    NUM_TIMEOUT(400, "인증 시간을 초과하였습니다. 다시 시도해주세요"),
+    MORE_PW_ERROR(400, "비밀번호가 일치하지않습니다."),
+    SAVE_ERROR(500, "저장 실패했습니다. 다시 시도해주세요"),
+    UPDATE_ERROR(500, "업데이트 실패했습니다. 다시 시도해주세요"),
+    DELETE_ERROR(500, "삭제 실패했습니다. 다시 시도해주세요")
+
+
     ;
 
 

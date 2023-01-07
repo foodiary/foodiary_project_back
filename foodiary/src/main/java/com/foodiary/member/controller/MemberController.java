@@ -21,18 +21,19 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.foodiary.auth.service.UserService;
 import com.foodiary.common.email.EmailService;
 import com.foodiary.common.s3.S3Service;
 import com.foodiary.daily.model.DailysResponseDto;
+import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
+import com.foodiary.member.model.MemberCheckIdEmailRequestDto;
 import com.foodiary.member.model.MemberCheckIdRequestDto;
 import com.foodiary.member.model.MemberCheckNicknameRequestDto;
+import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
 import com.foodiary.member.model.MemberLikeResponseDto;
-import com.foodiary.member.model.MemberLoginRequestDto;
 import com.foodiary.member.model.MemberScrapResponseDto;
 import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
@@ -94,10 +95,28 @@ public class MemberController {
     @ResponseBody
     @PostMapping(value = "/member/find/password")
     public ResponseEntity<?> memberFindPassword(
-        @RequestBody MemberCheckEmailRequestDto memberCheckEmailRequestDto
+        @RequestBody @Valid MemberCheckIdEmailRequestDto memberCheckIdEmailRequestDto
     ) throws Exception {
 
-        memberService.findmemberInfo(memberCheckEmailRequestDto.getEmail(), "password");
+        memberService.findmemberInfoPw(memberCheckIdEmailRequestDto.getEmail(), memberCheckIdEmailRequestDto.getLoginId(), "pw");
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member password jwt confirm", description = "jwt로 비밀번호 변경하기")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/password/change/jwt")
+    public ResponseEntity<?> memberPasswordConfirm(
+        @RequestBody @Valid MemberCheckPwJwtRequestDto memberCheckPwJwtRequestDto
+    ) throws Exception {
+
+        memberService.memberPwConfirm(memberCheckPwJwtRequestDto);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -115,7 +134,7 @@ public class MemberController {
         @RequestBody @Valid MemberCheckEmailRequestDto memberCheckEmailRequestDto
     ) throws Exception {
 
-        memberService.findmemberInfo(memberCheckEmailRequestDto.getEmail(), "id");
+        memberService.findmemberInfoId(memberCheckEmailRequestDto.getEmail(), "id");
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -194,6 +213,23 @@ public class MemberController {
         
     }
 
+    @Operation(summary = "member verification num confirm", description = "이메일 발송 후 인증번호 확인")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @PostMapping(value = "/member/email/send/confirm")
+    public ResponseEntity<?> memberEmailSendConfirm(
+        @RequestBody MemberCheckEmailNumRequestDto memberCheckEmailNumRequestDto
+    ) throws Exception {
+
+        memberService.mailSendConfirm(memberCheckEmailNumRequestDto);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+        
+    }
 
     @Operation(summary = "member sign up", description = "회원 가입하기")
     @ApiResponses({ 
@@ -257,21 +293,7 @@ public class MemberController {
         return new ResponseEntity<>(memberEditResponseDto, HttpStatus.OK);
     }
     
-    @Operation(summary = "member login", description = "로그인")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ResponseBody
-    @PostMapping(value = "/member/login")
-    public ResponseEntity<String> memberLogin(
-        @RequestBody MemberLoginRequestDto memberLoginDto
-    ) throws Exception {
 
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
 
     @Operation(summary = "member logout", description = "로그아웃")
     @ApiResponses({ 
