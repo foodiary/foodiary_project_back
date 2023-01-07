@@ -96,15 +96,31 @@ public class SecurityConfig {
                 // "/recipe/like/{recipeId}/{recipeLikeId}/{memberId}",
                 // "/recipe/scrap/{recipeId}/{memberId}",
                 
-                // // 권한 필요없는 url
-                // "/member/login",
-                // "/member/signup",
-                // "/member/search",
-                // "/dailys",
-                // "/daily/details",
+                // 권한 필요 url
+                // "/member/password/{memberId}",
+                // "/member/{memberId}",
+                // "/member/post/{memberId}\",
+                // "/member/image/{memberId}",
+                // "/member/scrap/{memberId}",
+                // "/member/like/{memberId}",
+                // "/member/comment/{memberId}",
+                // "",
+                // "",
+                // "",
 
-                // "/recipes",
-                // "/recipe/details"
+
+                // 권한 필요x url
+                // "/member/find/id",
+                // "/member/find/password",
+                // "/member/email/send/confirm",
+                // "/member/email/send",
+                // "/member/check/nickname",
+                // "/member/check/loginid",
+                // "/member/check/email",
+                // "/member/password/change/jwt",
+                // "/member/signup",
+                
+
 
 
                 // ).permitAll()
