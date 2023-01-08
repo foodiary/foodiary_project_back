@@ -15,25 +15,25 @@ public interface DailyMapper {
 
 // =================== INSERT ====================
 
-    void saveDaily(DailyWriteRequestDto dailyWriteRequestDto);
+    int saveDaily(DailyWriteRequestDto dailyWriteRequestDto);
 
-    void saveDailyComment(DailyCommentWriteRequestDto dailyCommentWriteRequestDto);
+    int saveDailyComment(DailyCommentWriteRequestDto dailyCommentWriteRequestDto);
 
-    void saveDailyLike(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
+    int saveDailyLike(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
 
-    void saveDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
+    int saveDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
-    void saveImage(DailyImageDto imageDto);
+    int saveImage(DailyImageDto imageDto);
 
 
 
 // =================== UPDATE ====================
 
-    void updateDaily(DailyEditRequestDto dailyEditRequestDto);
+    int updateDaily(DailyEditRequestDto dailyEditRequestDto);
 
-    void updateDailyComment(DailyCommentEditRequestDto dailyCommentEditRequestDto);
+    int updateDailyComment(DailyCommentEditRequestDto dailyCommentEditRequestDto);
 
-    void updateDailyView(@Param("dailyId") int dailyId);
+    int updateDailyView(@Param("dailyId") int dailyId);
 
 
 
@@ -62,13 +62,13 @@ public interface DailyMapper {
 
 // =================== DELETE ====================
 
-    void deleteDailyLike(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
+    int deleteDailyLike(@Param("dailyId") int dailyId);
 
-    void deleteDaily(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
+    int deleteDaily(@Param("dailyId") int dailyId);
 
-    void deleteDailyComment(@Param("dailyId") int dailyId, @Param("memberId") int memberId, @Param("commentId") int commentId);
+    int deleteDailyComment(@Param("dailyId") int dailyId, @Param("commentId") int commentId);
 
-    void deleteDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId, @Param("scrapId") int scrapId);
+    int deleteDailyScrap(@Param("dailyId") int dailyId, @Param("scrapId") int scrapId);
 
-    void deleteDailyImage(@Param("dailyId") int dailyId, @Param("path") String path);
+    int deleteDailyImage(@Param("dailyId") int dailyId, @Param("path") String path);
 }

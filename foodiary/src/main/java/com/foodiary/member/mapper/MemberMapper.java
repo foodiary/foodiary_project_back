@@ -20,7 +20,7 @@ import com.foodiary.member.model.MemberSignUpRequestDto;
 @Mapper
 public interface MemberMapper {
 
-    void saveMember(MemberSignUpRequestDto memberSignUpDto);
+    int saveMember(MemberSignUpRequestDto memberSignUpDto);
 
     Optional<MemberDto> findByEmail(@Param("email") String email);
 
@@ -36,13 +36,13 @@ public interface MemberMapper {
 
     List<MemberDto> findAll();
 
-    void saveMemberImage(MemberImageDto memberImageDto);
+    int saveMemberImage(MemberImageDto memberImageDto);
 
-    void updateMemberPassword(@Param("password") String password, @Param("id") int id);
+    int updateMemberPassword(@Param("password") String password, @Param("id") int id);
 
-    void updateMemberInfo(MemberEditRequestDto memberEditDto);
+    int updateMemberInfo(MemberEditRequestDto memberEditDto);
 
-    void deleteMemberImage(@Param("id") int id);
+    int deleteMemberImage(@Param("id") int id);
 
     MemberImageDto findByIdFile(@Param("id") int id);
 
@@ -54,18 +54,18 @@ public interface MemberMapper {
 
     List<MemberRecipeLikeResponseDto> findByRecipeLike(@Param("id") int id);
 
-    void deleteDailyScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
+    int deleteDailyScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
 
-    void deleteRecipeScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
+    int deleteRecipeScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
 
-    void deleteDailyLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
+    int deleteDailyLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
 
-    void deleteRecipeLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
+    int deleteRecipeLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
 
     MemberEditResponseDto findByMemberIdEdit(@Param("memberId") int memberId);
 
-    void updateMemberImage(@Param("memberId") int memberId);
+    int updateMemberImage(@Param("memberId") int memberId);
 
-    void deleteMember(@Param("id") int id);
+    int deleteMember(@Param("id") int id);
 
 }

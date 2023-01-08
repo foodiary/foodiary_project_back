@@ -1,17 +1,19 @@
 package com.foodiary.food.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.food.mapper.FoodMapper;
 import com.foodiary.food.model.FoodDto;
-
 import com.foodiary.food.model.MenuRecommendResponseDto;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
+import com.foodiary.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,8 +27,10 @@ public class FoodService {
 
 
     private final FoodMapper foodMapper;
-    private final RedisTemplate redisTemplate;
+    private final RedisDao redisDao;
     private final MemberMapper memberMapper;
+    private final UserService userService;
+    private ObjectMapper objectMapper;
 
 
     public FoodDto randomFood(int memberId) {
@@ -59,7 +63,7 @@ public class FoodService {
         return foodRecommend;
     }
 
-    public MenuRecommendResponseDto weekRecommendMenu(int memberId) {
+    public MenuRecommendResponseDto weekRecommendMenu(int memberId) throws JsonProcessingException {
 
         List<Integer> hateFoodList = foodMapper.findAllHateFood(memberId);
         List<FoodDto> list = new ArrayList<>();
@@ -104,30 +108,45 @@ public class FoodService {
 
         MemberDto member = memberMapper.findByMemberId(memberId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        redisTemplate.opsForValue().set(member.getMemberNickName(), recommendMenu);
 
-        MenuRecommendResponseDto result =  (MenuRecommendResponseDto)redisTemplate.opsForValue().get(member.getMemberNickName());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String saveMenu = null;
+        try {
+            saveMenu = objectMapper.writeValueAsString(recommendMenu);
+        } catch ( JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        redisDao.setValues(member.getMemberNickName(), saveMenu);
+
+         String findMenu = redisDao.getValues(member.getMemberNickName());
+        MenuRecommendResponseDto result = objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
         return result;
     }
 
-    public MenuRecommendResponseDto findMenuRecommendWeek(int memberId) {
+
+
+    public MenuRecommendResponseDto findMenuRecommendWeek(int memberId) throws JsonProcessingException {
         MemberDto member = memberMapper.findByMemberId(memberId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        return (MenuRecommendResponseDto) redisTemplate.opsForValue().get(member.getMemberNickName());
+        String findMenu = redisDao.getValues(member.getMemberNickName());
+        return objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
     }
+
 
     public void patchLikeFood(int memberFoodId, int memberId){
 //        userService.checkUser(memberId);
         foodMapper.findMemberFoodById(memberFoodId)
                         .orElseThrow(() -> new BusinessLogicException(ExceptionCode.LIKE_NOT_FOUND));
-        foodMapper.updateFoodLike(memberFoodId);
+        int updateCheck = foodMapper.updateFoodLike(memberFoodId);
+        userService.verifyUpdate(updateCheck);
     }
 
     public void patchHateFood(int memberFoodId, int memberId){
 //        userService.checkUser(memberId);
         foodMapper.findMemberFoodById(memberFoodId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.LIKE_NOT_FOUND));
-        foodMapper.updateFoodHate(memberFoodId);
+        int updateCheck = foodMapper.updateFoodHate(memberFoodId);
+        userService.verifyUpdate(updateCheck);
     }
     
     public FoodDto recommendFood() {

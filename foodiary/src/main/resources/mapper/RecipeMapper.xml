@@ -48,7 +48,7 @@
 <update id="updateRecipe">
     UPDATE TB_RECIPE
     SET RECIPE_TITLE = #{title}, RECIPE_BODY = #{content}, RECIPE_PATH1 = #{path1}, RECIPE_PATH2 = #{path2}, RECIPE_PATH3 = #{path3}, RECIPE_UPDATE = now()
-    WHERE  MEMBER_ID = #{memberId} AND RECIPE_ID = #{recipeId};
+    WHERE RECIPE_ID = #{recipeId};
 </update>
 
 
@@ -57,7 +57,7 @@
 <update id="updateRecipeComment">
 UPDATE TB_RECIPE_COMMENT
 SET RECIPE_COMMENT_BODY = #{content}, RECIPE_COMMENT_UPDATE = now()
-WHERE RECIPE_COMMENT_ID = #{commentId} AND MEMBER_ID = #{memberId} AND RECIPE_ID = #{recipeId};
+WHERE RECIPE_COMMENT_ID = #{commentId} AND RECIPE_ID = #{recipeId};
 </update>
 
 <update id="updateRecipeView">
@@ -177,7 +177,7 @@ WHERE  RECIPE_ID = #{recipeId}
         <!--    좋아요 취소-->
 <delete id="deleteRecipeLike">
 DELETE FROM TB_RECIPE_LIKE
-WHERE RECIPE_LIKE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
+WHERE RECIPE_LIKE_ID = #{recipeId}
 </delete>
 
 
@@ -185,19 +185,19 @@ WHERE RECIPE_LIKE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
 <update id="deleteRecipe">
 UPDATE TB_RECIPE
 SET RECIPE_YN = 'Y', RECIPE_DELETE = now()
-WHERE RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
+WHERE RECIPE_ID = #{recipeId}
 </update>
 
 
         <!--    댓글 삭제-->
 <delete id="deleteRecipeComment">
 DELETE FROM TB_RECIPE_COMMENT
-WHERE RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId} AND RECIPE_COMMENT_ID = #{commentId}
+WHERE RECIPE_ID = #{recipeId} AND RECIPE_COMMENT_ID = #{commentId}
 </delete>
 
 <delete id="deleteRecipeScrap">
 DELETE FROM TB_MEMBER_SCRAP_RECIPE
-WHERE RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId} AND MEMBER_RECIPE_BOARDSCRAP_ID = #{scrapId}
+WHERE RECIPE_ID = #{recipeId} AND MEMBER_RECIPE_BOARDSCRAP_ID = #{scrapId}
 </delete>
 
 <delete id="deleteRecipeImage">

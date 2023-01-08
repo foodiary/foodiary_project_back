@@ -8,10 +8,8 @@ import com.foodiary.daily.mapper.DailyMapper;
 import com.foodiary.daily.model.*;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
-import com.foodiary.daily.model.DailyImageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,9 +27,8 @@ public class DailyService {
     private final DailyMapper dailyMapper;
     private final MemberMapper memberMapper;
     private final S3Service s3Service;
-
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    
 
     // 하루 식단 게시글 추가
     public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile dailyImage) throws IOException {
@@ -65,7 +61,8 @@ public class DailyService {
                 dailyWriteRequestDto.setWrite(member.getMemberNickName());
                 dailyMapper.saveDaily(dailyWriteRequestDto);
                 saveImage.setDailyId(dailyWriteRequestDto.getDailyId());
-                dailyMapper.saveImage(saveImage);
+                int saveCheck = dailyMapper.saveImage(saveImage);
+                userService.verifySave(saveCheck);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -88,7 +85,9 @@ public class DailyService {
         if (!verifyLike) {
             removeDailyLike(dailyId, memberId);
         } else {
-            dailyMapper.saveDailyLike(memberId, dailyId);
+            int saveCheck = dailyMapper.saveDailyLike(memberId, dailyId);
+            userService.verifySave(saveCheck);
+
         }
 
     }
@@ -101,7 +100,8 @@ public class DailyService {
         if(!verifyDailyScrap) {
             throw new BusinessLogicException(ExceptionCode.SCRAP_EXISTS);
         }
-        dailyMapper.saveDailyScrap(dailyId, memberId);
+        int saveCheck = dailyMapper.saveDailyScrap(dailyId, memberId);
+        userService.verifySave(saveCheck);
     }
 
     // 하루 식단 게시글 수정
@@ -142,7 +142,8 @@ public class DailyService {
                 throw new RuntimeException(e);
             }
         }
-        dailyMapper.updateDaily(dailyEditRequestDto);
+        int updateCheck = dailyMapper.updateDaily(dailyEditRequestDto);
+        userService.verifyUpdate(updateCheck);
     }
 
 
@@ -151,7 +152,8 @@ public class DailyService {
         userService.checkUser(dailyCommentEditRequestDto.getMemberId());
         verifyDailyComment(dailyCommentEditRequestDto.getCommentId());
 
-        dailyMapper.updateDailyComment(dailyCommentEditRequestDto);
+        int updateCheck = dailyMapper.updateDailyComment(dailyCommentEditRequestDto);
+        userService.verifyUpdate(updateCheck);
     }
 
     //하루식단 게시판 조회
@@ -168,8 +170,6 @@ public class DailyService {
 
         DailyDetailsResponseDto dailyResponse = verifyDailyPost(dailyId);
 
-        dailyResponse.setUserCheck(userService.verifyUser(dailyResponse.getMemberId()));
-
         return dailyResponse;
     }
 
@@ -184,7 +184,7 @@ public class DailyService {
     
     //하루식단 게시글 좋아요 취소
     public void removeDailyLike(int dailyId, int memberId) {
-        dailyMapper.deleteDailyLike(dailyId, memberId);
+        dailyMapper.deleteDailyLike(dailyId);
     }
 
     //하루식단 게시글 삭제
@@ -197,7 +197,8 @@ public class DailyService {
             dailyMapper.deleteDailyImage(dailyId, verifyDaily.getDailyPath());
         }
 
-        dailyMapper.deleteDaily(dailyId, memberId);
+        int deleteCheck = dailyMapper.deleteDaily(dailyId);
+        userService.verifyDelete(deleteCheck);
     }
 
 
@@ -206,7 +207,8 @@ public class DailyService {
         userService.checkUser(memberId);
         verifyDailyComment(commentId);
 
-        dailyMapper.deleteDailyComment(dailyId, memberId, commentId);
+        int deleteCheck = dailyMapper.deleteDailyComment(dailyId, commentId);
+        userService.verifyDelete(deleteCheck);
     }
 
 
@@ -215,7 +217,8 @@ public class DailyService {
         userService.checkUser(memberId);
         verifyDailyScrap(dailyId, memberId);
 
-        dailyMapper.deleteDailyScrap(dailyId, memberId, scrapId);
+        int deleteCheck = dailyMapper.deleteDailyScrap(dailyId, scrapId);
+        userService.verifyDelete(deleteCheck);
     }
 
 
@@ -248,6 +251,4 @@ public class DailyService {
         dailyMapper.findByDailyComment(commentId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
     }
-
-
 }

@@ -1,5 +1,6 @@
 package com.foodiary.food.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.foodiary.food.model.FoodDto;
 import com.foodiary.food.model.FoodRecommendResponseDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
@@ -48,7 +49,7 @@ public class FoodController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("/menu")
-    public ResponseEntity<MenuRecommendResponseDto> recommendWeekMenu(@RequestParam int memberId) {
+    public ResponseEntity<MenuRecommendResponseDto> recommendWeekMenu(@RequestParam int memberId) throws JsonProcessingException {
         MenuRecommendResponseDto response = foodService.weekRecommendMenu(memberId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -61,7 +62,7 @@ public class FoodController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("/menu/week")
-    public ResponseEntity<MenuRecommendResponseDto> findWeekMenu(@RequestParam int memberId) {
+    public ResponseEntity<MenuRecommendResponseDto> findWeekMenu(@RequestParam int memberId) throws JsonProcessingException {
         MenuRecommendResponseDto response = foodService.findMenuRecommendWeek(memberId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

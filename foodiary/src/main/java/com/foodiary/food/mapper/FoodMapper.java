@@ -16,16 +16,16 @@ import java.util.Optional;
 @Mapper
 public interface FoodMapper {
 
-    void saveFood(FoodDto food);
+    int saveFood(FoodDto food);
 
-    void saveMemberFood(@Param("memberId") int memberId, @Param("foodId") int foodId);
+    int saveMemberFood(@Param("memberId") int memberId, @Param("foodId") int foodId);
 
-    void saveWeekRecommendMenu(MenuRecommendRequestDto menuRecommendRequestDto);
+    int saveWeekRecommendMenu(MenuRecommendRequestDto menuRecommendRequestDto);
 
 
-    void updateFoodLike(@Param("memberFoodId") int memberFoodId);
+    int updateFoodLike(@Param("memberFoodId") int memberFoodId);
 
-    void updateFoodHate(@Param("memberFoodId") int memberFoodId);
+    int updateFoodHate(@Param("memberFoodId") int memberFoodId);
 
     List<Integer> findAllHateFood(@Param("memberId") int memberId);
 

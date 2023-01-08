@@ -1,22 +1,26 @@
 package com.foodiary.auth.controller;
 
+import com.foodiary.auth.jwt.CustomUserDetails;
+import com.foodiary.auth.model.TokenReissueDto;
 import com.foodiary.auth.model.TokenResponseDto;
-import com.foodiary.auth.service.GoogleOauth;
 import com.foodiary.auth.service.UserService;
-import com.foodiary.config.security.SecurityConfig;
 import com.foodiary.member.model.MemberLoginRequestDto;
 
+import io.jsonwebtoken.JwtException;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -52,9 +56,29 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @PostMapping("/login")
+    @PostMapping("auth/login")
     public ResponseEntity<?> memberLogin(@RequestBody MemberLoginRequestDto loginDto) throws Exception {
         TokenResponseDto response = userService.createLoginTokenResponse(loginDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("auth/logout")
+    public ResponseEntity logout(@AuthenticationPrincipal CustomUserDetails memberDetails,
+                                 @RequestHeader("Authorization") String bearerAtk) throws JwtException {
+        userService.memberLogout(memberDetails, bearerAtk);
+
+        return new ResponseEntity<>("로그아웃 되었습니다.", HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/auth/reissue")
+    public ResponseEntity reissue(@RequestHeader("Refresh") String refreshToken) throws Exception {
+        TokenReissueDto response = userService.tokenReissue(refreshToken);
+        log.info("토큰 재발급에 성공하였습니다.");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

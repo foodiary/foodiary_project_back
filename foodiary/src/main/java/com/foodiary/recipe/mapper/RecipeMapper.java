@@ -13,27 +13,27 @@ public interface RecipeMapper {
 
     // =================== INSERT ====================
 
-    void saveRecipe(RecipeWriteRequestDto recipeWriteRequestDto);
+    int saveRecipe(RecipeWriteRequestDto recipeWriteRequestDto);
 
-    void saveRecipeComment(RecipeCommentWriteRequestDto recipeCommentWriteRequestDto);
+    int saveRecipeComment(RecipeCommentWriteRequestDto recipeCommentWriteRequestDto);
 
-    void saveRecipeLike(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
+    int saveRecipeLike(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
 
-    void saveRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
+    int saveRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
 
-    void saveImage(RecipeImageDto imageDto);
+    int saveImage(RecipeImageDto imageDto);
 
 
 
     // =================== UPDATE ====================
 
-    void updateRecipe(RecipeEditRequestDto recipeEditRequestDto);
+    int updateRecipe(RecipeEditRequestDto recipeEditRequestDto);
 
-    void updateRecipeComment(RecipeCommentEditRequestDto recipeCommentEditRequestDto);
+    int updateRecipeComment(RecipeCommentEditRequestDto recipeCommentEditRequestDto);
 
-    void updateRecipeView(@Param("recipeId") int recipeId);
+    int updateRecipeView(@Param("recipeId") int recipeId);
 
-    void updateRecipeId(@Param("recipeId") int recipeId, @Param("path") String path);
+    int updateRecipeId(@Param("recipeId") int recipeId, @Param("path") String path);
 
 
 
@@ -63,15 +63,15 @@ public interface RecipeMapper {
 
     // =================== DELETE ====================
 
-    void deleteRecipeLike(@Param("recipeId") int recipeLikeId, @Param("memberId") int memberId);
+    int deleteRecipeLike(@Param("recipeId") int recipeLikeId);
 
-    void deleteRecipe(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
+    int deleteRecipe(@Param("recipeId") int recipeId);
 
-    void deleteRecipeComment(@Param("recipeId") int recipeId, @Param("memberId") int memberId, @Param("commentId") int commentId);
+    int deleteRecipeComment(@Param("recipeId") int recipeId, @Param("commentId") int commentId);
 
-    void deleteRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId, @Param("scrapId") int scrapId);
+    int deleteRecipeScrap(@Param("recipeId") int recipeId, @Param("scrapId") int scrapId);
 
-    void deleteRecipeImage(@Param("recipeId") int recipeId, @Param("path") String path);
+    int deleteRecipeImage(@Param("recipeId") int recipeId, @Param("path") String path);
 
 
 }
