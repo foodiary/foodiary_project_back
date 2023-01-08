@@ -42,7 +42,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @ResponseBody
         @PostMapping(value = "/recipe")
         public ResponseEntity<String> recipeWrite(
@@ -67,7 +67,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "404", description = "NOT FOUND"),
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @ResponseBody
         @PatchMapping(value = "/recipe/{recipeId}/{memberId}")
         public ResponseEntity<String> recipeModify(
@@ -131,7 +131,7 @@ public class RecipeController {
             return new ResponseEntity<>(recipeDetailsDtoList, HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe delete", description = "레시피 공유 게시글 삭제")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -149,7 +149,7 @@ public class RecipeController {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe comment write", description = "레시피 공유 게시글 댓글 작성")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -186,7 +186,7 @@ public class RecipeController {
             return new ResponseEntity<>(detailsDtos, HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe comment modify", description = "레시피 공유 게시글 댓글 수정")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -205,7 +205,7 @@ public class RecipeController {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe comment delete", description = "레시피 공유 게시글 댓글 삭제")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -223,7 +223,7 @@ public class RecipeController {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe like", description = "레시피 공유 게시글 좋아요")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -240,7 +240,7 @@ public class RecipeController {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe like cancle", description = "레시피 공유 게시글 좋아요 취소")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),
@@ -258,7 +258,7 @@ public class RecipeController {
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }
     
-        @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+        @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
         @Operation(summary = "recipe scrap", description = "레시피 공유 게시글 스크랩")
         @ApiResponses({ 
                 @ApiResponse(responseCode = "200", description = "OK"),

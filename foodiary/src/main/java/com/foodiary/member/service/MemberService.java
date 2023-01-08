@@ -25,6 +25,7 @@ import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberDailyLikeResponseDto;
 import com.foodiary.member.model.MemberDailyScrapResponseDto;
 import com.foodiary.member.model.MemberDto;
+import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
 import com.foodiary.member.model.MemberImageDto;
@@ -150,7 +151,7 @@ public class MemberService {
     // 아이디 중복 검사
     public void findMemberLoginId(String loginId) {
 
-        if(mapper.findByLoginId(loginId).isPresent()==true) {
+        if(mapper.findByLoginId(loginId).isPresent()) {
             throw new BusinessLogicException(ExceptionCode.LOGINID_BAD_REQUEST);
         }
     }
@@ -158,7 +159,7 @@ public class MemberService {
     // 이메일 중복 검사
     public void findmemberEmail(String email) {
 
-        if(mapper.findByEmail(email).isPresent()==true) {
+        if(mapper.findByEmail(email).isPresent()) {
             throw new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST);
         }
     }
@@ -166,7 +167,7 @@ public class MemberService {
     // 닉네임 중복 검사
     public void findmemberNickname(String nickname) {
 
-        if(mapper.findByNickname(nickname).isPresent()==true) {
+        if(mapper.findByNickname(nickname).isPresent()) {
             throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
         }
     }
@@ -179,13 +180,18 @@ public class MemberService {
     }
 
     // 비밀번호 수정
-    public void EditMemberPassword(String password, int id) {
-        String newPassword = userService.encrypt(password);
+    public void EditMemberPassword(MemberEditPasswordRequestDto memberEditPasswordRequestDto, int id) {
+        
+        if(memberEditPasswordRequestDto.getMore_password().equals(memberEditPasswordRequestDto.getPassword())) {
+            String newPassword = userService.encrypt(memberEditPasswordRequestDto.getPassword());
 
-        int updateChack = mapper.updateMemberPassword(newPassword, id);
-        if(updateChack < 1) {
-            throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+            int updateChack = mapper.updateMemberPassword(newPassword, id);
+            if(updateChack < 1) {
+                throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+            }
         }
+        throw new BusinessLogicException(ExceptionCode.MORE_PW_ERROR);
+
     }
 
     // 아이디 찾기
@@ -216,15 +222,11 @@ public class MemberService {
         try {
             if (memberCheckPwJwtRequestDto.getPassword().equals(memberCheckPwJwtRequestDto.getMore_password())) {
                 String email = jwtProvider.getSubject(memberCheckPwJwtRequestDto.getJwt());
-                if (email.equals(memberCheckPwJwtRequestDto.getEmail())) {
 
-                    int update = mapper.updateMemberPw(email, userService.encrypt(memberCheckPwJwtRequestDto.getPassword()));
-                    if (update < 1) {
-                        throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-                    }
-                } else {
+                int update = mapper.updateMemberPw(email, userService.encrypt(memberCheckPwJwtRequestDto.getPassword()));
+                if (update < 1) {
                     throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-                }
+                } 
             } else {
                 throw new BusinessLogicException(ExceptionCode.MORE_PW_ERROR);
             }

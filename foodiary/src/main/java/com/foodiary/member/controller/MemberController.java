@@ -74,14 +74,14 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @PatchMapping(value = "/member/password/{memberId}")
     public ResponseEntity<?> memberModifyPassword(
         @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
         @RequestBody @Valid MemberEditPasswordRequestDto memberEditPasswordRequestDto
     ) throws Exception {
 
-        memberService.EditMemberPassword(memberEditPasswordRequestDto.getPassword(), memberId);
+        memberService.EditMemberPassword(memberEditPasswordRequestDto, memberId);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -259,7 +259,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @PatchMapping(value = "/member/{memberId}")
     public ResponseEntity<String> memberModify(
@@ -280,7 +280,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member")
     public ResponseEntity<MemberEditResponseDto> memberDetails(
@@ -303,7 +303,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @PostMapping(value = "/member/logout")
     public ResponseEntity<String> memberLogout(
@@ -319,7 +319,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @DeleteMapping(value = "/member/{memberId}")
     public ResponseEntity<String> memberDelete(
@@ -368,7 +368,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @DeleteMapping(value = "/member/image/{memberId}")
     public ResponseEntity<String> memberImageDelete(
@@ -387,7 +387,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member/scrap")
     public ResponseEntity<MemberScrapResponseDto> scraps(
@@ -407,7 +407,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @DeleteMapping(value = "/member/scrap/daily/{scrapId}/{memberId}")
     public ResponseEntity<String> scrapDailyDelete(
@@ -427,7 +427,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @DeleteMapping(value = "/member/scrap/recipe/{scrapId}/{memberId}")
     public ResponseEntity<String> scrapRecipeDelete(
@@ -447,7 +447,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member/like")
     public ResponseEntity<MemberLikeResponseDto> likes(
@@ -467,7 +467,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @DeleteMapping(value = "/member/like/daily/{likeId}/{memberId}")
     public ResponseEntity<String> likeDailyDelete(
@@ -487,7 +487,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @DeleteMapping(value = "/member/like/recipe/{likeId}/{memberId}")
     public ResponseEntity<String> likeRecipeDelete(
