@@ -3,6 +3,7 @@ package com.foodiary.auth.jwt;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +13,7 @@ import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberDetailsService implements UserDetailsService {
@@ -22,6 +24,7 @@ public class MemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         MemberDto member = memberMapper.findByEmail(userEmail).
                 orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        log.info("회원 정보를 확인하였습니다. >>> nickName : {}", member.getMemberNickName());
 
         return new CustomUserDetails(member);
     }

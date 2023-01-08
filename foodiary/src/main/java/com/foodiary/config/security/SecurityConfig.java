@@ -97,7 +97,7 @@ public class SecurityConfig {
                 // "/recipe/scrap/{recipeId}/{memberId}",
                 
                 // // 권한 필요없는 url
-                // "/member/login",
+                // "/auth/login",
                 // "/member/signup",
                 // "/member/search",
                 // "/dailys",
