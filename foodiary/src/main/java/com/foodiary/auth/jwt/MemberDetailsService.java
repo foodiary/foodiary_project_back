@@ -9,8 +9,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.foodiary.member.model.MemberDto;
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberDto;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Slf4j

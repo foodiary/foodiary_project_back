@@ -7,6 +7,7 @@ import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
 
 import io.jsonwebtoken.Claims;
