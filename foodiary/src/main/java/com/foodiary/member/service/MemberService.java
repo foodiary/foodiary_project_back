@@ -25,6 +25,7 @@ import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberDailyLikeResponseDto;
 import com.foodiary.member.model.MemberDailyScrapResponseDto;
 import com.foodiary.member.model.MemberDto;
+import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
 import com.foodiary.member.model.MemberImageDto;
@@ -36,9 +37,11 @@ import com.foodiary.member.model.MemberSignUpRequestDto;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class MemberService {
 
     private final MemberMapper mapper;
@@ -55,6 +58,7 @@ public class MemberService {
 
     public void createdMember(MemberSignUpRequestDto memberSignUpDto, MultipartFile memberImage) throws Exception {
 
+        // 한번 더 입력한 비밀번호 검사
         if (memberSignUpDto.getMore_password().equals(memberSignUpDto.getPassword()) == false) {
 
             VaildErrorResponseDto vaildErrorDto = new VaildErrorResponseDto("more_password", "비밀번호가 일치하지 않습니다");
@@ -62,12 +66,18 @@ public class MemberService {
             throw new MorePasswordException(vaildErrorDto);
         }
 
+        // 약관동의 검사
+        if (memberSignUpDto.getRequiredTerms().equals("N")) {
+            throw new BusinessLogicException(ExceptionCode.TERMS_ERROR);
+        }
+
         String newPassword = userService.encrypt(memberSignUpDto.getPassword());
 
         memberSignUpDto.passwordUpdate(newPassword);
 
+        // 이미지 있을 경우와 없을 경우 분리
         if (memberImage == null) {
-            int saveCheck =mapper.saveMember(memberSignUpDto);
+            int saveCheck = mapper.saveMember(memberSignUpDto);
             if(saveCheck < 1) {
                 throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
             }
@@ -81,7 +91,7 @@ public class MemberService {
             if(saveCheck < 1) {
                 throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
             }
-            MemberDto memberDto = mapper.findByLoginId(memberSignUpDto.getLoginId()).orElseThrow(() -> new BusinessLogicException(ExceptionCode.INTERNAL_SERVER_ERROR));
+            MemberDto memberDto = mapper.findByLoginId(memberSignUpDto.getLoginId()).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));
 
             String fileFullName = memberImage.getOriginalFilename();
             String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
@@ -90,6 +100,7 @@ public class MemberService {
             MemberImageDto memberImageDto = new MemberImageDto(memberDto.getMemberId(), fileName, fileFullName,
                     fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
 
+            // 이미지 저장
             createMemberImage(memberImageDto);
         }
 
@@ -140,20 +151,25 @@ public class MemberService {
     // 아이디 중복 검사
     public void findMemberLoginId(String loginId) {
 
-        mapper.findByLoginId(loginId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.LOGINID_BAD_REQUEST));
-
+        if(mapper.findByLoginId(loginId).isPresent()) {
+            throw new BusinessLogicException(ExceptionCode.LOGINID_BAD_REQUEST);
+        }
     }
 
     // 이메일 중복 검사
     public void findmemberEmail(String email) {
 
-        mapper.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST));
+        if(mapper.findByEmail(email).isPresent()) {
+            throw new BusinessLogicException(ExceptionCode.EMAIL_BAD_REQUEST);
+        }
     }
 
     // 닉네임 중복 검사
     public void findmemberNickname(String nickname) {
 
-        mapper.findByNickname(nickname).orElseThrow(() -> new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST));
+        if(mapper.findByNickname(nickname).isPresent()) {
+            throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
+        }
     }
 
     public void createMemberImage(MemberImageDto memberImageDto) {
@@ -163,13 +179,19 @@ public class MemberService {
         }
     }
 
-    public void EditMemberPassWord(String password, int id) {
-        String newPassword = userService.encrypt(password);
+    // 비밀번호 수정
+    public void EditMemberPassword(MemberEditPasswordRequestDto memberEditPasswordRequestDto, int id) {
+        
+        if(memberEditPasswordRequestDto.getMore_password().equals(memberEditPasswordRequestDto.getPassword())) {
+            String newPassword = userService.encrypt(memberEditPasswordRequestDto.getPassword());
 
-        int updateChack = mapper.updateMemberPassword(newPassword, id);
-        if(updateChack < 1) {
-            throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+            int updateChack = mapper.updateMemberPassword(newPassword, id);
+            if(updateChack < 1) {
+                throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+            }
         }
+        throw new BusinessLogicException(ExceptionCode.MORE_PW_ERROR);
+
     }
 
     // 아이디 찾기
@@ -182,7 +204,7 @@ public class MemberService {
 
     public void findmemberInfoPw(String email, String loginId, String type) throws Exception {
 
-        MemberDto memberDto = mapper.findByEmailAndId(email, loginId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        mapper.findByEmailAndId(email, loginId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
@@ -191,6 +213,7 @@ public class MemberService {
         Date expiration = jwtProvider.getTokenExpiration(30);
 
         String jwt = jwtProvider.generateAccessToken(claims, subject, expiration);
+        log.info("jwt = {}",jwt);
         emailService.EmailSend(email, jwt, type);
     }
 
@@ -199,20 +222,16 @@ public class MemberService {
         try {
             if (memberCheckPwJwtRequestDto.getPassword().equals(memberCheckPwJwtRequestDto.getMore_password())) {
                 String email = jwtProvider.getSubject(memberCheckPwJwtRequestDto.getJwt());
-                if (email.equals(memberCheckPwJwtRequestDto.getEmail())) {
 
-                    int update = mapper.updateMemberPw(email,
-                            userService.encrypt(memberCheckPwJwtRequestDto.getPassword()));
-                    if (update < 1) {
-                        throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-                    }
-                } else {
+                int update = mapper.updateMemberPw(email, userService.encrypt(memberCheckPwJwtRequestDto.getPassword()));
+                if (update < 1) {
                     throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-                }
+                } 
             } else {
                 throw new BusinessLogicException(ExceptionCode.MORE_PW_ERROR);
             }
         } catch (ExpiredJwtException e) {
+            // 토큰 시간 초과
             throw new BusinessLogicException(ExceptionCode.NUM_TIMEOUT);
         }
     }
@@ -286,10 +305,14 @@ public class MemberService {
 
     public void mailSend(MemberCheckEmailRequestDto memberCheckEmailRequestDto) throws Exception {
 
+        // 이메일 중복 검사 한번더 
         findmemberEmail(memberCheckEmailRequestDto.getEmail());
 
+        // 6자리 인증번호 생성
         int authNo = (int) (Math.random() * (999999 - 100000 + 1)) + 100000;
         String num = Integer.toString(authNo);
+        
+        // 레디스에 값 추가
         redisTemplate.opsForValue().set("signup:" + memberCheckEmailRequestDto.getEmail(), num);
         redisTemplate.expire("signup:" + memberCheckEmailRequestDto.getEmail(), 5, TimeUnit.MINUTES);
 
@@ -297,13 +320,15 @@ public class MemberService {
 
     }
 
-
     public void mailSendConfirm(MemberCheckEmailNumRequestDto memberCheckEmailNumRequestDto) {
 
         String confirm = redisTemplate.opsForValue().get("signup:" + memberCheckEmailNumRequestDto.getEmail());
         
-        if(confirm==null || !confirm.equals(memberCheckEmailNumRequestDto.getNum())) {
+        if(confirm==null) {
             throw new BusinessLogicException(ExceptionCode.NUM_TIMEOUT);
+        }
+        if(!confirm.equals(memberCheckEmailNumRequestDto.getNum())) {
+            throw new BusinessLogicException(ExceptionCode.NUM_BAD_REQUEST);
         }
     }
 

@@ -5,8 +5,8 @@
 
     <insert id="saveMember">
         INSERT INTO TB_MEMBER (MEMBER_LOGINID, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_NICKNAME,
-        MEMBER_PROFILE, MEMBER_PATH, MEMBER_CREATE, MEMBER_UPDATE)
-        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, now(), now());
+        MEMBER_PROFILE, MEMBER_PATH, MEMBER_REQUIRED_TERMS, MEMBER_CHOICE_TERMS, MEMBER_CREATE, MEMBER_UPDATE)
+        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, #{requiredTerms}, #{choiceTerms}, now(), now());
 	</insert>
 
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
@@ -39,12 +39,12 @@
         WHERE MEMBER_NICKNAME = #{nickname}
     </select>
 
-    <select id="saveMemberImage">
+    <insert id="saveMemberImage">
         INSERT INTO TB_MEMBER_IMAGE 
         (MEMBER_ID, MEMBER_FILE_ORIGINAL_NAME, MEMBER_FILE_FULL_NAME, MEMBER_FILE_SAVE_NAME,
         MEMBER_FILE_PATH, MEMBER_FILE_SIZE, MEMBER_FILE_TYPE, MEMBER_FILE_CREATE, MEMBER_FILE_UPDATE)
         VALUES (#{memberId}, #{memberFileOriginalName}, #{memberFileFullName}, #{memberFileSaveName}, #{memberFilePath}, #{memberFileSize}, #{memberFileType}, now(), now());
-    </select>
+    </insert>
 
     <update id="updateMemberPassword">
         UPDATE TB_MEMBER SET 
