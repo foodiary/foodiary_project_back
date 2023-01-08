@@ -24,15 +24,17 @@ public interface MemberMapper {
 
     Optional<MemberDto> findByEmail(@Param("email") String email);
 
+    Optional<MemberDto> findByEmailAndId(@Param("email") String email, @Param("loginId") String loginId);
+
     Optional<MemberDto> findByMemberId(@Param("memberId") int memberId);
 
     MemberDto findByEmailAndPw(@Param("email") String email,@Param("pw") String pw);
 
-    MemberDto findByLoginId(@Param("loginId") String loginId);
+    Optional<MemberDto> findByLoginId(@Param("loginId") String loginId);
 
-    MemberDto findByNickname(@Param("nickname") String nickname);
+    Optional<MemberDto> findByNickname(@Param("nickname") String nickname);
 
-    MemberDto findById(@Param("id") String id);
+    Optional<MemberDto> findById(@Param("id") String id);
 
     List<MemberDto> findAll();
 
@@ -67,5 +69,7 @@ public interface MemberMapper {
     int updateMemberImage(@Param("memberId") int memberId);
 
     int deleteMember(@Param("id") int id);
+    
+    int updateMemberPw(@Param("email") String email, @Param("pw") String pw);
 
 }

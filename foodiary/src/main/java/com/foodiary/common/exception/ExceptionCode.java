@@ -28,7 +28,10 @@ public enum ExceptionCode {
 
     SAVE_ERROR(500, "저장 실패했습니다. 다시 시도해주세요"),
     UPDATE_ERROR(500, "업데이트 실패했습니다. 다시 시도해주세요"),
-    DELETE_ERROR(500, "삭제 실패했습니다. 다시 시도해주세요")
+    DELETE_ERROR(500, "삭제 실패했습니다. 다시 시도해주세요"),
+    NUM_BAD_REQUEST(400, "인증번호가 일치하지 않습니다."),
+    NUM_TIMEOUT(400, "인증 시간을 초과하였습니다. 다시 시도해주세요"),
+    MORE_PW_ERROR(400, "비밀번호가 일치하지않습니다."),
     ;
 
 

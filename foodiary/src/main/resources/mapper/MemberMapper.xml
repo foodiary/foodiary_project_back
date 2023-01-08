@@ -15,6 +15,11 @@
         WHERE MEMBER_EMAIL = #{email}
 	</select>
 
+    <select id="findByEmailAndId" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_EMAIL = #{email} AND MEMBER_LOGINID = #{loginId}
+    </select>
+
     <select id="findByEmailAndPw" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_EMAIL = #{email} AND MEMBER_PASSWORD = #{pw}
@@ -166,6 +171,13 @@
             MEMBER_DELETE = NOW(),
             MEMBER_YN='Y'
         WHERE MEMBER_ID = #{id}
+    </update>
+
+    <update id="updateMemberPw">
+        UPDATE TB_MEMBER SET 
+        MEMBER_UPDATE = NOW(),
+        MEMBER_PASSWORD=#{pw}
+        WHERE MEMBER_EMAIL = #{email}
     </update>
 
 </mapper>
