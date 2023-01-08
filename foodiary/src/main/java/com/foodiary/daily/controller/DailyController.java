@@ -40,7 +40,7 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @PostMapping(value = "/daily")
     public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
@@ -63,7 +63,7 @@ public class DailyController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @PostMapping(value = "/daily/{dailyId}/{memberId}")
     public ResponseEntity<String> dailyModify(
@@ -119,7 +119,7 @@ public class DailyController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily delete", description = "하루 식단 게시글 삭제")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -137,7 +137,7 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily comment write", description = "하루 식단 게시글 댓글 작성")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -179,7 +179,7 @@ public class DailyController {
         return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily comment modify", description = "하루 식단 게시글 댓글 수정")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -202,7 +202,7 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily comment delete", description = "하루 식단 게시글 댓글 삭제")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -221,7 +221,7 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily like", description = "하루 식단 게시글 좋아요")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -240,7 +240,7 @@ public class DailyController {
     }
 
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily scrap", description = "하루 식단 게시글 스크랩")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -258,7 +258,7 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @ApiImplicitParam(name = "accessToken", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @Operation(summary = "daily scrap remove", description = "하루 식단 게시글 스크랩 삭제")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
