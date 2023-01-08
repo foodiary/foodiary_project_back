@@ -1,21 +1,22 @@
 package com.foodiary.common.scheduler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.food.mapper.FoodMapper;
 import com.foodiary.food.model.FoodDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
 import com.foodiary.food.service.FoodService;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
-import org.springframework.data.redis.core.RedisTemplate;
+import com.foodiary.rank.mapper.RankMapper;
+import com.foodiary.redis.RedisDao;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.foodiary.rank.mapper.RankMapper;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class SchedulerController {
     private final FoodMapper foodMapper;
     private final MemberMapper memberMapper;
     private final FoodService foodService;
-    private final RedisTemplate redisTemplate;
+    private final RedisDao redisDao;
     
     @Scheduled(cron="0 0 0/1 * * *")
     public void scheduler() {
@@ -88,8 +89,18 @@ public class SchedulerController {
                     .menuSunDinnerCategory(list.get(13).getFoodCategory()).menuSunDinner(list.get(13).getFoodName())
                     .build();
 
+            MemberDto member = memberMapper.findByMemberId(k)
+                    .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-            redisTemplate.opsForValue().set(memberList.get(k-1).getMemberNickName(), recommendMenu);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String saveMenu = null;
+            try {
+                saveMenu = objectMapper.writeValueAsString(recommendMenu);
+            } catch ( JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            redisDao.setValues(member.getMemberNickName(), saveMenu);
+
         }
         log.info("모든 회원의 식단 구성을 완료하였습니다.");
     }
