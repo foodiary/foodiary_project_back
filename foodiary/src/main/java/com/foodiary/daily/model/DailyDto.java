@@ -37,10 +37,4 @@ public class DailyDto {
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
     private int dailyLike;
 
-    @ApiModelProperty(value="게시글이 없을 경우", required = true)
-    private String no;
-    
-    public void noAdd() {
-        no = "게시글이 없습니다.";
-    }
 }

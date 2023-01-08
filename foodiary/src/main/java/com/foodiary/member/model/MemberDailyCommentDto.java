@@ -16,7 +16,7 @@ public class MemberDailyCommentDto {
     @ApiModelProperty(value="하루 공유 댓글 시퀀스", required = true)
     private int dailyCommentId;
 
-    @ApiModelProperty(value="하루 공유 시퀀스", required = true)
+    @ApiModelProperty(value="하루 공유 게시글 시퀀스", required = true)
     private int dailyId;
 
     @ApiModelProperty(value="하루 공유 제목", required = true)
@@ -28,10 +28,4 @@ public class MemberDailyCommentDto {
     @ApiModelProperty(value="하루 공유 댓글 내용", required = true)
     private String dailyCommentBody;
 
-    @ApiModelProperty(value="댓글이 없을 경우", required = true)
-    private String no;
-    
-    public void noAdd() {
-        no = "댓글이 없습니다.";
-    }
 }

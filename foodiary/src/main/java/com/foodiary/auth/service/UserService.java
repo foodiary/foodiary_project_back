@@ -121,6 +121,24 @@ public class UserService {
         } else return false;
     }
 
+    public void verifySave(int saveCheck) {
+        if(saveCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
+        }
+    }
+
+    public void verifyUpdate(int updateCheck) {
+        if(updateCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+        }
+    }
+
+    public void verifyDelete(int deleteCheck) {
+        if(deleteCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.DELETE_ERROR);
+        }
+    }
+
     public String encrypt(String s) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

@@ -13,7 +13,15 @@ import com.foodiary.member.model.MemberDailyScrapResponseDto;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
+import com.foodiary.member.model.MemberFaqDto;
+import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberImageDto;
+import com.foodiary.member.model.MemberNoticeInfoResponseDto;
+import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberQuestionEditResponseDto;
+import com.foodiary.member.model.MemberQuestionImageDto;
+import com.foodiary.member.model.MemberQuestionResponseDto;
+import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
 import com.foodiary.member.model.MemberRecipeLikeResponseDto;
 import com.foodiary.member.model.MemberRecipeScrapResponseDto;
@@ -91,4 +99,30 @@ public interface MemberMapper {
 
     int updateRecipeComment(@Param("recipeComments") int recipeComments, @Param("comment") String comment);
 
+    List<MemberNoticeResponseDto> findByNotice();
+
+    Optional<MemberNoticeInfoResponseDto> findByNoticeId(@Param("noticeId") int noticeId);
+
+    List<MemberFaqDto> findByFaq();
+
+    List<MemberQuestionResponseDto> findByQuestion(@Param("memberId") int memberId);
+
+    Optional<MemberQuestionResponseDto> findByQuestionId(@Param("questionId") int questionId);
+
+    int saveQuestion(MemberQuestionWriteResponseDto memberQuestionWriteResponseDto);
+
+    int saveMemberQuestionImage(MemberQuestionImageDto memberQuestionImageDto);
+
+    MemberQuestionImageDto findByQuestionImage(@Param("questionId") int questionId);
+
+    int deleteQuestionImage(@Param("questionId") int questionId);
+
+    int updateQuetion(MemberQuestionEditResponseDto memberQuestionEditResponseDto);
+
+    int deleteQuetion(@Param("questionId") int questionId);
+
+    List<MemberFoodsResponseDto> findByFoods(@Param("memberId") int memberId);
+
+    int updateMemberFood(@Param("memberFoodId") int memberFoodId, @Param("like") String like);
 }
+

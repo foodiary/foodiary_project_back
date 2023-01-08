@@ -1,5 +1,6 @@
 package com.foodiary.common.exception;
 
+
 public enum ExceptionCode {
 
     MEMBER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
@@ -21,11 +22,13 @@ public enum ExceptionCode {
     NUM_BAD_REQUEST(400, "인증번호가 일치하지 않습니다."),
     NUM_TIMEOUT(400, "인증 시간을 초과하였습니다. 다시 시도해주세요"),
     MORE_PW_ERROR(400, "비밀번호가 일치하지않습니다."),
+    TERMS_ERROR(400, "필수약관에 동의해주세요"),
     SAVE_ERROR(500, "저장 실패했습니다. 다시 시도해주세요"),
     UPDATE_ERROR(500, "업데이트 실패했습니다. 다시 시도해주세요"),
     DELETE_ERROR(500, "삭제 실패했습니다. 다시 시도해주세요"),
     SELECT_ERROR(500, "데이터 가져오기에 실패했습니다. 다시 시도해주세요"),
-    NOT_AUTHORIZED(401, "접근 권한이 없는 사용자입니다.")
+    NOT_AUTHORIZED(401, "접근 권한이 없는 사용자입니다."),
+    MYPAGE_NOT_FOUND(404, "게시글이 없습니다.")
     ;
 
 

@@ -1,7 +1,5 @@
 package com.foodiary.config.security;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
@@ -98,29 +96,34 @@ public class SecurityConfig {
                 
                 // 권한 필요 url
                 // "/member/password/{memberId}",
+                // "/member/password/change/jwt",
                 // "/member/{memberId}",
-                // "/member/post/{memberId}\",
+                // "/member/post/daily/{memberId}",
+                // "/member/post/recipe/{memberId}",
                 // "/member/image/{memberId}",
-                // "/member/scrap/{memberId}",
-                // "/member/like/{memberId}",
-                // "/member/comment/{memberId}",
-                // "",
-                // "",
-                // "",
-
+                // "/member/scrap/daily/{memberId}",
+                // "/member/scrap/recipe/{memberId}",
+                // "/member/like/daily/{memberId}",
+                // "/member/like/recipe/{memberId}",
+                // "/member/comment/daily/{memberId}",
+                // "/member/comment/recipe/{memberId}",
+                // "/question/{memberId}",
+                // "/question/{memberId}/{questionId}",
+                // "/member/food/{memberId}",
+                // "/member/food/{memberId}/{memberFoodId}",
 
                 // 권한 필요x url
-                // "/member/find/id",
                 // "/member/find/password",
-                // "/member/email/send/confirm",
-                // "/member/email/send",
-                // "/member/check/nickname",
+                // "/member/find/id",
                 // "/member/check/loginid",
+                // "/member/check/nickname",
                 // "/member/check/email",
-                // "/member/password/change/jwt",
+                // "/member/email/send",
+                // "/member/email/send/confirm",
                 // "/member/signup",
-                
-
+                // "/notice",
+                // "/notice/{noticeId}",
+                // "/faq",
 
 
                 // ).permitAll()

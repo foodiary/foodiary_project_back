@@ -8,16 +8,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberNoticeDto {
+public class MemberNoticeInfoResponseDto {
     
     @ApiModelProperty(value="공지 시퀀스", required = true)
     private int noticeId;
 
     @ApiModelProperty(value="공지 제목", required = true)
     private String noticeTitle;
-
-    @ApiModelProperty(value="공지 작성자", required = true)
-    private String noticeWriter;
 
     @ApiModelProperty(value="공지 내용", required = true)
     private String noticeContent;

@@ -5,8 +5,8 @@
 
     <insert id="saveMember">
         INSERT INTO TB_MEMBER (MEMBER_LOGINID, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_NICKNAME,
-        MEMBER_PROFILE, MEMBER_PATH, MEMBER_CREATE, MEMBER_UPDATE)
-        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, now(), now());
+        MEMBER_PROFILE, MEMBER_PATH, MEMBER_REQUIRED_TERMS, MEMBER_CHOICE_TERMS, MEMBER_CREATE, MEMBER_UPDATE)
+        VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, #{requiredTerms}, #{choiceTerms}, now(), now());
 	</insert>
 
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
@@ -44,12 +44,12 @@
         WHERE MEMBER_NICKNAME = #{nickname}
     </select>
 
-    <select id="saveMemberImage">
+    <insert id="saveMemberImage">
         INSERT INTO TB_MEMBER_IMAGE 
         (MEMBER_ID, MEMBER_FILE_ORIGINAL_NAME, MEMBER_FILE_FULL_NAME, MEMBER_FILE_SAVE_NAME,
         MEMBER_FILE_PATH, MEMBER_FILE_SIZE, MEMBER_FILE_TYPE, MEMBER_FILE_CREATE, MEMBER_FILE_UPDATE)
         VALUES (#{memberId}, #{memberFileOriginalName}, #{memberFileFullName}, #{memberFileSaveName}, #{memberFilePath}, #{memberFileSize}, #{memberFileType}, now(), now());
-    </select>
+    </insert>
 
     <update id="updateMemberPassword">
         UPDATE TB_MEMBER SET 
@@ -231,4 +231,81 @@
         WHERE DAILY_COMMENT_ID = #{recipeComments};
     </update>
 
+    <select id="findByNotice" resultType="com.foodiary.member.model.MemberNoticeResponseDto">
+        SELECT * FROM TB_NOTICE 
+	</select>
+
+    <select id="findByNoticeId" resultType="com.foodiary.member.model.MemberNoticeInfoResponseDto">
+        SELECT * FROM TB_NOTICE 
+        WHERE NOTICE_ID = #{noticeId}
+	</select>
+
+    <select id="findByFaq" resultType="com.foodiary.member.model.MemberFaqDto">
+        SELECT * FROM TB_FAQ 
+	</select>
+
+    <select id="findByQuestion" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
+        SELECT * FROM TB_QUESTION
+        WHERE MEMBER_ID = #{memberId} AND QUESTION_YN = 'N'
+	</select>
+
+    <select id="findByQuestionId" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
+        SELECT * FROM TB_QUESTION tq
+        LEFT JOIN TB_ANSWER ta 
+        ON tq.QUESTION_ID = ta.QUESTION_ID
+        WHERE tq.QUESTION_ID = #{questionId} AND tq.QUESTION_YN = 'N'
+	</select>
+
+    <insert id="saveQuestion" parameterType="com.foodiary.member.model.MemberQuestionResponseDto" useGeneratedKeys="true" keyProperty="questionId" keyColumn="QUESTION_ID">
+        INSERT INTO TB_QUESTION 
+        (MEMBER_ID, QUESTION_TITLE, QUESTION_CONTENT, QUESTION_PATH, QUESTION_CREATE, QUESTION_UPDATE)
+        VALUES (#{memberId}, #{questionTitle}, #{questionContent}, #{questionPath}, now(), now());
+    </insert>
+
+    <insert id="saveMemberQuestionImage">
+        INSERT INTO TB_QUESTION_IMAGE 
+        (MEMBER_ID, QUESTION_ID,QUESTION_FILE_ORIGINAL_NAME, QUESTION_FILE_FULL_NAME, QUESTION_FILE_SAVE_NAME,
+        QUESTION_FILE_PATH, QUESTION_FILE_SIZE, QUESTION_FILE_TYPE, QUESTION_FILE_CREATE, QUESTION_FILE_UPDATE)
+        VALUES (#{memberId}, #{questionId}, #{questionFileOriginalName}, #{questionFileFullName}, #{questionFileSaveName}, #{questionFilePath}, #{questionFileSize}, #{questionFileType}, now(), now());
+    </insert>
+
+    <select id="findByQuestionImage" resultType="com.foodiary.member.model.MemberQuestionImageDto">
+        SELECT * FROM TB_QUESTION_IMAGE
+        WHERE QUESTION_ID = #{questionId}
+	</select>
+
+    <delete id="deleteQuestionImage">
+        SELECT * FROM TB_QUESTION_IMAGE
+        WHERE QUESTION_ID = #{questionId}
+	</delete>
+
+    <update id="updateQuetion">
+        UPDATE TB_QUESTION
+        SET QUESTION_TITLE = #{questionTitle}, QUESTION_CONTENT = #{questionContent}, 
+            QUESTION_PATH = #{questionPath}, QUESTION_UPDATE = now()
+        WHERE QUESTION_ID = #{questionId};
+    </update>
+
+    <update id="deleteQuetion">
+        UPDATE TB_QUESTION
+        SET QUESTION_YN = 'Y', QUESTION_UPDATE = now(), QUESTION_DELETE = now()
+        WHERE QUESTION_ID = #{questionId};
+    </update>
+
+    <select id="findByFoods" resultType="com.foodiary.member.model.MemberFoodsResponseDto">
+        SELECT tmf.MEMBER_FOOD_ID, tmf.MEMBER_ID, tmf.FOOD_ID, 
+            tmf.MEMBER_FOOD_LIKE, tf.FOOD_NAME, tmf.MEMBER_FOOD_CREATE  
+        FROM TB_MEMBER_FOOD tmf
+        LEFT JOIN TB_FOOD tf
+        ON tmf.FOOD_ID = tf.FOOD_ID
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY MEMBER_FOOD_CREATE DESC;
+	</select>
+
+    <update id="updateMemberFood">
+        UPDATE TB_MEMBER_FOOD
+        SET MEMBER_FOOD_LIKE = #{like}
+        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+    </update>
+    
 </mapper>
