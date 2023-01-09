@@ -21,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,7 +114,80 @@ public class RecipeController {
                         throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
                 }
                 PageHelper.startPage(page, 10);
+
                 List<RecipesResponseDto> response = recipeService.findRecipes();
+                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        }
+
+
+
+
+        @Operation(summary = "today recipe list", description = "일간 레시피 게시판 보기")
+        @ApiResponses({
+                @ApiResponse(responseCode = "200", description = "OK"),
+                @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+                @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+                @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+        })
+        @GetMapping(value = "/recipes/today")
+        public ResponseEntity<?> todayRecipes(
+                @ApiParam(value = "게시판 페이지", required = false) int page
+        ) throws Exception {
+                if(page <= 0){
+                        throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                }
+                PageHelper.startPage(page, 10);
+
+                LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+                LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+                List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
+                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        }
+
+        @Operation(summary = "week recipe list", description = "주간 레시피 게시판 보기")
+        @ApiResponses({
+                @ApiResponse(responseCode = "200", description = "OK"),
+                @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+                @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+                @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+        })
+        @GetMapping(value = "/recipes/week")
+        public ResponseEntity<?> weekRecipes(
+                @ApiParam(value = "게시판 페이지", required = false) int page
+        ) throws Exception {
+                if(page <= 0){
+                        throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                }
+                PageHelper.startPage(page, 10);
+
+                LocalDateTime start = LocalDateTime.of(LocalDate.now().minusDays(7), LocalTime.of(0, 0, 0));
+                LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+                List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
+                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        }
+
+        @Operation(summary = "month recipe list", description = "월간 레시피 게시판 보기")
+        @ApiResponses({
+                @ApiResponse(responseCode = "200", description = "OK"),
+                @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+                @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+                @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+        })
+        @GetMapping(value = "/recipes/month")
+        public ResponseEntity<?> monthRecipes(
+                @ApiParam(value = "게시판 페이지", required = false) int page
+        ) throws Exception {
+                if(page <= 0){
+                        throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                }
+                PageHelper.startPage(page, 10);
+
+                LocalDateTime start = LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.of(0, 0, 0));
+                LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+                List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
                 return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
         }
 

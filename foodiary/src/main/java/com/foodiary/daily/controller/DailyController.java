@@ -21,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -81,9 +84,8 @@ public class DailyController {
 
 
 
-
     @Operation(summary = "daily list", description = "하루 식단 게시판 보기")
-    @ApiResponses({ 
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
@@ -91,13 +93,87 @@ public class DailyController {
     })
     @GetMapping(value = "/dailys")
     public ResponseEntity<?> dailys(
+            @ApiParam(value = "게시판 페이지", required = false) @Positive int page
+    ) throws Exception {
+        if(page <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+        PageHelper.startPage(page, 10);
+
+
+        List<DailysResponseDto> response = dailyService.findDailys();
+        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+    }
+
+
+
+
+    @Operation(summary = "today daily list", description = "일간 하루 식단 게시판 보기")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping(value = "/dailys/today")
+    public ResponseEntity<?> todayDailys(
         @ApiParam(value = "게시판 페이지", required = false) @Positive int page
     ) throws Exception {
         if(page <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<DailysResponseDto> response = dailyService.findDailys();
+
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        List<DailysResponseDto> response = dailyService.findCreateDailys(start, end);
+        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+    }
+
+    @Operation(summary = "week daily list", description = "주간 하루 식단 게시판 보기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping(value = "/dailys/week")
+    public ResponseEntity<?> weekDailys(
+            @ApiParam(value = "게시판 페이지", required = false) @Positive int page
+    ) throws Exception {
+        if(page <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+        PageHelper.startPage(page, 10);
+
+        LocalDateTime start = LocalDateTime.of(LocalDate.now().minusDays(7), LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        List<DailysResponseDto> response = dailyService.findCreateDailys(start, end);
+        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+    }
+
+    @Operation(summary = "month daily list", description = "월간 하루 식단 게시판 보기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping(value = "/dailys/month")
+    public ResponseEntity<?> monthDailys(
+            @ApiParam(value = "게시판 페이지", required = false) @Positive int page
+    ) throws Exception {
+        if(page <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+        PageHelper.startPage(page, 10);
+
+        LocalDateTime start = LocalDateTime.of(LocalDate.now().minusDays(30), LocalTime.of(0, 0, 0));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
+
+        List<DailysResponseDto> response = dailyService.findCreateDailys(start, end);
         return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
 

@@ -4,6 +4,7 @@ import com.foodiary.recipe.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +56,8 @@ public interface RecipeMapper {
     List<RecipeCommentDetailsResponseDto> findAllRecipeComment(@Param("recipeId") int recipeId);
 
     List<RecipesResponseDto> findAll();
+
+    List<RecipesResponseDto> findCreateAll(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 
 

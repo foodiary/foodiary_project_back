@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -147,9 +148,17 @@ public class DailyService {
         userService.verifyUpdate(dailyMapper.updateDailyComment(dailyCommentEditRequestDto));
     }
 
-    //하루식단 게시판 조회
     public List<DailysResponseDto> findDailys() {
         List<DailysResponseDto> dailys = dailyMapper.findAll();
+        if(dailys.size() == 0) {
+            throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
+        }
+        return dailys;
+    }
+
+    //하루식단 게시판 조회(월, 주, 일)
+    public List<DailysResponseDto> findCreateDailys(LocalDateTime start,  LocalDateTime end) {
+        List<DailysResponseDto> dailys = dailyMapper.findAllCreate(start, end);
         if(dailys.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }

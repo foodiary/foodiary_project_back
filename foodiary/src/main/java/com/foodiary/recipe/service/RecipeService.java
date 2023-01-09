@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -212,9 +213,19 @@ public class RecipeService {
         userService.verifyUpdate(recipeMapper.updateRecipeComment(recipeCommentEditRequestDto));
     }
 
+
     //레시피 게시판 조회
     public List<RecipesResponseDto> findRecipes() {
         List<RecipesResponseDto> recipes = recipeMapper.findAll();
+        if (recipes.size() == 0) {
+            throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
+        }
+        return recipes;
+    }
+
+    //레시피 게시판 조회 (일, 주, 월)
+    public List<RecipesResponseDto> findCreateRecipes(LocalDateTime start, LocalDateTime end) {
+        List<RecipesResponseDto> recipes = recipeMapper.findCreateAll(start, end);
         if (recipes.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }

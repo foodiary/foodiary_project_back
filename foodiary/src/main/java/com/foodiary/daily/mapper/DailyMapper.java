@@ -4,6 +4,7 @@ import com.foodiary.daily.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,8 @@ public interface DailyMapper {
     Optional<Integer> findByMemberIdAndDailyId(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
 
     List<DailyCommentDetailsResponseDto> findAllDailyComment(@Param("dailyId") int dailyId);
+
+    List<DailysResponseDto> findAllCreate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     List<DailysResponseDto> findAll();
 
