@@ -1,9 +1,10 @@
 package com.foodiary.recipe.model;
 
-import java.time.LocalDateTime;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Getter
@@ -25,6 +26,10 @@ public class RecipeDetailsResponseDto {
 
     @ApiModelProperty(value="게시글 작성자", required = true)
     private String recipeWriter;
+
+    @Setter
+    @ApiModelProperty(value="재료", required = true)
+    private List<IngredientResponseDto> ingredient;
 
     @Setter
     @ApiModelProperty(value="게시글 이미지 경로1", required = false)

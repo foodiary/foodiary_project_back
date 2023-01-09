@@ -3,8 +3,6 @@ package com.foodiary.daily.mapper;
 import com.foodiary.daily.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,13 +44,7 @@ public interface DailyMapper {
 
     Optional<Integer> findByDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
-    Optional<Integer> findByDailyLikeId(@Param("dailyLikeId") int dailyLikeId);
-
     Optional<Integer> findByMemberIdAndDailyId(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
-
-    String findByDailyImage(@Param("dailyId") int dailyId);
-
-    List<Integer> findAllDailyId(@Param("dailyId") int dailyId);
 
     List<DailyCommentDetailsResponseDto> findAllDailyComment(@Param("dailyId") int dailyId);
 

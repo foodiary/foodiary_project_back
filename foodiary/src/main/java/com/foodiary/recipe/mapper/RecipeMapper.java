@@ -1,6 +1,5 @@
 package com.foodiary.recipe.mapper;
 
-import com.foodiary.daily.model.*;
 import com.foodiary.recipe.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,6 +21,8 @@ public interface RecipeMapper {
     int saveRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
 
     int saveImage(RecipeImageDto imageDto);
+
+    int saveIngredient(IngredientRequestDto ingredientRequestDto);
 
 
 
@@ -45,15 +46,11 @@ public interface RecipeMapper {
 
     Optional<Integer> findByRecipeScrap(@Param("recipeId") int recipeId, @Param("memberId") int memberId);
 
-    Optional<Integer> findByRecipeLikeId(@Param("recipeLikeId") int recipeLikeId);
-
     Optional<Integer> findByMemberIdAndRecipeId(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
 
     Optional<Integer> findByRecipeId1(@Param("path1") String path);
 
-    String findByRecipeImage(@Param("recipeId") int recipeId);
-
-    List<Integer> findAllRecipeId(@Param("recipeId") int recipeId);
+    List<IngredientResponseDto> findAllIngredient(@Param("recipeId") int recipeId);
 
     List<RecipeCommentDetailsResponseDto> findAllRecipeComment(@Param("recipeId") int recipeId);
 
@@ -72,6 +69,8 @@ public interface RecipeMapper {
     int deleteRecipeScrap(@Param("recipeId") int recipeId, @Param("scrapId") int scrapId);
 
     int deleteRecipeImage(@Param("recipeId") int recipeId, @Param("path") String path);
+
+    int deleteIngredient(@Param("recipeId") int recipeId);
 
 
 }

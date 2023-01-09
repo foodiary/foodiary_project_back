@@ -13,6 +13,10 @@
         WHERE FOOD_ID = #{foodId}
     </select>
 
+    <select id="findAllFood" resultType="com.foodiary.food.model.FoodDto">
+        SELECT * FROM TB_Food
+    </select>
+
     <select id="findMemberFoodByCreateAt" resultType="Integer">
         SELECT MEMBER_FOOD_ID FROM TB_MEMBER_FOOD
         WHERE MEMBER_FOOD_CREATE <![CDATA[>=]]> #{start} AND MEMBER_FOOD_CREATE <![CDATA[<=]]> #{end} AND MEMBER_ID = #{memberId};

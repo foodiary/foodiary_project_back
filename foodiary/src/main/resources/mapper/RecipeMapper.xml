@@ -14,8 +14,8 @@
 
     <!--    댓글 추가-->
     <insert id="saveRecipeComment">
-        INSERT INTO TB_RECIPE_COMMENT (MEMBER_ID, RECIPE_ID, RECIPE_COMMENT_BODY, RECIPE_COMMENT_CREATE, RECIPE_COMMENT_UPDATE)
-        VALUES (#{memberId}, #{recipeId}, #{content}, now(), now());
+        INSERT INTO TB_RECIPE_COMMENT (MEMBER_ID, RECIPE_ID, RECIPE_COMMENT_BODY, RECIPE_COMMENT_WRITER, RECIPE_COMMENT_CREATE, RECIPE_COMMENT_UPDATE)
+        VALUES (#{memberId}, #{recipeId}, #{content}, #{writer}, now(), now());
     </insert>
 
 
@@ -32,9 +32,16 @@
         VALUES (#{memberId}, #{recipeId});
     </insert>
 
+
+    <!--    게시글 이미지 저장-->
     <insert id="saveImage">
         INSERT INTO TB_RECIPE_IMAGE (MEMBER_ID, RECIPE_ID, RECIPE_FILE_ORIGINAL_NAME, RECIPE_FILE_FULL_NAME, RECIPE_FILE_SAVE_NAME, RECIPE_FILE_PATH, RECIPE_FILE_SIZE, RECIPE_FILE_TYPE, RECIPE_FILE_CREATE, RECIPE_FILE_UPDATE)
         VALUES (#{memberId}, #{recipeId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
+    </insert>
+
+    <insert id="saveIngredient">
+        INSERT INTO TB_INGREDIENT (RECIPE_ID, INGREDIENT, DOSE)
+        VALUES (#{recipeId}, #{ingredient}, #{dose});
     </insert>
 
 
@@ -86,6 +93,7 @@ WHERE RECIPE_ID = #{recipeId};
            (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
            (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
     FROM TB_RECIPE AS r
+    ORDER BY r.RECIPE_ID DESC
 </select>
 
 
@@ -125,6 +133,12 @@ WHERE  RECIPE_ID = #{recipeId}
 <select id="findAllRecipeComment" resultType="com.foodiary.recipe.model.RecipeCommentDetailsResponseDto">
 SELECT * FROM TB_RECIPE_COMMENT
 WHERE  RECIPE_ID = #{recipeId}
+</select>
+
+        <!--    음식 재료 조회-->
+<select id="findAllIngredient" resultType="com.foodiary.recipe.model.IngredientResponseDto">
+    SELECT INGREDIENT, DOSE FROM TB_INGREDIENT
+    WHERE  RECIPE_ID = #{recipeId}
 </select>
 
 
@@ -203,6 +217,11 @@ WHERE RECIPE_ID = #{recipeId} AND MEMBER_RECIPE_BOARDSCRAP_ID = #{scrapId}
 <delete id="deleteRecipeImage">
     DELETE FROM TB_RECIPE_IMAGE
     WHERE RECIPE_ID = #{recipeId} AND RECIPE_FILE_PATH = #{path}
+</delete>
+
+<delete id="deleteIngredient">
+    DELETE FROM TB_INGREDIENT
+    WHERE RECIPE_ID = #{recipeId}
 </delete>
 
 </mapper>

@@ -30,7 +30,6 @@ public class FoodService {
     private final RedisDao redisDao;
     private final MemberMapper memberMapper;
     private final UserService userService;
-    private ObjectMapper objectMapper;
 
 
     public FoodDto randomFood(int memberId) {
@@ -66,11 +65,12 @@ public class FoodService {
     public MenuRecommendResponseDto weekRecommendMenu(int memberId) throws JsonProcessingException {
 
         List<Integer> hateFoodList = foodMapper.findAllHateFood(memberId);
+        List<FoodDto> foodList = foodMapper.findAllFood();
         List<FoodDto> list = new ArrayList<>();
 
         //중복 음식 방지 로직
         for(int i=0; i<14; i++) {
-            list.add(recommendFood());
+            list.add(recommendFood(foodList));
             for(int j=0; j<i; j++){
                 if(list.get(i).getFoodId() == list.get(j).getFoodId()){
                     log.info("중복된 숫자가 나왔습니다.");
@@ -119,13 +119,13 @@ public class FoodService {
         redisDao.setValues(member.getMemberNickName(), saveMenu);
 
          String findMenu = redisDao.getValues(member.getMemberNickName());
-        MenuRecommendResponseDto result = objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
-        return result;
+        return objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
     }
 
 
 
     public MenuRecommendResponseDto findMenuRecommendWeek(int memberId) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
         MemberDto member = memberMapper.findByMemberId(memberId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         String findMenu = redisDao.getValues(member.getMemberNickName());
@@ -134,7 +134,7 @@ public class FoodService {
 
 
     public void patchLikeFood(int memberFoodId, int memberId){
-//        userService.checkUser(memberId);
+        userService.checkUser(memberId);
         foodMapper.findMemberFoodById(memberFoodId)
                         .orElseThrow(() -> new BusinessLogicException(ExceptionCode.LIKE_NOT_FOUND));
         int updateCheck = foodMapper.updateFoodLike(memberFoodId);
@@ -142,16 +142,16 @@ public class FoodService {
     }
 
     public void patchHateFood(int memberFoodId, int memberId){
-//        userService.checkUser(memberId);
+        userService.checkUser(memberId);
         foodMapper.findMemberFoodById(memberFoodId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.LIKE_NOT_FOUND));
         int updateCheck = foodMapper.updateFoodHate(memberFoodId);
         userService.verifyUpdate(updateCheck);
     }
     
-    public FoodDto recommendFood() {
+    public FoodDto recommendFood(List<FoodDto> foodDto) {
         Random random = new Random();
         Integer randomIndex = random.nextInt(685) + 1;
-        return foodMapper.findById(randomIndex);
+        return foodDto.get(randomIndex);
     }
 }

@@ -47,6 +47,7 @@ public class SchedulerController {
     public void menuScheduler() {
 
         List<MemberDto> memberList = memberMapper.findAll();
+        List<FoodDto> FoodList = foodMapper.findAllFood();
 
         for (int k = 1; k <= memberList.size() ; k++) {
             List<Integer> hateFoodList = foodMapper.findAllHateFood(k);
@@ -54,7 +55,7 @@ public class SchedulerController {
 
             //중복 음식 방지 로직
             for(int i=0; i<14; i++) {
-                list.add(foodService.recommendFood());
+                list.add(foodService.recommendFood(FoodList));
                 for(int j=0; j<i; j++){
                     if(list.get(i).getFoodId() == list.get(j).getFoodId()){
                         log.info("중복된 숫자가 나왔습니다.");

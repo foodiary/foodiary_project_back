@@ -34,6 +34,8 @@ public interface FoodMapper {
 
     List<FoodDto> findByFoodCetegory(String cetegory);
 
+    List<FoodDto> findAllFood();
+
     Optional<Integer> findMemberFoodById(@Param("memberFoodId") int memberFoodId);
 
     FoodDto findById(@Param("foodId") int foodId);

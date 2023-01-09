@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,6 +26,9 @@ public class RecipeEditRequestDto {
 
     @ApiModelProperty(value="게시글 내용", required = true)
     private String content;
+
+    @ApiModelProperty(value="레시피 재료", required = true)
+    private List<IngredientRequestDto> ingredients;
 
     @ApiModelProperty(value="이미지 경로1", required = true)
     @Setter private String path1;

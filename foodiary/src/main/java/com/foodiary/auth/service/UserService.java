@@ -5,26 +5,20 @@ import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.model.*;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
-import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
-
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -48,11 +42,12 @@ public class UserService {
         if(providerId.equals("GOOGLE")){
             GoogleUserDto googleUser = oAuthService.getGoogleUserInfo(userInfoResponse);
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(googleUser.email) == null){
+            if (memberMapper.findByEmail(googleUser.email).isEmpty()){
+                // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(googleUser.email, googleUser.picture, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            else{
+            } else{
+                // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(googleUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -60,11 +55,12 @@ public class UserService {
         else if (providerId.equals("NAVER")) {
             NaverUserDto naverUser = oAuthService.getNaverUserInfo(userInfoResponse);
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(naverUser.email) == null){
+            if (memberMapper.findByEmail(naverUser.email).isEmpty()){
+                // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(naverUser.email, naverUser.profile_image, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            else{
+            } else{
+                // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(naverUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -72,12 +68,13 @@ public class UserService {
         return null;
     }
     private TokenResponseDto createTokenResponse(String email) throws Exception {
-        MemberDto member = verifyMember(email);
-        log.info(member.getMemberEmail());
-        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
-        tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
-        tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
-        return tokenResponseDto;
+
+            MemberDto member = verifyMember(email);
+            log.info(member.getMemberEmail());
+            TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
+            tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
+            tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
+            return tokenResponseDto;
     }
 
     public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {

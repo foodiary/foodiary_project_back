@@ -1,17 +1,16 @@
 package com.foodiary.recipe.model;
 
-import javax.validation.constraints.NotBlank;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class    RecipeWriteRequestDto {
+public class RecipeWriteRequestDto {
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int recipeId;
@@ -22,6 +21,9 @@ public class    RecipeWriteRequestDto {
     @NotBlank(message = "제목이 비어있습니다.")
     @ApiModelProperty(value="게시글 제목", required = true)
     private String title;
+
+    @ApiModelProperty(value="레시피 재료", required = true)
+    private List<IngredientRequestDto> ingredients;
 
     @NotBlank(message = "내용이 비어있습니다.")
     @ApiModelProperty(value="게시글 내용", required = true)

@@ -14,8 +14,8 @@
 
 <!--    댓글 추가-->
     <insert id="saveDailyComment">
-        INSERT INTO TB_DAILY_COMMENT (MEMBER_ID, DAILY_ID, DAILY_COMMENT_BODY, DAILY_COMMENT_CREATE, DAILY_COMMENT_UPDATE)
-        VALUES (#{memberId}, #{dailyId}, #{content}, now(), now());
+        INSERT INTO TB_DAILY_COMMENT (MEMBER_ID, DAILY_ID, DAILY_COMMENT_BODY, DAILY_COMMENT_WRITER, DAILY_COMMENT_CREATE, DAILY_COMMENT_UPDATE)
+        VALUES (#{memberId}, #{dailyId}, #{content}, #{writer}, now(), now());
     </insert>
 
 
@@ -83,6 +83,7 @@
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
+        ORDER BY d.DAILY_ID DESC
     </select>
 
 

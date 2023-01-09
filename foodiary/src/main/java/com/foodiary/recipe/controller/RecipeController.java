@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,9 +44,16 @@ public class RecipeController {
         public ResponseEntity<?> RecipeWrite(
                 @RequestPart(value = "recipeWrite") @Valid RecipeWriteRequestDto recipeWriteRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage", required = false) List<MultipartFile> recipeImage
+                @RequestPart(value = "recipeImage1", required = true) MultipartFile recipeImage1,
+                @RequestPart(value = "recipeImage2", required = false) MultipartFile recipeImage2,
+                @RequestPart(value = "recipeImage3", required = false) MultipartFile recipeImage3
         ) throws Exception {
+                List<MultipartFile> recipeImage = new ArrayList<>();
+                if(recipeImage1 != null) recipeImage.add(recipeImage1);
+                if(recipeImage2 != null) recipeImage.add(recipeImage2);
+                if(recipeImage3 != null) recipeImage.add(recipeImage3);
 
+                log.info( recipeWriteRequestDto.getIngredients().get(0).getIngredient());
                 recipeService.addRecipe(recipeWriteRequestDto, recipeImage);
                 return new ResponseEntity<>("OK", HttpStatus.CREATED);
         }
@@ -68,9 +76,17 @@ public class RecipeController {
                 @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
                 @RequestPart(value = "recipeEdit") RecipeEditRequestDto recipeEditRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage", required = true) List<MultipartFile> recipeImage
+                @RequestPart(value = "recipeImage1", required = true) MultipartFile recipeImage1,
+                @RequestPart(value = "recipeImage2", required = false) MultipartFile recipeImage2,
+                @RequestPart(value = "recipeImage3", required = false) MultipartFile recipeImage3
 
         ) throws Exception {
+
+                List<MultipartFile> recipeImage = new ArrayList<>();
+                if(recipeImage1 != null) recipeImage.add(recipeImage1);
+                if(recipeImage2 != null) recipeImage.add(recipeImage2);
+                if(recipeImage3 != null) recipeImage.add(recipeImage3);
+
                 recipeEditRequestDto.setRecipeId(recipeId);
                 recipeEditRequestDto.setMemberId(memberId);
                 recipeService.modifyRecipe(recipeEditRequestDto, recipeImage);
