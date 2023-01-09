@@ -219,17 +219,18 @@
         WHERE RECIPE_COMMENT_ID = #{recipeComments}
     </delete>
 
-    <update id="updateRecipeComment">
-        UPDATE TB_RECIPE_COMMENT
-        SET RECIPE_COMMENT_BODY = #{comment}, RECIPE_COMMENT_UPDATE = now()
-        WHERE RECIPE_COMMENT_ID = #{dailyCommentId};
-    </update>
-
     <update id="updateDailyComment">
         UPDATE TB_DAILY_COMMENT
         SET DAILY_COMMENT_BODY = #{comment}, DAILY_COMMENT_UPDATE = now()
-        WHERE DAILY_COMMENT_ID = #{recipeComments};
+        WHERE DAILY_COMMENT_ID = #{dailyCommentId};
     </update>
+
+    <update id="updateRecipeComment">
+        UPDATE TB_RECIPE_COMMENT
+        SET RECIPE_COMMENT_BODY = #{comment}, RECIPE_COMMENT_UPDATE = now()
+        WHERE RECIPE_COMMENT_ID = #{recipeCommentId};
+    </update>
+
 
     <select id="findByNotice" resultType="com.foodiary.member.model.MemberNoticeResponseDto">
         SELECT * FROM TB_NOTICE 
@@ -308,4 +309,29 @@
         WHERE MEMBER_FOOD_ID = #{memberFoodId};
     </update>
     
+
+    <select id="findByDailyCommentId" resultType="com.foodiary.member.model.MemberDailyCommentDetailResponseDto">
+        SELECT tdc.DAILY_COMMENT_ID, tdc.DAILY_ID, tdc.MEMBER_ID, 
+    	tdc.DAILY_COMMENT_WRITER, tdc.DAILY_COMMENT_BODY, 
+    	tdc.DAILY_COMMENT_CREATE, td.DAILY_TITLE,
+        (SELECT COUNT(*) from TB_MEMBER_SCRAP_DAILY tmsd WHERE tmsd.DAILY_ID=td.DAILY_ID) AS DAILY_SCRAP,
+        (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE 
+        FROM TB_DAILY td 
+            LEFT JOIN TB_DAILY_COMMENT tdc
+            ON td.DAILY_ID = tdc.DAILY_ID
+        WHERE td.DAILY_ID = #{dailyId} AND DAILY_YN = 'N' AND tdc.DAILY_COMMENT_ID = #{dailyCommentId}
+
+	</select>
+
+    <select id="findByRecipeCommentId" resultType="com.foodiary.member.model.MemberRecipeCommentDetailResponseDto">
+        SELECT tdc.RECIPE_COMMENT_ID, tdc.RECIPE_ID, tdc.MEMBER_ID, 
+    	tdc.RECIPE_COMMENT_WRITER, tdc.RECIPE_COMMENT_BODY, 
+    	tdc.RECIPE_COMMENT_CREATE, td.RECIPE_TITLE,
+        (SELECT COUNT(*) from TB_MEMBER_SCRAP_RECIPE tmsd WHERE tmsd.RECIPE_ID=td.RECIPE_ID) AS RECIPE_SCRAP,
+        (SELECT COUNT(*) from TB_RECIPE_LIKE tdl WHERE tdl.RECIPE_ID=td.RECIPE_ID) AS RECIPE_LIKE 
+        FROM TB_RECIPE td 
+            LEFT JOIN TB_RECIPE_COMMENT tdc
+            ON td.RECIPE_ID = tdc.RECIPE_ID
+        WHERE td.RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N' AND tdc.RECIPE_COMMENT_ID = #{recipeCommentId}
+	</select>
 </mapper>

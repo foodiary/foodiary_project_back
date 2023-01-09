@@ -107,10 +107,13 @@ public class SecurityConfig {
                 // "/member/like/recipe/{memberId}",
                 // "/member/comment/daily/{memberId}",
                 // "/member/comment/recipe/{memberId}",
+                // "/member/comment/daily/{memberId}/{dailyId}/{dailyCommentId}",
+                // "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}",
                 // "/question/{memberId}",
                 // "/question/{memberId}/{questionId}",
                 // "/member/food/{memberId}",
                 // "/member/food/{memberId}/{memberFoodId}",
+
 
                 // 권한 필요x url
                 // "/member/find/password",

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.foodiary.daily.model.DailyDto;
+import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
 import com.foodiary.member.model.MemberDailyLikeResponseDto;
 import com.foodiary.member.model.MemberDailyScrapResponseDto;
@@ -22,6 +23,7 @@ import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
+import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
 import com.foodiary.member.model.MemberRecipeLikeResponseDto;
 import com.foodiary.member.model.MemberRecipeScrapResponseDto;
@@ -75,14 +77,6 @@ public interface MemberMapper {
 
     List<MemberRecipeLikeResponseDto> findByRecipeLike(@Param("id") int id);
 
-    int deleteDailyScrap(@Param("scrapId") int likeId);
-
-    int deleteRecipeScrap(@Param("scrapId") int likeId);
-
-    int deleteDailyLike(@Param("likeId") int likeId);
-
-    int deleteRecipeLike(@Param("likeId") int likeId);
-
     MemberEditResponseDto findByMemberIdEdit(@Param("memberId") int memberId);
 
     void updateMemberImage(@Param("memberId") int memberId);
@@ -90,14 +84,6 @@ public interface MemberMapper {
     int deleteMember(@Param("id") int id);
     
     int updateMemberPw(@Param("email") String email, @Param("pw") String pw);
-
-    int deleteDailyComment(@Param("dailyCommentId") int dailyCommentId);
-
-    int deleteRecipeComment(@Param("recipeComments") int recipeComments);
-
-    int updateDailyComment(@Param("dailyCommentId") int dailyCommentId, @Param("comment") String comment);
-
-    int updateRecipeComment(@Param("recipeComments") int recipeComments, @Param("comment") String comment);
 
     List<MemberNoticeResponseDto> findByNotice();
 
@@ -124,5 +110,10 @@ public interface MemberMapper {
     List<MemberFoodsResponseDto> findByFoods(@Param("memberId") int memberId);
 
     int updateMemberFood(@Param("memberFoodId") int memberFoodId, @Param("like") String like);
+
+    Optional<MemberDailyCommentDetailResponseDto> findByDailyCommentId(@Param("dailyId") int dailyId, @Param("dailyCommentId") int dailyCommentId);
+
+    Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
+
 }
 

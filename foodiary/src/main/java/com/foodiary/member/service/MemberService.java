@@ -24,8 +24,7 @@ import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
-import com.foodiary.member.model.MemberCommentRequestDto;
-import com.foodiary.member.model.MemberCommentResponseDto;
+import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
 import com.foodiary.member.model.MemberDailyLikeResponseDto;
 import com.foodiary.member.model.MemberDailyScrapResponseDto;
@@ -35,21 +34,19 @@ import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberImageDto;
-import com.foodiary.member.model.MemberLikeResponseDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
+import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
 import com.foodiary.member.model.MemberRecipeLikeResponseDto;
 import com.foodiary.member.model.MemberRecipeScrapResponseDto;
-import com.foodiary.member.model.MemberScrapResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.recipe.model.RecipeDto;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -281,18 +278,6 @@ public class MemberService {
         return memberRecipeScrapResponseDtoList;
     }
 
-    public void deleteScrapDaily(int scrapId, int memberId) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.deleteDailyScrap(scrapId));
-    }
-
-    public void deleteScrapRecipe(int scrapId, int memberId) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.deleteRecipeScrap(scrapId));
-    }
-
     // 하루 식단 본인이 좋아요 한 글
     public List<MemberDailyLikeResponseDto> detailDailyLike(int memberId) {
         userService.checkUser(memberId);
@@ -312,18 +297,6 @@ public class MemberService {
         postSize(memberRecipeLikeResponseDtoList.size());
 
         return memberRecipeLikeResponseDtoList;
-    }
-
-    public void deleteLikeDaily(int likeId, int memberId) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.deleteDailyLike(likeId));
-    }
-
-    public void deleteLikeRecipe(int likeId, int memberId) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.deleteRecipeLike(likeId));
     }
 
     public MemberDto findByMemberIdInfo(int memberId) {
@@ -426,29 +399,26 @@ public class MemberService {
         return recipeList;
     }
 
-    public void commentDailyEdit(int memberId, int dailyCommentId, MemberCommentRequestDto memberCommentRequestDto) {
-        userService.checkUser(memberId);
+        // 하루 식단 본인이 쓴 댓글 상세조회
+        public MemberDailyCommentDetailResponseDto commentDailyDetail(int memberId, int dailyId, int dailyCommentId) {
+            // userService.checkUser(memberId);
+    
+            MemberDailyCommentDetailResponseDto memberDailyCommentDetailResponseDto = mapper.findByDailyCommentId(dailyId, dailyCommentId)
+                            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
+            
+            return memberDailyCommentDetailResponseDto;
+        }
+    
+        // 레시피 본인이 쓴 댓글 상세조회
+        public MemberRecipeCommentDetailResponseDto commentRecipeDetail(int memberId, int recipeId, int recipeCommentId) {
+            // userService.checkUser(memberId);
+    
+            MemberRecipeCommentDetailResponseDto memberRecipeCommentDetailResponseDto = mapper.findByRecipeCommentId(recipeId, recipeCommentId)
+                            .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
+    
+            return memberRecipeCommentDetailResponseDto;
+        }
 
-        // checkInsertUpdateDelete(mapper.updateDailyComment(dailyCommentId, memberCommentRequestDto.getComment()));
-    }
-
-    public void commentRecipeEdit(int memberId, int recipeComments, MemberCommentRequestDto memberCommentRequestDto) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.updateRecipeComment(recipeComments, memberCommentRequestDto.getComment()));
-    }
-
-    public void commentDailyDelete(int memberId, int dailyCommentId) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.deleteDailyComment(dailyCommentId));
-    }
-
-    public void commentRecipeDelete(int memberId, int recipeComments) {
-        userService.checkUser(memberId);
-
-        // checkInsertUpdateDelete(mapper.deleteRecipeComment(recipeComments));
-    }
 
     // 공지사항 보기
     public List<MemberNoticeResponseDto> noticeList() {

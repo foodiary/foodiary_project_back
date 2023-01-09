@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
@@ -21,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.foodiary.daily.model.DailyDto;
-import com.foodiary.common.email.EmailService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
-import com.foodiary.common.s3.S3Service;
+import com.foodiary.daily.model.DailyDto;
 import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
@@ -33,7 +30,7 @@ import com.foodiary.member.model.MemberCheckIdEmailRequestDto;
 import com.foodiary.member.model.MemberCheckIdRequestDto;
 import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
-import com.foodiary.member.model.MemberCommentRequestDto;
+import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
 import com.foodiary.member.model.MemberDailyLikeResponseDto;
 import com.foodiary.member.model.MemberDailyScrapResponseDto;
@@ -47,6 +44,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
+import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
 import com.foodiary.member.model.MemberRecipeLikeResponseDto;
 import com.foodiary.member.model.MemberRecipeScrapResponseDto;
@@ -559,87 +557,48 @@ public class MemberController {
         return new ResponseEntity<>(recipeList, HttpStatus.OK);
     }
 
-    // @Operation(summary = "member comment list", description = "데일리 회원(본인)이 쓴 댓글 수정")
-    // @ApiResponses({ 
-    //         @ApiResponse(responseCode = "200", description = "OK"),
-    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    // })
-    // @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    // @ResponseBody
-    // @PatchMapping(value = "/member/comment/daily/{dailyCommentId}/{memberId}")
-    // public ResponseEntity<String> dailyCommentsEdit(
-    //     @PathVariable @ApiParam(value = "데일리 댓글 시퀀스", required = true) int dailyCommentId,
-    //     @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
-    //     @RequestBody MemberCommentRequestDto memberCommentRequestDto
-    // ) throws Exception {
+    @Operation(summary = "member comment list", description = "회원(본인)이 쓴 하루식단 댓글 상세 조회")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @GetMapping(value = "/member/comment/daily/{memberId}/{dailyId}/{dailyCommentId}")
+    public ResponseEntity<MemberDailyCommentDetailResponseDto> dailyCommentsDetail(
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int dailyId,
+        @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int dailyCommentId
+    ) throws Exception {
 
-    //     memberService.commentDailyEdit(memberId, dailyCommentId, memberCommentRequestDto);
+        MemberDailyCommentDetailResponseDto memberDailyCommentDetailResponseDto = memberService.commentDailyDetail(memberId, dailyId, dailyCommentId);
 
-    //     return new ResponseEntity<>("OK", HttpStatus.OK);
-    // }
+        return new ResponseEntity<>(memberDailyCommentDetailResponseDto, HttpStatus.OK);
+    }
 
-    // @Operation(summary = "member comment list", description = "레시피 회원(본인)이 쓴 댓글 수정")
-    // @ApiResponses({ 
-    //         @ApiResponse(responseCode = "200", description = "OK"),
-    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    // })
-    
-    // @ResponseBody
-    // @PatchMapping(value = "/member/comment/recipe/{recipeCommentId}/{memberId}")
-    // public ResponseEntity<String> recipeCommentsEdit(
-    //     @PathVariable @ApiParam(value = "레피시 댓글 시퀀스", required = true) int recipeComments,
-    //     @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
-    //     @RequestBody MemberCommentRequestDto memberCommentRequestDto
-    // ) throws Exception {
+    @Operation(summary = "member comment list", description = "회원(본인)이 쓴 레시피 댓글 상세 조회")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @ResponseBody
+    @GetMapping(value = "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}")
+    public ResponseEntity<MemberRecipeCommentDetailResponseDto> recipeCommentsDetail(
+        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
+        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,
+        @PathVariable @ApiParam(value = "댓글 시퀀스", required = true) int recipeCommentId
+    ) throws Exception {
 
-    //     memberService.commentRecipeEdit(memberId, recipeComments, memberCommentRequestDto);
+        MemberRecipeCommentDetailResponseDto memberRecipeCommentDetailResponseDto = memberService.commentRecipeDetail(memberId, recipeId, recipeCommentId);
 
-    //     return new ResponseEntity<>("OK", HttpStatus.OK);
-    // }
+        return new ResponseEntity<>(memberRecipeCommentDetailResponseDto, HttpStatus.OK);
+    }
 
-    // @Operation(summary = "member comment list", description = "데일리 회원(본인)이 쓴 댓글 삭제")
-    // @ApiResponses({ 
-    //         @ApiResponse(responseCode = "200", description = "OK"),
-    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    // })
-    
-    // @ResponseBody
-    // @DeleteMapping(value = "/member/comment/daily/{dailyCommentId}/{memberId}")
-    // public ResponseEntity<String> dailyCommentsDelete(
-    //     @PathVariable @ApiParam(value = "데일리 댓글 시퀀스", required = true) int dailyCommentId,
-    //     @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId
-    // ) throws Exception {
-
-    //     memberService.commentDailyDelete(memberId, dailyCommentId);
-
-    //     return new ResponseEntity<>("OK", HttpStatus.OK);
-    // }
-
-    // @Operation(summary = "member comment list", description = "레시피 회원(본인)이 쓴 댓글 삭제")
-    // @ApiResponses({ 
-    //         @ApiResponse(responseCode = "200", description = "OK"),
-    //         @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-    //         @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-    //         @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    // })
-    
-    // @ResponseBody
-    // @DeleteMapping(value = "/member/comment/recipe/{recipeCommentId}/{memberId}")
-    // public ResponseEntity<String> recipeCommentsDelete(
-    //     @PathVariable @ApiParam(value = "레피시 댓글 시퀀스", required = true) int recipeComments,
-    //     @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId
-    // ) throws Exception {
-
-    //     memberService.commentRecipeDelete(memberId, recipeComments);
-
-    //     return new ResponseEntity<>("OK", HttpStatus.OK);
-    // }
 
     @Operation(summary = "notice list", description = "공지사항 보기")
     @ApiResponses({ 
