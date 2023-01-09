@@ -1,20 +1,27 @@
 package com.foodiary.auth.service;
 
+import java.security.MessageDigest;
+import java.time.LocalDateTime;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import com.foodiary.auth.jwt.JwtProvider;
-import com.foodiary.auth.model.*;
-import com.foodiary.member.model.MemberDto;
+import com.foodiary.auth.model.GoogleUserDto;
+import com.foodiary.auth.model.NaverUserDto;
+import com.foodiary.auth.model.NewUserResponseDto;
+import com.foodiary.auth.model.OAuthTokenDto;
+import com.foodiary.auth.model.TokenResponseDto;
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.member.mapper.MemberMapper;
+import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.security.MessageDigest;
-import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -61,7 +68,8 @@ public class UserService {
         return null;
     }
     private TokenResponseDto createTokenResponse(String email) throws Exception {
-        MemberDto member = memberMapper.findByEmail(email);
+        // TODO : 임의로 변경, 로직 검토 부탁드려요 민택님
+        MemberDto member = memberMapper.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         log.info(member.getMemberEmail());
         TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(email);
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
@@ -84,7 +92,8 @@ public class UserService {
 
 
     private boolean isJoinedUser(GoogleUserDto googleUser) {
-        MemberDto member = memberMapper.findByEmail(googleUser.getEmail());
+        // TODO : 임의로 변경, 로직 검토 부탁드려요 민택님
+        MemberDto member = memberMapper.findByEmail(googleUser.getEmail()).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         log.info("Joined User: {}", member);
         return member == null;
     }

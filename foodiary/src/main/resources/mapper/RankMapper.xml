@@ -5,30 +5,62 @@
 
     <select id="rankWeekList" resultType="com.foodiary.rank.model.RanksResponseDto">
         SELECT tr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
-            tr.RECIPE_PATH1, RECIPE_LIKE, tr.RECIPE_VIEW, 
-            RANK() OVER (ORDER BY RECIPE_LIKE DESC) AS RECIPE_RANK
-        FROM (
+            tr.RECIPE_PATH1, tr.RECIPE_VIEW, RECIPE_LIKE
+        FROM  (
             SELECT RECIPE_ID, COUNT(*) AS RECIPE_LIKE 
             FROM TB_RECIPE_LIKE trl 
             GROUP BY RECIPE_ID 
-        ) AS counts RIGHT JOIN TB_RECIPE tr 
-        ON counts.RECIPE_ID = tr.RECIPE_ID 
-        WHERE NOT RECIPE_LIKE is NULL AND tr.RECIPE_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK ) AND NOW()
-        LIMIT 20;
+            ) AS counts RIGHT JOIN TB_RECIPE tr 
+            ON counts.RECIPE_ID = tr.RECIPE_ID
+            LEFT JOIN TB_COMMON tc
+            ON tr.RECIPE_ID = tc.RANK_WEEK_RECIPE_ID    
+        WHERE NOT tc.RANK_WEEK_RECIPE_ID is NULL;
     </select>
 
     <select id="rankMonthList" resultType="com.foodiary.rank.model.RanksResponseDto">
         SELECT tr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
-            tr.RECIPE_PATH1, RECIPE_LIKE, tr.RECIPE_VIEW, 
-            RANK() OVER (ORDER BY RECIPE_LIKE DESC) AS RECIPE_RANK
-        FROM (
+            tr.RECIPE_PATH1, tr.RECIPE_VIEW, RECIPE_LIKE
+        FROM  (
             SELECT RECIPE_ID, COUNT(*) AS RECIPE_LIKE 
             FROM TB_RECIPE_LIKE trl 
             GROUP BY RECIPE_ID 
-        ) AS counts RIGHT JOIN TB_RECIPE tr 
-        ON counts.RECIPE_ID = tr.RECIPE_ID 
-        WHERE NOT RECIPE_LIKE is NULL AND tr.RECIPE_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 MONTH ) AND NOW()
-        LIMIT 20;
+            ) AS counts RIGHT JOIN TB_RECIPE tr 
+            ON counts.RECIPE_ID = tr.RECIPE_ID
+            LEFT JOIN TB_COMMON tc
+            ON tr.RECIPE_ID = tc.RANK_MONTH_RECIPE_ID    
+        WHERE NOT tc.RANK_MONTH_RECIPE_ID is NULL;
     </select>
+
+    <insert id="weekWrite">
+        INSERT INTO TB_COMMON (RANK_WEEK_RECIPE_ID) (
+	        SELECT tr.RECIPE_ID
+            FROM (
+                SELECT RECIPE_ID, COUNT(*) AS RECIPE_LIKE 
+                FROM TB_RECIPE_LIKE trl 
+                GROUP BY RECIPE_ID 
+            ) AS counts RIGHT JOIN TB_RECIPE tr 
+            ON counts.RECIPE_ID = tr.RECIPE_ID 
+            WHERE NOT RECIPE_LIKE is NULL AND tr.RECIPE_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK ) AND NOW()
+            ORDER BY RECIPE_LIKE DESC
+            LIMIT 20)
+    </insert>
+
+    <insert id="monthWrite">
+        INSERT INTO TB_COMMON (RANK_MONTH_RECIPE_ID) (
+            SELECT tr.RECIPE_ID
+            FROM (
+                SELECT RECIPE_ID, COUNT(*) AS RECIPE_LIKE 
+                FROM TB_RECIPE_LIKE trl 
+                GROUP BY RECIPE_ID 
+            ) AS counts RIGHT JOIN TB_RECIPE tr 
+            ON counts.RECIPE_ID = tr.RECIPE_ID 
+            WHERE NOT RECIPE_LIKE is NULL AND tr.RECIPE_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 MONTH ) AND NOW()
+            ORDER BY RECIPE_LIKE DESC
+            LIMIT 20)
+    </insert>
+
+    <delete id="rankDelete">
+        DELETE FROM TB_COMMON WHERE RANK_WEEK_RECIPE_ID OR RANK_MONTH_RECIPE_ID
+    </delete>
 
 </mapper>
