@@ -1,4 +1,4 @@
-package com.foodiary.member.model;
+package com.foodiary.recipe.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,11 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRecipeLikeResponseDto {
+public class RecipeDto {
     
-    @ApiModelProperty(value="좋아요 시퀀스", required = true)
-    private int recipeLikeId;
-
     @ApiModelProperty(value="멤버 시퀀스", required = true)
     private int memberId;
 
@@ -27,9 +24,9 @@ public class MemberRecipeLikeResponseDto {
 
     @ApiModelProperty(value="게시글 작성일자", required = true)
     private String recipeCreate;
-    
-    @ApiModelProperty(value="게시글 이미지 경로1", required = true)
-    private String recipePath1;
+
+    @ApiModelProperty(value="게시글 이미지 경로", required = true)
+    private String recipePath;
 
     @ApiModelProperty(value="게시글 댓글 수", required = true)
     private int recipeComment;
@@ -42,8 +39,9 @@ public class MemberRecipeLikeResponseDto {
 
     @ApiModelProperty(value="게시글이 없을 경우", required = true)
     private String no;
-
+    
     public void noAdd() {
         no = "게시글이 없습니다.";
     }
+
 }

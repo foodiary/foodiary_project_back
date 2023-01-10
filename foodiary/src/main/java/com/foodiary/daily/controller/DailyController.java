@@ -48,7 +48,7 @@ public class DailyController {
     public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
+        @RequestPart(value = "dailyImage", required = true) MultipartFile dailyImage
     ) throws Exception {
 
         dailyService.addDaily(dailyWriteRequestDto, dailyImage);

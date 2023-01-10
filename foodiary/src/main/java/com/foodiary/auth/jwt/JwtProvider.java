@@ -116,6 +116,16 @@ public class JwtProvider {
         return (String) claims.get("email");
     }
 
+    // public String getSubjectId(String jws) {
+    //     Claims claims = Jwts.parserBuilder()
+    //             .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+    //             .build()
+    //             .parseClaimsJws(jws)
+    //             .getBody();
+    //     System.out.println(claims.toString());
+    //     return (String) claims.get("memberId");
+    // }
+
 
 
     public Jws<Claims> getClaims(String jws) {

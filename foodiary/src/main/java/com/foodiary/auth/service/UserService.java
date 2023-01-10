@@ -42,7 +42,7 @@ public class UserService {
         if(providerId.equals("GOOGLE")){
             GoogleUserDto googleUser = oAuthService.getGoogleUserInfo(userInfoResponse);
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(googleUser.email).isEmpty()){
+            if (memberMapper.findByEmail(googleUser.email) == null){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(googleUser.email, googleUser.picture, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -55,7 +55,7 @@ public class UserService {
         else if (providerId.equals("NAVER")) {
             NaverUserDto naverUser = oAuthService.getNaverUserInfo(userInfoResponse);
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(naverUser.email).isEmpty()){
+            if (memberMapper.findByEmail(naverUser.email) == null){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(naverUser.email, naverUser.profile_image, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -68,6 +68,7 @@ public class UserService {
         return null;
     }
     private TokenResponseDto createTokenResponse(String email) throws Exception {
+
 
             MemberDto member = verifyMember(email);
             log.info(member.getMemberEmail());
@@ -120,10 +121,11 @@ public class UserService {
 
 
     private boolean isJoinedUser(GoogleUserDto googleUser) {
-        MemberDto member = verifyMember(googleUser.email);
+        MemberDto member = verifyMember(googleUser.getEmail());
         log.info("Joined User: {}", member);
         return member == null;
     }
+
 
     public String encrypt(String s) {
         try {
@@ -180,6 +182,4 @@ public class UserService {
             throw new BusinessLogicException(ExceptionCode.DELETE_ERROR);
         }
     }
-
-
 }

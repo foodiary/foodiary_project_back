@@ -24,6 +24,7 @@ public class MemberDetailsService implements UserDetailsService {
 
     private final MemberMapper memberMapper;
 
+    //TODO : 임시로 수정
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         MemberDto member = memberMapper.findByEmail(userEmail).

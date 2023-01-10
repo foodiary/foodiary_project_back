@@ -49,6 +49,9 @@ dependencies {
 	//page Helper
 	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.2'
 	
+	//page Helper
+	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.2'
+	
 	// SendGrid 설정
 	implementation 'com.sendgrid:sendgrid-java:4.9.3'
 

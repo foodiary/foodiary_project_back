@@ -13,6 +13,9 @@ public class MemberDailyScrapResponseDto {
     @ApiModelProperty(value="스크랩 시퀀스", required = true)
     private int memberDailyScrapId;
 
+    @ApiModelProperty(value="멤버 시퀀스", required = true)
+    private int memberId;
+    
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;
 
@@ -21,6 +24,9 @@ public class MemberDailyScrapResponseDto {
 
     @ApiModelProperty(value="게시글 작성자", required = true)
     private String dailyWriter;
+
+    @ApiModelProperty(value="게시글 작성일자", required = true)
+    private String dailyCreate;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
     private String dailyPath;
@@ -33,5 +39,12 @@ public class MemberDailyScrapResponseDto {
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
     private int dailyLike;
+
+    @ApiModelProperty(value="게시글이 없을 경우", required = true)
+    private String no;
+
+    public void noAdd() {
+        no = "게시글이 없습니다.";
+    }
     
 }

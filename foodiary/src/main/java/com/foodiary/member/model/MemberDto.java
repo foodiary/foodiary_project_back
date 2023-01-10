@@ -28,6 +28,9 @@ public class MemberDto {
 
     private String memberProfile;
 
+    private String memberPath;
+
+    // true면 탈퇴
     private String memberYn;
 
     private LocalDateTime memberCreate;

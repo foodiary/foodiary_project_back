@@ -33,7 +33,7 @@ public class EmailService {
       }
       else if(type.equals("pw")) {
         // 비밀번호 찾기
-        personalization.addDynamicTemplateData("link", "http://localhost:8080/member/password/change?jwt="+info);
+        personalization.addDynamicTemplateData("link", "http://localhost:3000/member/password/change?jwt="+info);
         mail.setTemplateId("d-e0ae8ffef4a74bdea87a1417d02b16c1");
       }
       else {

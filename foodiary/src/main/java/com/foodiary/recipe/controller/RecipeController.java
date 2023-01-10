@@ -47,12 +47,14 @@ public class RecipeController {
         public ResponseEntity<?> RecipeWrite(
                 @RequestPart(value = "recipeWrite") @Valid RecipeWriteRequestDto recipeWriteRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage1", required = false) MultipartFile recipeImage1,
+                @RequestPart(value = "recipeImage1", required = true) MultipartFile recipeImage1,
                 @RequestPart(value = "recipeImage2", required = false) MultipartFile recipeImage2,
                 @RequestPart(value = "recipeImage3", required = false) MultipartFile recipeImage3
         ) throws Exception {
                 List<MultipartFile> recipeImage = new ArrayList<>();
-                if(recipeImage1 != null) recipeImage.add(recipeImage1);
+                if(recipeImage1 != null){
+                        recipeImage.add(recipeImage1);
+                } else throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
                 if(recipeImage2 != null) recipeImage.add(recipeImage2);
                 if(recipeImage3 != null) recipeImage.add(recipeImage3);
 
