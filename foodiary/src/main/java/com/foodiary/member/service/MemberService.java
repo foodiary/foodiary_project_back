@@ -310,9 +310,8 @@ public class MemberService {
         // userService.checkUser(memberId);
 
         deleteImage(memberId);
-        mapper.updateMemberImage(memberId);
-        int a = mapper.updateMemberImage(memberId);
-        System.out.println("int : "+a);
+
+        userService.verifyUpdate(mapper.updateMemberImage(memberId));
 
     }
 
