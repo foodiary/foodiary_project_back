@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.foodiary.daily.model.DailysResponseDto;
-import com.foodiary.recipe.model.RecipesDto;
+import com.foodiary.recipe.model.RecipesResponseDto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class MemberSerchResponseDto {
     private List<DailysResponseDto> dailyList = new ArrayList<>();
 
     @ApiModelProperty(value="사용자 레시피 공유 게시글")
-    private List<RecipesDto> recipeList = new ArrayList<>();
+    private List<RecipesResponseDto> recipeList = new ArrayList<>();
 
     @ApiModelProperty(value="사용자 소개글")
     private String profile;

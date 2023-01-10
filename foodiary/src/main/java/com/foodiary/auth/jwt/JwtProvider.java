@@ -1,32 +1,21 @@
 package com.foodiary.auth.jwt;
 
 
-import java.security.Key;
-import java.time.Duration;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-
+import com.foodiary.auth.model.TokenResponseDto;
+import com.foodiary.member.model.MemberDto;
+import com.foodiary.redis.RedisDao;
+import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.foodiary.auth.model.TokenResponseDto;
-import com.foodiary.member.model.MemberDto;
-import com.foodiary.redis.RedisDao;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import java.security.Key;
+import java.time.Duration;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -163,14 +152,12 @@ public class JwtProvider {
         }
     }
 
-    public TokenResponseDto reissueAtk(MemberDto member) throws Exception {
+    public TokenResponseDto reissueAtk(MemberDto member, String rtk) throws Exception {
         String rtkInRedis = redisDao.getValues(member.getMemberEmail());
-        if (Objects.isNull(rtkInRedis)) {
+        if (!Objects.equals(rtkInRedis, rtk)) {
             throw new JwtException("인증 정보가 만료되었습니다.");
         }
-
-        String atk = delegateAccessToken(member);
-        return new TokenResponseDto(atk, null, "bearer", false);
+        return createTokensByLogin(member);
     }
 
     public void deleteRtk(MemberDto member) throws JwtException {
@@ -184,6 +171,9 @@ public class JwtProvider {
 
         redisDao.setValues(atk, "logout", Duration.ofMillis(expiration-now));
     }
+
+
+
 
     public boolean isBlackList(String atk) {
         return StringUtils.hasText(redisDao.getValues(atk));

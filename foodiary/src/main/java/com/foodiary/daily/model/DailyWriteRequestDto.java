@@ -6,11 +6,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class DailyWriteRequestDto {
+
+    @Setter
+    private int dailyId;
     
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
@@ -23,4 +27,9 @@ public class DailyWriteRequestDto {
     @ApiModelProperty(value="게시글 내용", required = true)
     private String content;
 
+    @ApiModelProperty(value="게시글 작성자", required = true)
+    @Setter private String write;
+
+    @ApiModelProperty(value="이미지 경로1", required = true)
+    @Setter private String path;
 }

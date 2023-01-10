@@ -9,6 +9,7 @@
         VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, #{requiredTerms}, #{choiceTerms}, now(), now());
 	</insert>
 
+
     <select id="findByEmail" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER 
         WHERE MEMBER_EMAIL = #{email}
@@ -39,6 +40,11 @@
         WHERE MEMBER_ID = #{id}
     </select>
 
+    <select id="findByMemberId" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
     <select id="findByNickname" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_NICKNAME = #{nickname}
@@ -50,6 +56,10 @@
         MEMBER_FILE_PATH, MEMBER_FILE_SIZE, MEMBER_FILE_TYPE, MEMBER_FILE_CREATE, MEMBER_FILE_UPDATE)
         VALUES (#{memberId}, #{memberFileOriginalName}, #{memberFileFullName}, #{memberFileSaveName}, #{memberFilePath}, #{memberFileSize}, #{memberFileType}, now(), now());
     </insert>
+
+    <select id="findAll" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+    </select>
 
     <update id="updateMemberPassword">
         UPDATE TB_MEMBER SET 

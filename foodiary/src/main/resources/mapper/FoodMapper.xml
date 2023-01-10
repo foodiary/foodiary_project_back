@@ -13,10 +13,72 @@
         WHERE FOOD_ID = #{foodId}
     </select>
 
+    <select id="findAllFood" resultType="com.foodiary.food.model.FoodDto">
+        SELECT * FROM TB_Food
+    </select>
+
+    <select id="findMemberFoodByCreateAt" resultType="Integer">
+        SELECT MEMBER_FOOD_ID FROM TB_MEMBER_FOOD
+        WHERE MEMBER_FOOD_CREATE <![CDATA[>=]]> #{start} AND MEMBER_FOOD_CREATE <![CDATA[<=]]> #{end} AND MEMBER_ID = #{memberId};
+    </select>
+
+    <select id="findMemberFoodById" resultType="Integer">
+        SELECT MEMBER_FOOD_ID FROM TB_MEMBER_FOOD
+        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+    </select>
+
+    <select id="findByMenu" resultType="com.foodiary.food.model.MenuRecommendResponseDto">
+        SELECT * FROM TB_MENU
+        WHERE MENU_ID = #{menuId} AND MEMBER_ID = #{memberId}
+    </select>
+
+    <select id="findAllHateFood" resultType="Integer">
+        SELECT FOOD_ID FROM TB_MEMBER_FOOD
+        WHERE MEMBER_FOOD_HATE = 'Y' AND MEMBER_ID = #{memberId}
+    </select>
+
     <insert id="saveMemberFood">
         INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_HATE, MEMBER_FOOD_CREATE)
         VALUES (#{memberId}, #{foodId}, 0, 0, now());
     </insert>
+
+    <insert id="saveWeekRecommendMenu" useGeneratedKeys="true" keyProperty="menuId" keyColumn="MENU_ID">
+        INSERT INTO TB_MENU (
+             MEMBER_ID, MENU_DAY,
+             MENU_MON_LUNCH_CATEGORY, MENU_MON_LUNCH, MENU_MON_DINNER_CATEGORY, MENU_MON_DINNER,
+             MENU_TUE_LUNCH_CATEGORY, MENU_TUE_LUNCH, MENU_TUE_DINNER_CATEGORY, MENU_TUE_DINNER,
+             MENU_WED_LUNCH_CATEGORY, MENU_WED_LUNCH, MENU_WED_DINNER_CATEGORY, MENU_WED_DINNER,
+             MENU_THU_LUNCH_CATEGORY, MENU_THU_LUNCH, MENU_THU_DINNER_CATEGORY, MENU_THU_DINNER,
+             MENU_FRI_LUNCH_CATEGORY, MENU_FRI_LUNCH, MENU_FRI_DINNER_CATEGORY, MENU_FRI_DINNER,
+             MENU_SAT_LUNCH_CATEGORY, MENU_SAT_LUNCH, MENU_SAT_DINNER_CATEGORY, MENU_SAT_DINNER,
+             MENU_SUN_LUNCH_CATEGORY, MENU_SUN_LUNCH, MENU_SUN_DINNER_CATEGORY, MENU_SUN_DINNER
+        )
+        VALUES (#{memberId}, now(),
+                #{menuMonLunchCategory}, #{menuMonLunch}, #{menuMonDinnerCategory}, #{menuMonDinner},
+                #{menuTueLunchCategory}, #{menuTueLunch}, #{menuTueDinnerCategory}, #{menuTueDinner},
+                #{menuWedLunchCategory}, #{menuWedLunch}, #{menuWedDinnerCategory}, #{menuWedDinner},
+                #{menuThuLunchCategory}, #{menuThuLunch}, #{menuThuDinnerCategory}, #{menuThuDinner},
+                #{menuFriLunchCategory}, #{menuFriLunch}, #{menuFriDinnerCategory}, #{menuFriDinner},
+                #{menuSatLunchCategory}, #{menuSatLunch}, #{menuSatDinnerCategory}, #{menuSatDinner},
+                #{menuSunLunchCategory}, #{menuSunLunch}, #{menuSunDinnerCategory}, #{menuSunDinner});
+    </insert>
+
+
+    <update id="updateFoodLike">
+        UPDATE TB_MEMBER_FOOD
+        SET MEMBER_FOOD_LIKE = IF(MEMBER_FOOD_LIKE = 'Y', 'N', 'Y'),
+            MEMBER_FOOD_HATE = 'N'
+        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+    </update>
+
+
+    <update id="updateFoodHate">
+        UPDATE TB_MEMBER_FOOD
+        SET MEMBER_FOOD_HATE = IF(MEMBER_FOOD_LIKE = 'Y', 'N', 'Y'),
+            MEMBER_FOOD_LIKE = 'N'
+        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+    </update>
+
 
 </mapper>
 

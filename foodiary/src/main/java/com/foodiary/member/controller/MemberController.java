@@ -52,7 +52,7 @@ import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.member.service.MemberService;
 import com.foodiary.recipe.model.RecipeDto;
-import com.foodiary.recipe.model.RecipesDto;
+import com.foodiary.recipe.model.RecipesResponseDto;
 import com.github.pagehelper.PageHelper;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -329,17 +329,17 @@ public class MemberController {
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        DailysResponseDto dailysDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
         List<DailysResponseDto> dailyList = new ArrayList<>();
 
-        dailyList.add(dailysDto);
+        dailyList.add(dailysResponseDto);
 
-        RecipesDto recipesDto = new RecipesDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
-        List<RecipesDto> recipeList = new ArrayList<>();
+        List<RecipesResponseDto> recipeList = new ArrayList<>();
 
-        recipeList.add(recipesDto);
+        recipeList.add(recipesResponseDto);
 
         MemberSerchResponseDto memberSerchDto = new MemberSerchResponseDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
         
