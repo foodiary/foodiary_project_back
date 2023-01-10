@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeCommentEditDto {
-    
+public class RecipeCommentDetailsResponseDto {
+ 
     @ApiModelProperty(value="댓글 시퀀스", required = true)
     private int commentId;
 
@@ -20,6 +20,6 @@ public class RecipeCommentEditDto {
     private int memberId;
 
     @ApiModelProperty(value="내용", required = true)
-    private String content;
-
+    private String recipeCommentBody;
+    
 }

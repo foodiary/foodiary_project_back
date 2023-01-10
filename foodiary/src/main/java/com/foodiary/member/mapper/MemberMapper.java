@@ -3,6 +3,7 @@ package com.foodiary.member.mapper;
 import java.util.List;
 import java.util.Optional;
 
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -51,6 +52,8 @@ public interface MemberMapper {
 
     Optional<MemberDto> findById(@Param("id") int id);
 
+    List<MemberDto> findAll();
+
     int saveMemberImage(MemberImageDto memberImageDto);
 
     int updateMemberPassword(@Param("password") String password, @Param("id") int id);
@@ -76,6 +79,14 @@ public interface MemberMapper {
     List<MemberDailyLikeResponseDto> findByDailyLike(@Param("id") int id);
 
     List<MemberRecipeLikeResponseDto> findByRecipeLike(@Param("id") int id);
+
+    int deleteDailyScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
+
+    int deleteRecipeScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
+
+    int deleteDailyLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
+
+    int deleteRecipeLike(@Param("likeId") int likeId, @Param("memberId") int memberId);
 
     MemberEditResponseDto findByMemberIdEdit(@Param("memberId") int memberId);
 

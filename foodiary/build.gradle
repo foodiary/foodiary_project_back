@@ -45,6 +45,9 @@ dependencies {
 
 	// 데이터 컨버터 에러 해결
 	implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.2'
+
+	//page Helper
+	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.2'
 	
 	//page Helper
 	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.4.2'

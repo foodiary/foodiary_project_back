@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -16,21 +17,21 @@ public class DailysResponseDto {
     private int dailyId;
 
     @ApiModelProperty(value="게시글 제목", required = true)
-    private String title;
+    private String dailyTitle;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String path;
+    private String dailyPath;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
-    private int like;
+    private int dailyLike;
 
     @ApiModelProperty(value="게시글 조회 수", required = true)
-    private int view;
+    private int dailyView;
 
     @ApiModelProperty(value="작성일", required = true)
-    private LocalDateTime create;
+    private LocalDateTime dailyCreate;
 
     @ApiModelProperty(value="댓글 수", required = true)
-    private int comment;
+    private int dailyComment;
 
 }

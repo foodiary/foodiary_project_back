@@ -2,6 +2,7 @@ package com.foodiary.auth.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
 
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
     private final JwtProvider jwtProvider;
     private final MemberDetailsService memberDetailsService;
@@ -33,11 +35,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         String refresh = request.getHeader("Refresh");
         String requestURI = request.getRequestURI();
 
-        if ((!Objects.isNull(access) && access.startsWith("Bearer ")) || requestURI.equals("/members/reissue")) {
+        if ((!Objects.isNull(access) && access.startsWith("Bearer ")) || requestURI.equals("/auth/reissue")) {
             try {
 
                 // 요청이 엑세스 토큰 재발급 요청이면 if문 실행 (재발급)
-                if (requestURI.equals("/members/reissue")) {
+                if (requestURI.equals("/auth/reissue")) {
                     String rtkSubject = jwtProvider.getClaims(refresh).getBody().getSubject();
                     UserDetails userDetails = memberDetailsService.loadUserByUsername(rtkSubject);
                     Authentication token = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -55,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
                         throw new JwtException("AccessToken이 만료되었습니다.");
                     }
                     String atkSubject = (String) claims.get("email");
-                    System.out.println(atkSubject);
+                    log.info(atkSubject);
 
 
                     UserDetails userDetails = memberDetailsService.loadUserByUsername(atkSubject);

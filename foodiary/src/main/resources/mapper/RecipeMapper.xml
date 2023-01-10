@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.foodiary.recipe.mapper.RecipeMapper">
+
+    <!--    ===================================== INSERT ========================================-->
+
+    <!--    게시글 추가-->
+    <insert id="saveRecipe" useGeneratedKeys="true" keyProperty="recipeId" keyColumn="RECIPE_ID">
+        INSERT INTO TB_RECIPE (MEMBER_ID, RECIPE_TITLE, RECIPE_BODY, RECIPE_WRITER, RECIPE_VIEW, RECIPE_PATH1, RECIPE_PATH2, RECIPE_PATH3, RECIPE_CREATE, RECIPE_UPDATE)
+        VALUES (#{memberId}, #{title}, #{content}, #{writer}, 0, #{path1}, #{path2}, #{path3}, now(), now());
+    </insert>
+
+
+    <!--    댓글 추가-->
+    <insert id="saveRecipeComment">
+        INSERT INTO TB_RECIPE_COMMENT (MEMBER_ID, RECIPE_ID, RECIPE_COMMENT_BODY, RECIPE_COMMENT_WRITER, RECIPE_COMMENT_CREATE, RECIPE_COMMENT_UPDATE)
+        VALUES (#{memberId}, #{recipeId}, #{content}, #{writer}, now(), now());
+    </insert>
+
+
+    <!--    좋아요-->
+    <insert id="saveRecipeLike">
+        INSERT INTO TB_RECIPE_LIKE (MEMBER_ID, RECIPE_ID)
+        VALUES (#{memberId}, #{recipeId});
+    </insert>
+
+
+    <!--    게시글 스크랩-->
+    <insert id="saveRecipeScrap">
+        INSERT INTO TB_MEMBER_BOARDSCRAP_RECIPE (MEMBER_ID, RECIPE_ID)
+        VALUES (#{memberId}, #{recipeId});
+    </insert>
+
+
+    <!--    게시글 이미지 저장-->
+    <insert id="saveImage">
+        INSERT INTO TB_RECIPE_IMAGE (MEMBER_ID, RECIPE_ID, RECIPE_FILE_ORIGINAL_NAME, RECIPE_FILE_FULL_NAME, RECIPE_FILE_SAVE_NAME, RECIPE_FILE_PATH, RECIPE_FILE_SIZE, RECIPE_FILE_TYPE, RECIPE_FILE_CREATE, RECIPE_FILE_UPDATE)
+        VALUES (#{memberId}, #{recipeId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
+    </insert>
+
+    <insert id="saveIngredient">
+        INSERT INTO TB_INGREDIENT (RECIPE_ID, INGREDIENT, DOSE)
+        VALUES (#{recipeId}, #{ingredient}, #{dose});
+    </insert>
+
+
+
+
+
+    <!--    ===================================== UPDATE ========================================-->
+
+
+    <!--    게시글 수정-->
+<update id="updateRecipe">
+    UPDATE TB_RECIPE
+    SET RECIPE_TITLE = #{title}, RECIPE_BODY = #{content}, RECIPE_PATH1 = #{path1}, RECIPE_PATH2 = #{path2}, RECIPE_PATH3 = #{path3}, RECIPE_UPDATE = now()
+    WHERE RECIPE_ID = #{recipeId};
+</update>
+
+
+
+        <!--    댓글 수정-->
+<update id="updateRecipeComment">
+UPDATE TB_RECIPE_COMMENT
+SET RECIPE_COMMENT_BODY = #{content}, RECIPE_COMMENT_UPDATE = now()
+WHERE RECIPE_COMMENT_ID = #{commentId} AND RECIPE_ID = #{recipeId};
+</update>
+
+<update id="updateRecipeView">
+UPDATE TB_RECIPE
+SET RECIPE_VIEW = TB_RECIPE.RECIPE_VIEW + 1, RECIPE_UPDATE = now()
+WHERE RECIPE_ID = #{recipeId};
+</update>
+
+<update id="updateRecipeId">
+    UPDATE TB_RECIPE_IMAGE
+    SET RECIPE_ID = #{recipeId}, RECIPE_FILE_UPDATE = now()
+    WHERE RECIPE_FILE_PATH = #{path};
+</update>
+
+
+
+
+
+        <!--    ===================================== SELECT ========================================-->
+
+
+
+    <!--    게시판 조회-->
+    <select id="findAll" resultType="com.foodiary.recipe.model.RecipesResponseDto">
+        SELECT r.RECIPE_ID, r.RECIPE_TITLE, r.RECIPE_PATH1, r.RECIPE_VIEW, r.RECIPE_CREATE,
+               (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
+               (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
+        FROM TB_RECIPE AS r
+        WHERE RECIPE_YN = 'N'
+        ORDER BY r.RECIPE_ID DESC
+    </select>
+
+
+        <!--    기간별 게시판 조회-->
+<select id="findCreateAll" resultType="com.foodiary.recipe.model.RecipesResponseDto">
+    SELECT r.RECIPE_ID, r.RECIPE_TITLE, r.RECIPE_PATH1, r.RECIPE_VIEW, r.RECIPE_CREATE,
+           (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
+           (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
+    FROM TB_RECIPE AS r
+    WHERE RECIPE_YN = 'N' AND r.RECIPE_CREATE BETWEEN #{start} AND #{end}
+    ORDER BY r.RECIPE_ID DESC
+</select>
+
+
+        <!--    게시글 조회-->
+<select id="findByRecipeId" resultType="com.foodiary.recipe.model.RecipeDetailsResponseDto">
+    SELECT r.RECIPE_ID, r.MEMBER_ID, r.RECIPE_TITLE, r.RECIPE_BODY, r.RECIPE_WRITER,
+           r.RECIPE_PATH1, r.RECIPE_PATH2, r.RECIPE_PATH3, r.RECIPE_VIEW, r.RECIPE_CREATE,
+           (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
+           (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
+    FROM TB_RECIPE AS r
+    WHERE RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N';
+</select>
+
+
+        <!--     게시판 최신글 10개 조회-->
+<select id="findTopRecipes" resultType="com.foodiary.recipe.model.RecipesResponseDto">
+    SELECT r.RECIPE_ID, r.RECIPE_TITLE, r.RECIPE_PATH1, r.RECIPE_VIEW, r.RECIPE_CREATE,
+           (SELECT COUNT(*) FROM TB_RECIPE_LIKE WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_LIKE,
+           (SELECT COUNT(*) FROM TB_RECIPE_COMMENT WHERE RECIPE_ID = r.RECIPE_ID) AS RECIPE_COMMENT
+    FROM TB_RECIPE AS r
+    WHERE RECIPE_YN = 'N'
+    ORDER BY r.RECIPE_ID DESC
+    LIMIT 10
+</select>
+
+
+
+
+
+        <!--  좋아요 취소전 null 체크용  -->
+<select id="findByRecipeLikeId" resultType="Integer">
+SELECT RECIPE_LIKE_ID FROM TB_RECIPE_LIKE
+WHERE RECIPE_LIKE_ID = #{recipeLikeId}
+</select>
+
+
+        <!--    게시글 좋아요 늘렀는지 유무 확인용-->
+<select id="findByMemberIdAndRecipeId" resultType="Integer">
+SELECT RECIPE_LIKE_ID FROM TB_RECIPE_LIKE
+WHERE MEMBER_ID = #{memberId} AND RECIPE_ID = #{recipeId}
+</select>
+
+
+        <!--    게시글 좋아요 갯수-->
+<select id="findAllRecipeId" resultType="Integer">
+SELECT RECIPE_LIKE_ID FROM TB_RECIPE_LIKE
+WHERE  RECIPE_ID = #{recipeId}
+</select>
+
+
+        <!--    댓글 조회-->
+<select id="findAllRecipeComment" resultType="com.foodiary.recipe.model.RecipeCommentDetailsResponseDto">
+SELECT * FROM TB_RECIPE_COMMENT
+WHERE  RECIPE_ID = #{recipeId}
+</select>
+
+        <!--    음식 재료 조회-->
+<select id="findAllIngredient" resultType="com.foodiary.recipe.model.IngredientResponseDto">
+    SELECT INGREDIENT, DOSE FROM TB_INGREDIENT
+    WHERE  RECIPE_ID = #{recipeId}
+</select>
+
+
+        <!--    댓글 삭제전 null값 확인용-->
+<select id="findByRecipeComment" resultType="com.foodiary.recipe.model.RecipeCommentDetailsResponseDto">
+SELECT * FROM TB_RECIPE_COMMENT
+WHERE  RECIPE_COMMENT_ID = #{commentId}
+</select>
+
+
+        <!--    스크랩 유무 확인용-->
+<select id="findByRecipeScrap" resultType="Integer">
+SELECT * FROM TB_MEMBER_BOARDSCRAP_RECIPE
+WHERE  RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
+</select>
+
+
+        <!--    게시글 이미지 가져오기-->
+<select id="findByRecipeImage" resultType="String">
+SELECT RECIPE_FILE_PATH FROM TB_RECIPE_IMAGE
+WHERE  RECIPE_ID = #{recipeId}
+</select>
+
+
+        <!--    게시글 id 가져오기-->
+<select id="findByRecipeId1" resultType="Integer">
+    SELECT RECIPE_ID FROM TB_RECIPE
+    WHERE  RECIPE_PATH1 = #{path1}
+</select>
+
+<select id="findByRecipeId2" resultType="Integer">
+    SELECT RECIPE_ID FROM TB_RECIPE
+    WHERE  RECIPE_PATH2 = #{path2}
+</select>
+
+<select id="findByRecipeId3" resultType="Integer">
+    SELECT RECIPE_ID FROM TB_RECIPE
+    WHERE  RECIPE_PATH3 = #{path3}
+</select>
+
+
+
+
+
+
+        <!--    ===================================== DELETE ========================================-->
+
+
+
+        <!--    좋아요 취소-->
+<delete id="deleteRecipeLike">
+DELETE FROM TB_RECIPE_LIKE
+WHERE RECIPE_LIKE_ID = #{recipeId}
+</delete>
+
+
+        <!--    게시글 삭제-->
+<update id="deleteRecipe">
+UPDATE TB_RECIPE
+SET RECIPE_YN = 'Y', RECIPE_DELETE = now()
+WHERE RECIPE_ID = #{recipeId}
+</update>
+
+
+        <!--    댓글 삭제-->
+<delete id="deleteRecipeComment">
+DELETE FROM TB_RECIPE_COMMENT
+WHERE RECIPE_ID = #{recipeId} AND RECIPE_COMMENT_ID = #{commentId}
+</delete>
+
+<delete id="deleteRecipeScrap">
+DELETE FROM TB_MEMBER_SCRAP_RECIPE
+WHERE RECIPE_ID = #{recipeId} AND MEMBER_RECIPE_BOARDSCRAP_ID = #{scrapId}
+</delete>
+
+<delete id="deleteRecipeImage">
+    DELETE FROM TB_RECIPE_IMAGE
+    WHERE RECIPE_ID = #{recipeId} AND RECIPE_FILE_PATH = #{path}
+</delete>
+
+<delete id="deleteIngredient">
+    DELETE FROM TB_INGREDIENT
+    WHERE RECIPE_ID = #{recipeId}
+</delete>
+
+</mapper>
+
+
+

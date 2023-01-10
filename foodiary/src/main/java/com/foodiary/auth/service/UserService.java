@@ -1,29 +1,24 @@
 package com.foodiary.auth.service;
 
-import java.security.MessageDigest;
-import java.time.LocalDateTime;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.jwt.JwtProvider;
-import com.foodiary.auth.model.GoogleUserDto;
-import com.foodiary.auth.model.NaverUserDto;
-import com.foodiary.auth.model.NewUserResponseDto;
-import com.foodiary.auth.model.OAuthTokenDto;
-import com.foodiary.auth.model.TokenResponseDto;
+import com.foodiary.auth.model.*;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberLoginRequestDto;
-
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.security.MessageDigest;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -33,6 +28,7 @@ public class UserService {
     private final OAuthService oAuthService;
     private final JwtProvider jwtProvider;
     private final MemberMapper memberMapper;
+    private final RestTemplate restTemplate;
 
     public ResponseEntity<?> oauthLogin(String providerId, String code) throws Exception {
         ResponseEntity<String> accessTokenResponse = oAuthService.createPostRequest(providerId, code);
@@ -47,10 +43,11 @@ public class UserService {
             GoogleUserDto googleUser = oAuthService.getGoogleUserInfo(userInfoResponse);
             // 신규회원인지 판별
             if (memberMapper.findByEmail(googleUser.email) == null){
+                // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(googleUser.email, googleUser.picture, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            else{
+            } else{
+                // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(googleUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -59,10 +56,11 @@ public class UserService {
             NaverUserDto naverUser = oAuthService.getNaverUserInfo(userInfoResponse);
             // 신규회원인지 판별
             if (memberMapper.findByEmail(naverUser.email) == null){
+                // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(naverUser.email, naverUser.profile_image, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            else{
+            } else{
+                // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(naverUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
@@ -70,21 +68,51 @@ public class UserService {
         return null;
     }
     private TokenResponseDto createTokenResponse(String email) throws Exception {
-        MemberDto member = verifyMember(email);
+
+
+            MemberDto member = verifyMember(email);
+            log.info(member.getMemberEmail());
+            TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
+            tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
+            tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
+            return tokenResponseDto;
+    }
+
+    public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
+        String encryptPw = encrypt(loginDto.getPassword());
+        log.info(encryptPw);
+        MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), encryptPw);
+
         log.info(member.getMemberEmail());
+        log.info(member.getMemberPassword());
+
         TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;
     }
 
-    public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
-        MemberDto member = memberMapper.findByLoginIdAndPw(loginDto.getLoginId(), loginDto.getPassword()).orElseThrow();
-        log.info(member.getMemberEmail());
-        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
-        tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
-        tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
-        return tokenResponseDto;
+    public TokenReissueDto tokenReissue(String refreshToken) throws Exception {
+        String memberEmail = jwtProvider.getClaims(refreshToken).getBody().getSubject();
+        log.info(memberEmail);
+        MemberDto member = memberMapper.findByEmail(memberEmail)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        TokenResponseDto tokenResponse = jwtProvider.reissueAtk(member, refreshToken);
+
+        return TokenReissueDto.builder()
+                    .memberId(member.getMemberId())
+                    .accessToken(tokenResponse.getAccessToken())
+                    .refreshToken(tokenResponse.getRefreshToken())
+                    .accessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60))
+                    .refreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 14))
+                    .build();
+    }
+
+    public void memberLogout(CustomUserDetails memberDetails, String atk) {
+        MemberDto member = memberDetails.getMember();
+
+        jwtProvider.setBlackListAtk(atk);
+        jwtProvider.deleteRtk(member);
     }
 
     public Claims oauthVerify(String jwt) throws Exception {
@@ -93,9 +121,25 @@ public class UserService {
 
 
     private boolean isJoinedUser(GoogleUserDto googleUser) {
-        MemberDto member = verifyMember(googleUser.email);
+        MemberDto member = verifyMember(googleUser.getEmail());
         log.info("Joined User: {}", member);
         return member == null;
+    }
+
+
+    public String encrypt(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] passBytes = s.getBytes();
+            md.reset();
+            byte[] digested = md.digest(passBytes);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < digested.length; i++)
+                sb.append(Integer.toString((digested[i] & 0xff) + 0x100, 16).substring(1));
+            return sb.toString();
+        } catch (Exception e) {
+            return s;
+        }
     }
 
     private MemberDto verifyMember(String email) {
@@ -138,20 +182,4 @@ public class UserService {
             throw new BusinessLogicException(ExceptionCode.DELETE_ERROR);
         }
     }
-
-    public String encrypt(String s) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] passBytes = s.getBytes();
-            md.reset();
-            byte[] digested = md.digest(passBytes);
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < digested.length; i++)
-                sb.append(Integer.toString((digested[i] & 0xff) + 0x100, 16).substring(1));
-            return sb.toString();
-        } catch (Exception e) {
-            return s;
-        }
-    }
-
 }

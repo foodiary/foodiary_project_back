@@ -3,9 +3,210 @@
 
 <mapper namespace="com.foodiary.daily.mapper.DailyMapper">
 
-    <insert id="saveDaily">
-        INSERT INTO TB_Daily (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_CREATE, DAILY_UPDATE)
-        VALUES (#{memberId}, #{title}, #{content}, now(), now());
+<!--    ===================================== INSERT ========================================-->
+
+<!--    게시글 추가-->
+    <insert id="saveDaily" useGeneratedKeys="true" keyProperty="dailyId" keyColumn="DAILY_ID">
+        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_WRITER, DAILY_VIEW, DAILY_PATH, DAILY_CREATE, DAILY_UPDATE)
+        VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path}, now(), now());
     </insert>
 
+
+<!--    댓글 추가-->
+    <insert id="saveDailyComment">
+        INSERT INTO TB_DAILY_COMMENT (MEMBER_ID, DAILY_ID, DAILY_COMMENT_BODY, DAILY_COMMENT_WRITER, DAILY_COMMENT_CREATE, DAILY_COMMENT_UPDATE)
+        VALUES (#{memberId}, #{dailyId}, #{content}, #{writer}, now(), now());
+    </insert>
+
+
+<!--    좋아요-->
+    <insert id="saveDailyLike">
+        INSERT INTO TB_DAILY_LIKE (MEMBER_ID, DAILY_ID)
+        VALUES (#{memberId}, #{dailyId});
+    </insert>
+
+
+<!--    게시글 스크랩-->
+    <insert id="saveDailyScrap">
+        INSERT INTO TB_MEMBER_BOARDSCRAP_DAILY (MEMBER_ID, DAILY_ID)
+        VALUES (#{memberId}, #{dailyId});
+    </insert>
+
+    <insert id="saveImage">
+        INSERT INTO TB_DAILY_IMAGE (MEMBER_ID, DAILY_ID, DAILY_FILE_ORIGINAL_NAME, DAILY_FILE_FULL_NAME, DAILY_FILE_SAVE_NAME, DAILY_FILE_PATH, DAILY_FILE_SIZE, DAILY_FILE_TYPE, DAILY_FILE_CREATE, DAILY_FILE_UPDATE)
+        VALUES (#{memberId}, #{dailyId}, #{originalName}, #{originalFullName}, #{saveName}, #{path}, #{size}, #{ext}, now(), now());
+    </insert>
+
+
+
+
+
+    <!--    ===================================== UPDATE ========================================-->
+
+
+
+<!--    게시글 수정-->
+    <update id="updateDaily">
+        UPDATE TB_DAILY
+        SET DAILY_TITLE = #{title}, DAILY_BODY = #{content}, DAILY_PATH = #{path}, DAILY_UPDATE = now()
+        WHERE DAILY_ID = #{dailyId};
+    </update>
+
+
+
+<!--    댓글 수정-->
+    <update id="updateDailyComment">
+        UPDATE TB_DAILY_COMMENT
+        SET DAILY_COMMENT_BODY = #{content}, DAILY_COMMENT_UPDATE = now()
+        WHERE DAILY_COMMENT_ID = #{commentId} AND DAILY_ID = #{dailyId};
+    </update>
+
+<!--    조회수 증가-->
+    <update id="updateDailyView">
+        UPDATE TB_DAILY
+        SET DAILY_VIEW = TB_DAILY.DAILY_VIEW + 1, DAILY_UPDATE = now()
+        WHERE DAILY_ID = #{dailyId};
+    </update>
+
+
+
+
+
+
+    <!--    ===================================== SELECT ========================================-->
+
+    <!--    게시판 조회-->
+    <select id="findAll" resultType="com.foodiary.daily.model.DailysResponseDto">
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
+        WHERE DAILY_YN = 'N'
+        ORDER BY d.DAILY_ID DESC
+    </select>
+
+<!--    게시판 조회(일, 주, 월)-->
+    <select id="findAllCreate" resultType="com.foodiary.daily.model.DailysResponseDto">
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
+        WHERE DAILY_YN = 'N' AND d.DAILY_CREATE BETWEEN #{start} AND #{end}
+        ORDER BY d.DAILY_ID DESC
+    </select>
+
+
+    <!--    게시판 최신글 10개 조회-->
+    <select id="findTopDaily" resultType="com.foodiary.daily.model.DailysResponseDto">
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
+        ORDER BY d.DAILY_ID DESC
+        LIMIT 10
+    </select>
+
+
+
+<!--    게시글 조회-->
+    <select id="findByDailyId" resultType="com.foodiary.daily.model.DailyDetailsResponseDto">
+        SELECT d.DAILY_ID, d.MEMBER_ID, d.DAILY_TITLE, d.DAILY_BODY, d.DAILY_WRITER,
+               d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
+        WHERE DAILY_ID = #{dailyId} AND DAILY_YN = 'N'
+    </select>
+
+
+<!--  좋아요 취소전 null 체크용  -->
+    <select id="findByDailyLikeId" resultType="Integer">
+        SELECT DAILY_LIKE_ID FROM TB_DAILY_LIKE
+        WHERE DAILY_LIKE_ID = #{dailyLikeId}
+    </select>
+
+
+<!--    게시글 좋아요 늘렀는지 유무 확인용-->
+    <select id="findByMemberIdAndDailyId" resultType="Integer">
+        SELECT DAILY_LIKE_ID FROM TB_DAILY_LIKE
+        WHERE MEMBER_ID = #{memberId} AND DAILY_ID = #{dailyId}
+    </select>
+
+
+<!--    게시글 좋아요 갯수-->
+    <select id="findAllDailyId" resultType="Integer">
+        SELECT DAILY_LIKE_ID FROM TB_DAILY_LIKE
+        WHERE  DAILY_ID = #{dailyId}
+    </select>
+
+
+<!--    댓글 조회-->
+    <select id="findAllDailyComment" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">
+        SELECT * FROM TB_DAILY_COMMENT
+        WHERE  DAILY_ID = #{dailyId}
+    </select>
+
+
+<!--    댓글 삭제전 null값 확인용-->
+    <select id="findByDailyComment" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">
+        SELECT * FROM TB_DAILY_COMMENT
+        WHERE  DAILY_COMMENT_ID = #{commentId}
+    </select>
+
+
+<!--    스크랩 유무 확인용-->
+    <select id="findByDailyScrap" resultType="Integer">
+        SELECT * FROM TB_MEMBER_BOARDSCRAP_DAILY
+        WHERE  DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId}
+    </select>
+
+
+<!--    게시글 이미지 가져오기-->
+    <select id="findByDailyImage" resultType="String">
+        SELECT DAILY_FILE_PATH FROM TB_DAILY_IMAGE
+        WHERE  DAILY_ID = #{dailyId}
+    </select>
+
+
+
+
+
+    <!--    ===================================== DELETE ========================================-->
+
+
+
+<!--    좋아요 취소-->
+    <delete id="deleteDailyLike">
+        DELETE FROM TB_DAILY_LIKE
+            WHERE DAILY_ID = #{dailyId}
+    </delete>
+
+
+<!--    게시글 삭제-->
+    <update id="deleteDaily">
+        UPDATE TB_DAILY
+        SET DAILY_YN = 'Y', DAILY_DELETE = now()
+        WHERE DAILY_ID = #{dailyId}
+    </update>
+
+
+<!--    댓글 삭제-->
+    <delete id="deleteDailyComment">
+        DELETE FROM TB_DAILY_COMMENT
+        WHERE DAILY_ID = #{dailyId} AND DAILY_COMMENT_ID = #{commentId}
+    </delete>
+
+    <delete id="deleteDailyScrap">
+        DELETE FROM TB_MEMBER_BOARDSCRAP_DAILY
+        WHERE DAILY_ID = #{dailyId} AND MEMBER_DAILY_BOARDSCRAP_ID = #{scrapId}
+    </delete>
+
+    <delete id="deleteDailyImage">
+        DELETE FROM TB_DAILY_IMAGE
+        WHERE DAILY_ID = #{dailyId} AND DAILY_FILE_PATH = #{path}
+    </delete>
+
 </mapper>
+
+
+

@@ -2,6 +2,7 @@ package com.foodiary.redis;
 
 import java.time.Duration;
 
+import com.foodiary.food.model.MenuRecommendResponseDto;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -23,11 +24,12 @@ public class RedisDao {
     public void setValues(String key, String data, Duration duration) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, data, duration);
+
     }
 
     public String getValues(String key) {
-        ValueOperations<String, String> values = redisTemplate.opsForValue();
-        return values.get(key);
+        String result = redisTemplate.opsForValue().get(key);
+        return result;
     }
 
     public void deleteValues(String key) {

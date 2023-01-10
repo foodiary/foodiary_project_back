@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class DailyCommentDetailsResponseDto {
  
     @ApiModelProperty(value="댓글 시퀀스", required = true)
-    private int commentId;
+    private int dailyCommentId;
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;
@@ -19,10 +19,7 @@ public class DailyCommentDetailsResponseDto {
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 
-    @ApiModelProperty(value="작성자", required = true)
-    private String writer;
-
     @ApiModelProperty(value="내용", required = true)
-    private String content;
+    private String dailyCommentBody;
     
 }

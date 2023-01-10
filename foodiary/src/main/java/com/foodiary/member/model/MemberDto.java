@@ -1,14 +1,17 @@
 package com.foodiary.member.model;
 
-import java.time.LocalDateTime;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
-// TODO : MemberDto는 Response인가요? Request인가요?
-@Data // TODO : setter 사용 지양, 수정 필요
+
+@Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class MemberDto {
 
@@ -23,22 +26,14 @@ public class MemberDto {
 
     private String memberNickName;
 
-    // private String memberFood;
-
-    // private String memberImage;
-
     private String memberProfile;
 
     private String memberPath;
 
     // true면 탈퇴
     private String memberYn;
-    // private Boolean memberSecession;
 
     private LocalDateTime memberCreate;
 
     private LocalDateTime memberUpdate;
-
-    // private LocalDateTime memberDelete;
-    
 }
