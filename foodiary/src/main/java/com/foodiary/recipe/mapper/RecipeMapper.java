@@ -57,6 +57,8 @@ public interface RecipeMapper {
 
     List<RecipesResponseDto> findAll();
 
+    List<RecipesResponseDto> findTopRecipes();
+
     List<RecipesResponseDto> findCreateAll(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 

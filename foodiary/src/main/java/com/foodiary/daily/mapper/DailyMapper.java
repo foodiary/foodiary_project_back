@@ -53,6 +53,9 @@ public interface DailyMapper {
 
     List<DailysResponseDto> findAll();
 
+    List<DailysResponseDto> findTopDaily();
+
+
 
 
 // =================== DELETE ====================

@@ -85,7 +85,7 @@
         ORDER BY d.DAILY_ID DESC
     </select>
 
-<!--    게시판 조회-->
+<!--    게시판 조회(일, 주, 월)-->
     <select id="findAllCreate" resultType="com.foodiary.daily.model.DailysResponseDto">
         SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
@@ -94,6 +94,18 @@
         WHERE DAILY_YN = 'N' AND d.DAILY_CREATE BETWEEN #{start} AND #{end}
         ORDER BY d.DAILY_ID DESC
     </select>
+
+
+    <!--    게시판 최신글 10개 조회-->
+    <select id="findTopDaily" resultType="com.foodiary.daily.model.DailysResponseDto">
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
+               (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY AS d
+        ORDER BY d.DAILY_ID DESC
+        LIMIT 10
+    </select>
+
 
 
 <!--    게시글 조회-->

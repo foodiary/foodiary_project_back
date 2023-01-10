@@ -44,7 +44,7 @@ public class RecipeService {
 
         List<RecipeImageDto> saveImageList = new ArrayList<>();
 
-        if(recipeImage == null) {
+        if(recipeImage.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
             for(int i=0; i < recipeImage.size(); i++) {
@@ -241,6 +241,15 @@ public class RecipeService {
         recipeResponse.setUserCheck(userService.verifyUser(recipeResponse.getMemberId()));
 
         return recipeResponse;
+    }
+
+    //레시피 게시판 최신글 10개 조회
+    public List<RecipesResponseDto> findTopRecipes() {
+        List<RecipesResponseDto> recipes = recipeMapper.findTopRecipes();
+        if (recipes.size() == 0) {
+            throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
+        }
+        return recipes;
     }
 
     // 레시피 댓글 조회

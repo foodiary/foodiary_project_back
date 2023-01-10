@@ -47,7 +47,7 @@ public class RecipeController {
         public ResponseEntity<?> RecipeWrite(
                 @RequestPart(value = "recipeWrite") @Valid RecipeWriteRequestDto recipeWriteRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage1", required = true) MultipartFile recipeImage1,
+                @RequestPart(value = "recipeImage1", required = false) MultipartFile recipeImage1,
                 @RequestPart(value = "recipeImage2", required = false) MultipartFile recipeImage2,
                 @RequestPart(value = "recipeImage3", required = false) MultipartFile recipeImage3
         ) throws Exception {
@@ -56,7 +56,6 @@ public class RecipeController {
                 if(recipeImage2 != null) recipeImage.add(recipeImage2);
                 if(recipeImage3 != null) recipeImage.add(recipeImage3);
 
-                log.info( recipeWriteRequestDto.getIngredients().get(0).getIngredient());
                 recipeService.addRecipe(recipeWriteRequestDto, recipeImage);
                 return new ResponseEntity<>("OK", HttpStatus.CREATED);
         }
@@ -190,6 +189,22 @@ public class RecipeController {
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
                 return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
         }
+
+
+        @Operation(summary = "TOP10 recipe list", description = "레시피 게시판 최신글 10개 보기")
+        @ApiResponses({
+                @ApiResponse(responseCode = "200", description = "OK"),
+                @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+                @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+                @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+        })
+        @GetMapping(value = "/recipes/top")
+        public ResponseEntity<?> topRecipe() throws Exception {
+
+                List<RecipesResponseDto> response = recipeService.findTopRecipes();
+                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        }
+
 
         @Operation(summary = "recipe list", description = "레시피 게시글 상세 보기")
         @ApiResponses({

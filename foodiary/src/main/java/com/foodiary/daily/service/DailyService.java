@@ -148,6 +148,7 @@ public class DailyService {
         userService.verifyUpdate(dailyMapper.updateDailyComment(dailyCommentEditRequestDto));
     }
 
+    //하루식단 게시판 조회
     public List<DailysResponseDto> findDailys() {
         List<DailysResponseDto> dailys = dailyMapper.findAll();
         if(dailys.size() == 0) {
@@ -165,6 +166,18 @@ public class DailyService {
         return dailys;
     }
 
+
+    //하루식단 게시판 최신글 10개 조회
+    public List<DailysResponseDto> findTopDailys() {
+        List<DailysResponseDto> dailys = dailyMapper.findTopDaily();
+        if(dailys.size() == 0) {
+            throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
+        }
+        return dailys;
+    }
+
+
+
     //하루식단 게시글 조회
     public DailyDetailsResponseDto findDaily(int dailyId) {
 
@@ -173,6 +186,7 @@ public class DailyService {
 
         return verifyDailyPost(dailyId);
     }
+
 
 
     // 하루식단 댓글 조회

@@ -56,12 +56,13 @@ public class FoodService {
                 i = 0;
             }
         }
+
+
         FoodDto foodRecommend = foodMapper.findById(randomIndex);
         foodMapper.saveMemberFood(memberId, foodRecommend.getFoodId());
 
         return foodRecommend;
     }
-
     public MenuRecommendResponseDto weekRecommendMenu(int memberId) throws JsonProcessingException {
 
         List<Integer> hateFoodList = foodMapper.findAllHateFood(memberId);

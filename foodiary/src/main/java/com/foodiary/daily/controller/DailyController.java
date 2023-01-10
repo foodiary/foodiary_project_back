@@ -177,6 +177,22 @@ public class DailyController {
         return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
     }
 
+
+
+    @Operation(summary = "TOP10 daily list", description = "하루 식단 게시판 최신글 10개 보기")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping(value = "/dailys/top")
+    public ResponseEntity<?> topDailys() throws Exception {
+
+        List<DailysResponseDto> response = dailyService.findDailys();
+        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+    }
+
     @Operation(summary = "daily list detail", description = "하루 식단 게시글 상세 보기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
