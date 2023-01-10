@@ -38,4 +38,13 @@ public class RecipeEditRequestDto {
 
     @ApiModelProperty(value="이미지 경로3", required = true)
     @Setter private String path3;
+
+    @ApiModelProperty(value="이미지1 변경 유무", required = true)
+    @Setter private String path1YN;
+
+    @ApiModelProperty(value="이미지2 변경 유무", required = true)
+    @Setter private String path2YN;
+
+    @ApiModelProperty(value="이미지3 변경 유무", required = true)
+    @Setter private String path3YN;
 }

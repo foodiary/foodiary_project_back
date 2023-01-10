@@ -80,7 +80,7 @@ public class RecipeController {
                 @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
                 @RequestPart(value = "recipeEdit") RecipeEditRequestDto recipeEditRequestDto,
                 @Parameter(description = "사진 이미지")
-                @RequestPart(value = "recipeImage1", required = true) MultipartFile recipeImage1,
+                @RequestPart(value = "recipeImage1", required = false) MultipartFile recipeImage1,
                 @RequestPart(value = "recipeImage2", required = false) MultipartFile recipeImage2,
                 @RequestPart(value = "recipeImage3", required = false) MultipartFile recipeImage3
 

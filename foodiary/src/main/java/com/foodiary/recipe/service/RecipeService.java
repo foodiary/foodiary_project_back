@@ -130,6 +130,7 @@ public class RecipeService {
 
 
 
+    // TODO : 파일 수정 어떻게 할것인가? 
     // 레시피 식단 게시글 수정
     public void modifyRecipe(RecipeEditRequestDto recipeEditRequestDto, List<MultipartFile> recipeImage) throws IOException {
         userService.checkUser(recipeEditRequestDto.getMemberId());
@@ -137,8 +138,11 @@ public class RecipeService {
             memberMapper.findByMemberId(recipeEditRequestDto.getMemberId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         if(recipeImage == null) {
-            throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
+            // 삭제 필요 
+            // throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
+            // 이미지값이 있을때, 싹다 교체
+            // 재료 지우고
             recipeMapper.deleteIngredient(recipeEditRequestDto.getRecipeId());
             if(recipeEditRequestDto.getIngredients().size() != 0) {
                 recipeEditRequestDto.getIngredients()
@@ -148,9 +152,20 @@ public class RecipeService {
                         });
             }
 
+            // path2YN Y 이미지를 변경하겠다는 거잖아요, multipart null로 왔어요, 기존 이미지 있을때
+            // 기존 이미지 삭제
+
+            // path2YN Y 이미지를 변경하겠다는 거잖아요, multipart 값이 있으면로 왔어요, 기존 이미지 있을때
+            // 기존 이미지 삭제, 새로운 이미지 추가
+
+            // path2YN Y 이미지를 변경하겠다는 거잖아요, multipart 값이 있으면로 왔어요, 기존 이미지 없을때
+            // 새로운 이미지 추가
+            
+
             // 기존 게시물의 파일 경로 삭제 및 S3 파일 삭제
             RecipeDetailsResponseDto verifyRecipe = verifyRecipePost(recipeEditRequestDto.getRecipeId());
 
+            // 이미지 3개 다 업데이트할때의 경우
             if(verifyRecipe.getRecipePath1() != null) {
                 s3Service.deleteImage(verifyRecipe.getRecipePath1());
                 recipeMapper.deleteRecipeImage(recipeEditRequestDto.getRecipeId(), verifyRecipe.getRecipePath1());
@@ -166,6 +181,9 @@ public class RecipeService {
 
             // 파일 url 담을 리스트
             List<String> fileUrlList = new ArrayList<>();
+
+            // 만약에 기존이미지1, 2가 있고, 제가 2만 교체 한다고 했을때
+            // image2만 들어오겠죠?
 
 
             // 새로 첨부 받은 이미지 파일로 업데이트
