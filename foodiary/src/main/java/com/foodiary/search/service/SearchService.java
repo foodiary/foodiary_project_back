@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.search.mapper.SearchMapper;
 import com.foodiary.search.model.SearchResponseMemberDto;
-import com.foodiary.search.model.SearchRequestDto;
 import com.foodiary.search.model.SearchRequestMemberDto;
-import com.foodiary.search.model.SearchResponseDto;
+import com.foodiary.search.model.SearchDailyResponseDto;
+import com.foodiary.search.model.SearchRecipeResponseDto;
+import com.foodiary.search.model.SearchRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,18 +30,20 @@ public class SearchService {
     
     private final SearchMapper mapper;
 
-    public List<SearchResponseDto> search(SearchRequestDto searchRequestDto) {
+    private final UserService userService;
+
+    // 하루 식단 검색하기
+    public List<SearchDailyResponseDto> searchDaily(SearchRequestDto searchRequestDto) {
         
         if(searchRequestDto.getMemberId() > 0) {
 
-            String hashkey = "search:"+searchRequestDto.getMemberId();
+            String hashkey = "dailySearch:"+ searchRequestDto.getMemberId();
             HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
             
             long size = hashOperations.size(hashkey);
             
             if(size > 0) {
                 Map<Integer, String> map = hashOperations.entries(hashkey);
-                Set<Integer> set = map.keySet();
     
                 int min = Collections.min(map.keySet());
                 int max = Collections.max(map.keySet());
@@ -49,23 +52,23 @@ public class SearchService {
                     // 제일 먼저 들어온 최근 검색어 지우기
                     if(map.containsValue(searchRequestDto.getKeyword())==false) {
                         hashOperations.delete(hashkey, min);
-                        addKeyword(max, searchRequestDto, hashOperations,hashkey);
-    
+                        addKeywordDaily(max, searchRequestDto, hashOperations,hashkey); 
                     }
                 }
                 else {
                     if(map.containsValue(searchRequestDto.getKeyword())==false) {
-                        addKeyword(max, searchRequestDto, hashOperations,hashkey);
+                        addKeywordDaily(max, searchRequestDto, hashOperations,hashkey); 
+
                     }
                 }
             }
             else {
-                addKeyword(0, searchRequestDto, hashOperations,hashkey);
+                addKeywordDaily(0, searchRequestDto, hashOperations,hashkey); 
             }
 
         }   
 
-        List<SearchResponseDto> searchResponseDto = mapper.findbyTitle(searchRequestDto);
+        List<SearchDailyResponseDto> searchResponseDto = mapper.findbyDaily(searchRequestDto);
         if(searchResponseDto.size()>0) {
             return searchResponseDto; 
         }
@@ -74,11 +77,13 @@ public class SearchService {
         }
     }
 
-    public List<SearchResponseMemberDto> searchView(SearchRequestMemberDto sRequestMemberDto) {
+    // 하루 식단 검색 보기
+    public List<SearchResponseMemberDto> searchViewDaily(SearchRequestMemberDto sRequestMemberDto) {
+        // TODO: 유저 검사 넣기
 
         HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
         List<SearchResponseMemberDto> searchMemberDtoList = new ArrayList<>();
-        Map<Integer, String> map = hashOperations.entries("search:"+sRequestMemberDto.getMemberId());
+        Map<Integer, String> map = hashOperations.entries("dailySearch:"+sRequestMemberDto.getMemberId());
         if(map.size()==0) {
             throw new BusinessLogicException(ExceptionCode.LAST_SEARCH_NOT_FOUND);
         }
@@ -89,14 +94,104 @@ public class SearchService {
         return searchMemberDtoList;
     }
 
-    private void addKeyword(int max, SearchRequestDto searchRequestDto, HashOperations<String, Integer, String> hashOperations, String hashkey) {
-        hashOperations.put(hashkey, max+1, searchRequestDto.getKeyword());
-        redisTemplate.expire("search:"+searchRequestDto.getMemberId(), 30, TimeUnit.DAYS);
+    // 하루 식단 검색어 삭제
+    public void deleteDaily(int memberId, int keywordId) {
+        // TODO: 유저 검사 넣기
+        HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
+        if(hashOperations.hasKey("dailySearch:"+memberId, keywordId)) {
+            hashOperations.delete("dailySearch:"+memberId, keywordId);
+        }
+        else {
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);            
+        }
     }
 
-    public void delete(int memberId, int keywordId) {
+    private void addKeywordDaily(int max, SearchRequestDto searchRequestDto, HashOperations<String, Integer, String> hashOperations, String hashkey) {
+        hashOperations.put(hashkey, max+1, searchRequestDto.getKeyword());
+
+        redisTemplate.expire("dailySearch:"+ searchRequestDto.getMemberId(), 30, TimeUnit.DAYS);
+    }
+
+    // 레시피 검색하기
+    public List<SearchRecipeResponseDto> searchRecipe(SearchRequestDto searchRequestDto) {
+        
+        if(searchRequestDto.getMemberId() > 0) {
+
+            String hashkey = "recipeSearch:" + searchRequestDto.getMemberId();
+            HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
+            
+            long size = hashOperations.size(hashkey);
+            
+            if(size > 0) {
+                Map<Integer, String> map = hashOperations.entries(hashkey);
+    
+                int min = Collections.min(map.keySet());
+                int max = Collections.max(map.keySet());
+    
+                if(size > 9) {
+                    // 제일 먼저 들어온 최근 검색어 지우기
+                    if(map.containsValue(searchRequestDto.getKeyword())==false) {
+                        hashOperations.delete(hashkey, min);
+                        addKeywordRecipe(max, searchRequestDto, hashOperations,hashkey);
+    
+                    }
+                }
+                else {
+                    if(map.containsValue(searchRequestDto.getKeyword())==false) {
+                        addKeywordRecipe(max, searchRequestDto, hashOperations,hashkey);
+                    }
+                }
+            }
+            else {
+                addKeywordRecipe(0, searchRequestDto, hashOperations,hashkey);
+            }
+
+        }   
+
+        List<SearchRecipeResponseDto> searchResponseDto = mapper.findbyRecipe(searchRequestDto);
+        if(searchResponseDto.size()>0) {
+            return searchResponseDto; 
+        }
+        else {
+            throw new BusinessLogicException(ExceptionCode.SEARCH_NOT_FOUND);
+        }
+    }
+
+    // 레시피 검색 보기
+    public List<SearchResponseMemberDto> searchViewRecipe(SearchRequestMemberDto sRequestMemberDto) {
+        // TODO: 유저 검사 넣기
+
         HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
-        hashOperations.delete("search:"+memberId, keywordId);
+        List<SearchResponseMemberDto> searchMemberDtoList = new ArrayList<>();
+        Map<Integer, String> map = hashOperations.entries("recipeSearch:"+sRequestMemberDto.getMemberId());
+        if(map.size()==0) {
+            throw new BusinessLogicException(ExceptionCode.LAST_SEARCH_NOT_FOUND);
+        }
+        for (int key : map.keySet()) {
+            SearchResponseMemberDto searchMemberDto = new SearchResponseMemberDto(sRequestMemberDto.getMemberId(), key, map.get(key));
+            searchMemberDtoList.add(searchMemberDto);
+        }
+        return searchMemberDtoList;
+    }
+
+    // 레시피 검색어 삭제
+    public void deleteRecipe(int memberId, int keywordId) {
+        // TODO: 유저 검사 넣기
+
+        HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
+
+        if(hashOperations.hasKey("recipeSearch:"+memberId, keywordId)) {
+            hashOperations.delete("recipeSearch:"+memberId, keywordId);
+        }
+        else {
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);            
+        }
+    }
+
+    private void addKeywordRecipe(int max, SearchRequestDto searchRequestDto, HashOperations<String, Integer, String> hashOperations, String hashkey) {
+        hashOperations.put(hashkey, max+1, searchRequestDto.getKeyword());
+        
+        redisTemplate.expire("recipeSearch:"+searchRequestDto.getMemberId(), 30, TimeUnit.DAYS);
     }
 
 }

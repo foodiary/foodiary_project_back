@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchDailyResponseDto {
     
-    @ApiModelProperty(value="레시피 시퀀스", required = true)
+    @ApiModelProperty(value="데일리 시퀀스", required = true)
     private int dailyId;
     
     @ApiModelProperty(value="게시글 제목", required = true)
@@ -19,8 +19,8 @@ public class SearchDailyResponseDto {
     @ApiModelProperty(value="게시글 직상지", required = true)
     private String dailyWriter;
 
-    @ApiModelProperty(value="게시글 이미지 경로1", required = true)
-    private String dailyPath1;
+    @ApiModelProperty(value="게시글 이미지 경로", required = true)
+    private String dailyPath;
 
     @ApiModelProperty(value="게시글 댓글 수", required = true)
     private int dailyComment;

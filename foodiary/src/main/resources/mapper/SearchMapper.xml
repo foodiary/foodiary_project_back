@@ -3,12 +3,22 @@
 
 <mapper namespace="com.foodiary.search.mapper.SearchMapper">
 
-    <select id="findbyTitle" resultType="com.foodiary.search.model.SearchResponseDto">
+    <select id="findbyRecipe" resultType="com.foodiary.search.model.SearchRecipeResponseDto">
         SELECT tr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
             tr.RECIPE_PATH1, tr.RECIPE_VIEW, tr.RECIPE_BODY,
             (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_LIKE,
             (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_COMMENT
-        FROM TB_RECIPE tr WHERE tr.RECIPE_TITLE LIKE CONCAT('%', #{keyword}, '%') OR tr.RECIPE_BODY LIKE CONCAT('%', #{keyword}, '%') 
+        FROM TB_RECIPE tr WHERE tr.RECIPE_TITLE LIKE CONCAT('%', #{keyword}, '%') OR tr.RECIPE_BODY LIKE CONCAT('%', #{keyword}, '%')
+        ORDER by tr.RECIPE_CREATE DESC
+    </select>
+
+    <select id="findbyDaily" resultType="com.foodiary.search.model.SearchDailyResponseDto">
+        SELECT td.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, 
+            td.DAILY_PATH, td.DAILY_VIEW, td.DAILY_BODY,
+            (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID = td.DAILY_ID) AS DAILY_LIKE,
+            (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID = td.DAILY_ID) AS DAILY_COMMENT
+        FROM TB_DAILY td WHERE td.DAILY_TITLE LIKE CONCAT('%', #{keyword}, '%') OR td.DAILY_BODY LIKE CONCAT('%', #{keyword}, '%') 
+        ORDER by td.DAILY_CREATE DESC 
     </select>
 
 </mapper>
