@@ -19,6 +19,11 @@
         WHERE MEMBER_EMAIL = #{email} AND MEMBER_LOGINID = #{loginId}
     </select>
 
+    <select id="findByLoginIdAndPw" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_PASSWORD = #{pw} AND MEMBER_LOGINID = #{loginId}
+    </select>
+
     <select id="findByEmailAndPw" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_EMAIL = #{email} AND MEMBER_PASSWORD = #{pw}
@@ -81,57 +86,75 @@
         WHERE MEMBER_ID = #{id}
     </select>
 
+    <select id="findByDaily" resultType="com.foodiary.daily.model.DailyDto">
+        SELECT 
+            DAILY_ID, MEMBER_ID, DAILY_WRITER, DAILY_TITLE, DAILY_BODY, DAILY_PATH, DAILY_CREATE, DAILY_VIEW, 
+            (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS DAILY_COMMENT,
+            (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE 
+        FROM TB_DAILY
+        WHERE MEMBER_ID = #{id} AND DAILY_YN = 'N'
+    </select>
+
+    <select id="findByRecipe" resultType="com.foodiary.recipe.model.RecipeDto">
+        SELECT 
+            RECIPE_ID, MEMBER_ID, RECIPE_TITLE, RECIPE_WRITER, 
+            RECIPE_VIEW, RECIPE_CREATE, RECIPE_PATH1, 
+            (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_COMMENT,
+            (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_LIKE
+        FROM TB_RECIPE
+        WHERE MEMBER_ID = #{id}
+    </select>
+
     <select id="findByDailyScrap" resultType="com.foodiary.member.model.MemberDailyScrapResponseDto">
-        SELECT tmsd.MEMBER_DAILY_SCRAP_ID AS MEMBER_DAILY_SCRAP_ID, 
-            tmsd.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, td.DAILY_VIEW ,td.DAILY_PATH, 
+        SELECT tmsd.MEMBER_DAILY_SCRAP_ID AS MEMBER_DAILY_SCRAP_ID, td.MEMBER_ID,
+            tmsd.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, td.DAILY_VIEW ,td.DAILY_PATH, td.DAILY_CREATE,
 	        (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS DAILY_COMMENT,
 	        (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE
         from TB_MEMBER_SCRAP_DAILY tmsd 
             right join TB_DAILY td 
             ON tmsd.DAILY_ID = td.DAILY_ID
-        WHERE tmsd.MEMBER_ID = #{id}
+        WHERE tmsd.MEMBER_ID = #{id} AND td.DAILY_YN = 'N'
     </select>
 
     <select id="findByRecipeScrap" resultType="com.foodiary.member.model.MemberRecipeScrapResponseDto">
-        SELECT tmsr.MEMBER_RECIPE_SCRAP_ID AS MEMBER_RECIPE_SCRAP_ID, 
-            tmsr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, 
-            tr.RECIPE_PATH1,
+        SELECT tmsr.MEMBER_RECIPE_SCRAP_ID AS MEMBER_RECIPE_SCRAP_ID, tr.MEMBER_ID,  tr.RECIPE_CREATE,
+            tmsr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, tr.RECIPE_PATH1,
 	        (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_COMMENT,
 	        (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID=tr.RECIPE_ID) AS RECIPE_LIKE
         from TB_MEMBER_SCRAP_RECIPE tmsr 
             right join TB_RECIPE tr 
             ON tmsr.RECIPE_ID = tr.RECIPE_ID
-        WHERE tmsr.MEMBER_ID = #{id}
+        WHERE tmsr.MEMBER_ID = #{id} AND tr.RECIPE_YN = 'N'
     </select>
 
     <delete id="deleteDailyScrap">
         DELETE FROM TB_MEMBER_SCRAP_DAILY 
-            WHERE MEMBER_DAILY_SCRAP_ID=#{scrapId} AND MEMBER_ID = #{memberId}
+            WHERE MEMBER_DAILY_SCRAP_ID=#{scrapId}
     </delete>
 
     <delete id="deleteRecipeScrap">
         DELETE FROM TB_MEMBER_SCRAP_RECIPE 
-            WHERE MEMBER_RECIPE_SCRAP_ID=#{scrapId} AND MEMBER_ID = #{memberId}
+            WHERE MEMBER_RECIPE_SCRAP_ID=#{scrapId}
     </delete>
 
     <select id="findByDailyLike" resultType="com.foodiary.member.model.MemberDailyLikeResponseDto">
-        SELECT tdl.DAILY_LIKE_ID, tdl.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, td.DAILY_VIEW, td.DAILY_PATH,
+        SELECT tdl.DAILY_LIKE_ID, tdl.DAILY_ID, td.MEMBER_ID, td.DAILY_TITLE, td.DAILY_WRITER, td.DAILY_VIEW, td.DAILY_PATH, td.DAILY_CREATE,
             (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS DAILY_COMMENT,
             (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE
         FROM TB_DAILY_LIKE tdl 
             right join TB_DAILY td 
             ON tdl.DAILY_ID = td.DAILY_ID 
-        WHERE tdl.MEMBER_ID = #{id}
+        WHERE tdl.MEMBER_ID = #{id} AND td.DAILY_YN = 'N'
     </select>
 
     <select id="findByRecipeLike" resultType="com.foodiary.member.model.MemberRecipeLikeResponseDto">
-        SELECT trl.RECIPE_LIKE_ID, trl.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, tr.RECIPE_PATH1,
+        SELECT trl.RECIPE_LIKE_ID, trl.RECIPE_ID, tr.MEMBER_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, tr.RECIPE_VIEW, tr.RECIPE_PATH1, tr.RECIPE_CREATE,
             (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_COMMENT,
             (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_LIKE
         FROM TB_RECIPE_LIKE trl 
             right join TB_RECIPE tr 
             ON trl.RECIPE_ID = tr.RECIPE_ID  
-        WHERE trl.MEMBER_ID = #{id}
+        WHERE trl.MEMBER_ID = #{id} AND tr.RECIPE_YN = 'N'
     </select>
 
     <delete id="deleteDailyLike">
@@ -170,4 +193,145 @@
         WHERE MEMBER_EMAIL = #{email}
     </update>
 
+    <select id="findByDailyComment" resultType="com.foodiary.member.model.MemberDailyCommentDto">
+        SELECT tdc.DAILY_COMMENT_ID, tdc.DAILY_ID, tdc.DAILY_COMMENT_WRITER, 
+                tdc.DAILY_COMMENT_BODY, td.DAILY_TITLE, tdc.DAILY_COMMENT_CREATE, tdc.MEMBER_ID 
+                FROM TB_DAILY_COMMENT tdc LEFT JOIN TB_DAILY td 
+                ON tdc.DAILY_ID  = td.DAILY_ID 
+        WHERE tdc.MEMBER_ID = #{id} AND td.DAILY_YN = 'N'
+    </select>
+
+    <select id="findByRecipeComment" resultType="com.foodiary.member.model.MemberRecipeCommentDto">
+        SELECT trc.RECIPE_COMMENT_ID, trc.RECIPE_ID, trc.RECIPE_COMMENT_WRITER, 
+                trc.RECIPE_COMMENT_BODY, tr.RECIPE_TITLE, trc.RECIPE_COMMENT_CREATE, trc.MEMBER_ID 
+                FROM TB_RECIPE_COMMENT trc LEFT JOIN TB_RECIPE tr 
+                ON trc.RECIPE_ID  = tr.RECIPE_ID 
+        WHERE trc.MEMBER_ID = #{id} AND tr.RECIPE_YN = 'N'
+    </select>
+
+    <delete id="deleteDailyComment">
+        DELETE FROM TB_DAILY_COMMENT
+        WHERE DAILY_COMMENT_ID = #{dailyCommentId}
+    </delete>
+
+    <delete id="deleteRecipeComment">
+        DELETE FROM TB_RECIPE_COMMENT
+        WHERE RECIPE_COMMENT_ID = #{recipeComments}
+    </delete>
+
+    <update id="updateDailyComment">
+        UPDATE TB_DAILY_COMMENT
+        SET DAILY_COMMENT_BODY = #{comment}, DAILY_COMMENT_UPDATE = now()
+        WHERE DAILY_COMMENT_ID = #{dailyCommentId};
+    </update>
+
+    <update id="updateRecipeComment">
+        UPDATE TB_RECIPE_COMMENT
+        SET RECIPE_COMMENT_BODY = #{comment}, RECIPE_COMMENT_UPDATE = now()
+        WHERE RECIPE_COMMENT_ID = #{recipeCommentId};
+    </update>
+
+
+    <select id="findByNotice" resultType="com.foodiary.member.model.MemberNoticeResponseDto">
+        SELECT * FROM TB_NOTICE 
+	</select>
+
+    <select id="findByNoticeId" resultType="com.foodiary.member.model.MemberNoticeInfoResponseDto">
+        SELECT * FROM TB_NOTICE 
+        WHERE NOTICE_ID = #{noticeId}
+	</select>
+
+    <select id="findByFaq" resultType="com.foodiary.member.model.MemberFaqDto">
+        SELECT * FROM TB_FAQ 
+	</select>
+
+    <select id="findByQuestion" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
+        SELECT * FROM TB_QUESTION
+        WHERE MEMBER_ID = #{memberId} AND QUESTION_YN = 'N'
+	</select>
+
+    <select id="findByQuestionId" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
+        SELECT * FROM TB_QUESTION tq
+        LEFT JOIN TB_ANSWER ta 
+        ON tq.QUESTION_ID = ta.QUESTION_ID
+        WHERE tq.QUESTION_ID = #{questionId} AND tq.QUESTION_YN = 'N'
+	</select>
+
+    <insert id="saveQuestion" parameterType="com.foodiary.member.model.MemberQuestionResponseDto" useGeneratedKeys="true" keyProperty="questionId" keyColumn="QUESTION_ID">
+        INSERT INTO TB_QUESTION 
+        (MEMBER_ID, QUESTION_TITLE, QUESTION_CONTENT, QUESTION_PATH, QUESTION_CREATE, QUESTION_UPDATE)
+        VALUES (#{memberId}, #{questionTitle}, #{questionContent}, #{questionPath}, now(), now());
+    </insert>
+
+    <insert id="saveMemberQuestionImage">
+        INSERT INTO TB_QUESTION_IMAGE 
+        (MEMBER_ID, QUESTION_ID,QUESTION_FILE_ORIGINAL_NAME, QUESTION_FILE_FULL_NAME, QUESTION_FILE_SAVE_NAME,
+        QUESTION_FILE_PATH, QUESTION_FILE_SIZE, QUESTION_FILE_TYPE, QUESTION_FILE_CREATE, QUESTION_FILE_UPDATE)
+        VALUES (#{memberId}, #{questionId}, #{questionFileOriginalName}, #{questionFileFullName}, #{questionFileSaveName}, #{questionFilePath}, #{questionFileSize}, #{questionFileType}, now(), now());
+    </insert>
+
+    <select id="findByQuestionImage" resultType="com.foodiary.member.model.MemberQuestionImageDto">
+        SELECT * FROM TB_QUESTION_IMAGE
+        WHERE QUESTION_ID = #{questionId}
+	</select>
+
+    <delete id="deleteQuestionImage">
+        SELECT * FROM TB_QUESTION_IMAGE
+        WHERE QUESTION_ID = #{questionId}
+	</delete>
+
+    <update id="updateQuetion">
+        UPDATE TB_QUESTION
+        SET QUESTION_TITLE = #{questionTitle}, QUESTION_CONTENT = #{questionContent}, 
+            QUESTION_PATH = #{questionPath}, QUESTION_UPDATE = now()
+        WHERE QUESTION_ID = #{questionId};
+    </update>
+
+    <update id="deleteQuetion">
+        UPDATE TB_QUESTION
+        SET QUESTION_YN = 'Y', QUESTION_UPDATE = now(), QUESTION_DELETE = now()
+        WHERE QUESTION_ID = #{questionId};
+    </update>
+
+    <select id="findByFoods" resultType="com.foodiary.member.model.MemberFoodsResponseDto">
+        SELECT tmf.MEMBER_FOOD_ID, tmf.MEMBER_ID, tmf.FOOD_ID, 
+            tmf.MEMBER_FOOD_LIKE, tf.FOOD_NAME, tmf.MEMBER_FOOD_CREATE  
+        FROM TB_MEMBER_FOOD tmf
+        LEFT JOIN TB_FOOD tf
+        ON tmf.FOOD_ID = tf.FOOD_ID
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY MEMBER_FOOD_CREATE DESC;
+	</select>
+
+    <update id="updateMemberFood">
+        UPDATE TB_MEMBER_FOOD
+        SET MEMBER_FOOD_LIKE = #{like}
+        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+    </update>
+    
+
+    <select id="findByDailyCommentId" resultType="com.foodiary.member.model.MemberDailyCommentDetailResponseDto">
+        SELECT tdc.DAILY_COMMENT_ID, tdc.DAILY_ID, tdc.MEMBER_ID, 
+    	tdc.DAILY_COMMENT_WRITER, tdc.DAILY_COMMENT_BODY, 
+    	tdc.DAILY_COMMENT_CREATE, td.DAILY_TITLE,
+        (SELECT COUNT(*) from TB_MEMBER_SCRAP_DAILY tmsd WHERE tmsd.DAILY_ID=td.DAILY_ID) AS DAILY_SCRAP,
+        (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE 
+        FROM TB_DAILY td 
+            LEFT JOIN TB_DAILY_COMMENT tdc
+            ON td.DAILY_ID = tdc.DAILY_ID
+        WHERE td.DAILY_ID = #{dailyId} AND DAILY_YN = 'N' AND tdc.DAILY_COMMENT_ID = #{dailyCommentId}
+
+	</select>
+
+    <select id="findByRecipeCommentId" resultType="com.foodiary.member.model.MemberRecipeCommentDetailResponseDto">
+        SELECT tdc.RECIPE_COMMENT_ID, tdc.RECIPE_ID, tdc.MEMBER_ID, 
+    	tdc.RECIPE_COMMENT_WRITER, tdc.RECIPE_COMMENT_BODY, 
+    	tdc.RECIPE_COMMENT_CREATE, td.RECIPE_TITLE,
+        (SELECT COUNT(*) from TB_MEMBER_SCRAP_RECIPE tmsd WHERE tmsd.RECIPE_ID=td.RECIPE_ID) AS RECIPE_SCRAP,
+        (SELECT COUNT(*) from TB_RECIPE_LIKE tdl WHERE tdl.RECIPE_ID=td.RECIPE_ID) AS RECIPE_LIKE 
+        FROM TB_RECIPE td 
+            LEFT JOIN TB_RECIPE_COMMENT tdc
+            ON td.RECIPE_ID = tdc.RECIPE_ID
+        WHERE td.RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N' AND tdc.RECIPE_COMMENT_ID = #{recipeCommentId}
+	</select>
 </mapper>

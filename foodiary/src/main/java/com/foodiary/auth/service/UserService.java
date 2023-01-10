@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.model.GoogleUserDto;
 import com.foodiary.auth.model.NaverUserDto;
@@ -68,19 +70,18 @@ public class UserService {
         return null;
     }
     private TokenResponseDto createTokenResponse(String email) throws Exception {
-        // TODO : 임의로 변경, 로직 검토 부탁드려요 민택님
-        MemberDto member = memberMapper.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        MemberDto member = verifyMember(email);
         log.info(member.getMemberEmail());
-        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(email);
+        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;
     }
 
     public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
-        MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), loginDto.getPassword());
+        MemberDto member = memberMapper.findByLoginIdAndPw(loginDto.getLoginId(), loginDto.getPassword()).orElseThrow();
         log.info(member.getMemberEmail());
-        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(loginDto.getLoginId());
+        TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;
@@ -92,10 +93,50 @@ public class UserService {
 
 
     private boolean isJoinedUser(GoogleUserDto googleUser) {
-        // TODO : 임의로 변경, 로직 검토 부탁드려요 민택님
-        MemberDto member = memberMapper.findByEmail(googleUser.getEmail()).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        MemberDto member = verifyMember(googleUser.email);
         log.info("Joined User: {}", member);
         return member == null;
+    }
+
+    private MemberDto verifyMember(String email) {
+        return memberMapper.findByEmail(email)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    }
+
+    public boolean checkUser(int memberId) {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("userId : {}", principal.getUsername());
+        int id = Integer.parseInt(principal.getUsername());
+        if(memberId != id) {
+            throw new BusinessLogicException(ExceptionCode.NOT_AUTHORIZED);
+        } else return true;
+    }
+
+    public boolean verifyUser(int memberId) {
+        CustomUserDetails principal = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("userId : {}", principal.getUsername());
+        int id = Integer.parseInt(principal.getUsername());
+        if(memberId == id) {
+            return true;
+        } else return false;
+    }
+
+    public void verifySave(int saveCheck) {
+        if(saveCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.SAVE_ERROR);
+        }
+    }
+
+    public void verifyUpdate(int updateCheck) {
+        if(updateCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.UPDATE_ERROR);
+        }
+    }
+
+    public void verifyDelete(int deleteCheck) {
+        if(deleteCheck < 1) {
+            throw new BusinessLogicException(ExceptionCode.DELETE_ERROR);
+        }
     }
 
     public String encrypt(String s) {
