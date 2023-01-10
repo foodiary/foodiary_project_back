@@ -25,8 +25,9 @@ public enum ExceptionCode {
     NICKNAME_BAD_REQUEST(400, "닉네임이 중복입니다"),
     LOGINID_BAD_REQUEST(400, "아이디가 중복입니다"),
     SEARCH_NOT_FOUND(404, "검색어와 일치하는 게시글이 없습니다."),
+    LAST_SEARCH_NOT_FOUND(404, "최근 검색어가 없습니다."),
+    NOT_FOUND(404, "요청한 데이터가 없습니다."),
     NOT_AUTHORIZED(401, "접근 권한이 없는 사용자입니다."),
-
     NUM_BAD_REQUEST(400, "인증번호가 일치하지 않습니다."),
     NUM_TIMEOUT(400, "인증 시간을 초과하였습니다. 다시 시도해주세요"),
     MORE_PW_ERROR(400, "비밀번호가 일치하지않습니다."),

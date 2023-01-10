@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchResponseDto {
+public class SearchRecipeResponseDto {
     
     @ApiModelProperty(value="레시피 시퀀스", required = true)
     private int recipeId;
