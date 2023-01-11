@@ -113,6 +113,8 @@ public class SecurityConfig {
                 // "/question/{memberId}/{questionId}",
                 // "/member/food/{memberId}",
                 // "/member/food/{memberId}/{memberFoodId}",
+                // "/member/image/{memberId}",
+                // "/member/scrap/{memberId}",
 
 
                 // 권한 필요x url

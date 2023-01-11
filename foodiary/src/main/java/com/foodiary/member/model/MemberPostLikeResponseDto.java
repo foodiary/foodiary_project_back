@@ -8,42 +8,43 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberRecipeLikeResponseDto {
+public class MemberPostLikeResponseDto {
     
     @ApiModelProperty(value="좋아요 시퀀스", required = true)
-    private int recipeLikeId;
+    private int likeId;
 
     @ApiModelProperty(value="멤버 시퀀스", required = true)
     private int memberId;
 
     @ApiModelProperty(value="게시글 시퀀스", required = true)
-    private int recipeId;
+    private int postId;
 
     @ApiModelProperty(value="게시글 제목", required = true)
-    private String recipeTitle;
+    private String postTitle;
 
     @ApiModelProperty(value="게시글 작성자", required = true)
-    private String recipeWriter;
+    private String postWriter;
 
     @ApiModelProperty(value="게시글 작성일자", required = true)
-    private String recipeCreate;
+    private String postCreate;
     
-    @ApiModelProperty(value="게시글 이미지 경로1", required = true)
-    private String recipePath1;
+    @ApiModelProperty(value="게시글 이미지 경로", required = true)
+    private String postPath;
+
+    @ApiModelProperty(value="게시글 타입", required = true)
+    private String type;
 
     @ApiModelProperty(value="게시글 댓글 수", required = true)
-    private int recipeComment;
+    private int postComment;
 
     @ApiModelProperty(value="게시글 조회 수", required = true)
-    private int recipeView;
+    private int postView;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
-    private int recipeLike;
+    private int postLike;
 
-    @ApiModelProperty(value="게시글이 없을 경우", required = true)
-    private String no;
+    @ApiModelProperty(value="좋아요한 일자", required = true)
+    private String likeCreate;
 
-    public void noAdd() {
-        no = "게시글이 없습니다.";
-    }
+
 }

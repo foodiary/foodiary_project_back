@@ -32,8 +32,6 @@ import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
-import com.foodiary.member.model.MemberDailyLikeResponseDto;
-import com.foodiary.member.model.MemberDailyScrapResponseDto;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
@@ -41,13 +39,13 @@ import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberPostLikeResponseDto;
+import com.foodiary.member.model.MemberPostScrapResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
-import com.foodiary.member.model.MemberRecipeLikeResponseDto;
-import com.foodiary.member.model.MemberRecipeScrapResponseDto;
 import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.member.service.MemberService;
@@ -84,7 +82,29 @@ public class MemberController {
         @RequestBody @Valid MemberEditPasswordRequestDto memberEditPasswordRequestDto
     ) throws Exception {
 
-        memberService.EditMemberPassword(memberEditPasswordRequestDto, memberId);
+        memberService.editMemberPassword(memberEditPasswordRequestDto, memberId);
+
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "member image edit", description = "마이페이지에서 이미지 수정하기")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @PatchMapping(value = "/member/image/{memberId}")
+    public ResponseEntity<?> memberModifyImage(
+        @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
+        @Parameter(description = "사진 이미지")
+        @RequestPart(value = "memberImage", required = true) MultipartFile memberImage,
+        @RequestPart(value = "memberPath", required = false) String memberPath
+    ) throws Exception {
+
+        memberService.editMemberImage(memberId, memberImage, memberPath);
 
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
@@ -256,7 +276,6 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    // TODO : 디자인 나오면 추가 수정 필요함. 지금은 검토 X
     @Operation(summary = "member info modify", description = "회원 정보 수정")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -269,12 +288,10 @@ public class MemberController {
     @PatchMapping(value = "/member/{memberId}")
     public ResponseEntity<String> memberModify(
         @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
-        @RequestPart @Valid MemberEditRequestDto memberEditDto,
-        @Parameter(description = "사진 이미지")
-        @RequestPart(value = "memberImage", required = false) MultipartFile memberImage
+        @RequestBody @Valid MemberEditRequestDto memberEditDto
     ) throws Exception {
 
-        memberService.updateMember(memberEditDto, memberId, memberImage);
+        memberService.updateMember(memberEditDto, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -413,7 +430,7 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @Operation(summary = "member scrap list", description = "회원(본인) 하루식단 스크랩 조회")
+    @Operation(summary = "member scrap list", description = "회원(본인) 스크랩 조회")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -422,8 +439,8 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/scrap/daily/{memberId}")
-    public ResponseEntity<List<MemberDailyScrapResponseDto> > dailyScraps(
+    @GetMapping(value = "/member/scrap/{memberId}")
+    public ResponseEntity<List<MemberPostScrapResponseDto> > postScraps(
         @PathVariable @ApiParam(value = "memberId", required = true) int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
@@ -432,12 +449,12 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<MemberDailyScrapResponseDto> memberDailyScrapResponseDtoList = memberService.detailDadilyScrap(memberId);
+        List<MemberPostScrapResponseDto>  memberPostScrapResponseDtoList= memberService.detailScrap(memberId);
 
-        return new ResponseEntity<>(memberDailyScrapResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(memberPostScrapResponseDtoList, HttpStatus.OK);
     }
 
-    @Operation(summary = "member scrap list", description = "회원(본인) 레시피 스크랩 조회")
+    @Operation(summary = "member like list", description = "회원(본인) 좋아요 한 글 조회")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -446,32 +463,8 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/scrap/recipe/{memberId}")
-    public ResponseEntity<List<MemberRecipeScrapResponseDto>> recipeScraps(
-        @PathVariable @ApiParam(value = "memberId", required = true) int memberId,
-        @ApiParam(value="페이지", required = true) @Positive int page
-    ) throws Exception {
-
-        if(page <= 0){
-            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-        }
-        PageHelper.startPage(page, 10);
-        List<MemberRecipeScrapResponseDto> memberRecipeScrapResponseDtoList = memberService.detailRecipeScrap(memberId);
-
-        return new ResponseEntity<>(memberRecipeScrapResponseDtoList, HttpStatus.OK);
-    }
-
-    @Operation(summary = "member like list", description = "회원(본인) 하루식단 좋아요 한 글 조회")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @GetMapping(value = "/member/like/daily/{memberId}")
-    public ResponseEntity<List<MemberDailyLikeResponseDto>> dailyLikes(
+    @GetMapping(value = "/member/like/{memberId}")
+    public ResponseEntity<List<MemberPostLikeResponseDto>> postLikes(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
@@ -480,33 +473,9 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<MemberDailyLikeResponseDto> memberDailyLikeResponseDtoList = memberService.detailDailyLike(memberId);
+        List<MemberPostLikeResponseDto> memberPostLikeResponseDtoList = memberService.detailLike(memberId);
 
-        return new ResponseEntity<>(memberDailyLikeResponseDtoList, HttpStatus.OK);
-    }
-
-    @Operation(summary = "member like list", description = "회원(본인) 레시피 좋아요 한 글 조회")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
-    @GetMapping(value = "/member/like/recipe/{memberId}")
-    public ResponseEntity<List<MemberRecipeLikeResponseDto>> recipeLikes(
-        @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
-        @ApiParam(value="페이지", required = true) @Positive int page
-    ) throws Exception {
-
-        if(page <= 0){
-            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-        }
-        PageHelper.startPage(page, 10);
-        List<MemberRecipeLikeResponseDto> memberRecipeLikeResponseDtoList = memberService.detailRecipeLike(memberId);
-
-        return new ResponseEntity<>(memberRecipeLikeResponseDtoList, HttpStatus.OK);
+        return new ResponseEntity<>(memberPostLikeResponseDtoList, HttpStatus.OK);
     }
 
     @Operation(summary = "member comment list", description = "회원(본인)이 쓴 하루식단 댓글 조회")
