@@ -213,7 +213,9 @@ public class MemberService {
 
             userService.verifyUpdate(mapper.updateMemberPassword(newPassword, id));
         }
-        throw new BusinessLogicException(ExceptionCode.MORE_PW_ERROR);
+        else {
+            throw new BusinessLogicException(ExceptionCode.MORE_PW_ERROR);
+        }
 
     }
 
@@ -317,6 +319,7 @@ public class MemberService {
 
     }
 
+    // 회원가입 이메일 발송
     public void mailSend(MemberCheckEmailRequestDto memberCheckEmailRequestDto) throws Exception {
 
         // 이메일 중복 검사 한번더 
@@ -334,15 +337,18 @@ public class MemberService {
 
     }
 
+    // 회원가입 이메일 확인
     public void mailSendConfirm(MemberCheckEmailNumRequestDto memberCheckEmailNumRequestDto) {
 
-        String confirm = redisTemplate.opsForValue().get("signup:" + memberCheckEmailNumRequestDto.getEmail());
+        if(redisTemplate.hasKey("signup:" + memberCheckEmailNumRequestDto.getEmail())) {
+            String confirm = redisTemplate.opsForValue().get("signup:" + memberCheckEmailNumRequestDto.getEmail());
         
-        if(confirm==null) {
-            throw new BusinessLogicException(ExceptionCode.NUM_TIMEOUT);
-        }
-        if(!confirm.equals(memberCheckEmailNumRequestDto.getNum())) {
-            throw new BusinessLogicException(ExceptionCode.NUM_BAD_REQUEST);
+            if(confirm==null) {
+                throw new BusinessLogicException(ExceptionCode.NUM_TIMEOUT);
+            }
+            if(!confirm.equals(memberCheckEmailNumRequestDto.getNum())) {
+                throw new BusinessLogicException(ExceptionCode.NUM_BAD_REQUEST);
+            }
         }
     }
 

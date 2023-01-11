@@ -2,6 +2,7 @@ package com.foodiary.search.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.foodiary.search.model.SearchResponseMemberDto;
 import com.foodiary.search.model.SearchRequestDto;
-import com.foodiary.search.model.SearchRequestMemberDto;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.search.model.SearchDailyResponseDto;
@@ -34,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class SearchController {
     
-    // TODO : springsecurity에 추가
     private final SearchService searchService;
 
     @Operation(summary = "search keyword delete", description = "하루식단 최근 검색어 삭제하기")
@@ -66,7 +66,7 @@ public class SearchController {
     @ResponseBody
     @PostMapping(value = "/search/daily/result")
     public ResponseEntity<List<SearchDailyResponseDto>> searchFindDaily(
-        @RequestBody SearchRequestDto searchRequestDto
+        @RequestBody @Valid SearchRequestDto searchRequestDto
     ) throws Exception {
 
         if(searchRequestDto.getPage() <= 0){
@@ -77,7 +77,7 @@ public class SearchController {
         return new ResponseEntity<>(searchResponseDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "search view", description = "하루식단 검색 보기")
+    @Operation(summary = "search view", description = "하루식단 검색어 보기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -88,10 +88,10 @@ public class SearchController {
     @ResponseBody
     @GetMapping(value = "/search/daily")
     public ResponseEntity<List<SearchResponseMemberDto>> searchsDaily(
-        @RequestBody SearchRequestMemberDto sRequestMemberDto
+        @RequestParam(required = true) @ApiParam(value="멤버 시퀀스", required = true) int memberId
     ) throws Exception {
 
-        List<SearchResponseMemberDto> searchMemberDtoList = searchService.searchViewDaily(sRequestMemberDto);
+        List<SearchResponseMemberDto> searchMemberDtoList = searchService.searchViewDaily(memberId);
 
         return new ResponseEntity<>(searchMemberDtoList, HttpStatus.OK);
     }
@@ -125,7 +125,7 @@ public class SearchController {
     @ResponseBody
     @PostMapping(value = "/search/recipe/result")
     public ResponseEntity<List<SearchRecipeResponseDto>> searchFind(
-        @RequestBody SearchRequestDto searchRequestDto
+        @RequestBody @Valid SearchRequestDto searchRequestDto
     ) throws Exception {
 
         if(searchRequestDto.getPage() <= 0){
@@ -136,7 +136,7 @@ public class SearchController {
         return new ResponseEntity<>(searchResponseDto, HttpStatus.OK);
     }
 
-    @Operation(summary = "search view", description = "레시피 검색 보기")
+    @Operation(summary = "search view", description = "레시피 검색어 보기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
@@ -147,10 +147,10 @@ public class SearchController {
     @ResponseBody
     @GetMapping(value = "/search/recipe")
     public ResponseEntity<List<SearchResponseMemberDto>> searchsRecipe(
-        @RequestBody SearchRequestMemberDto sRequestMemberDto
+        @ApiParam(value="멤버 시퀀스", required = true) int memberId
     ) throws Exception {
 
-        List<SearchResponseMemberDto> searchMemberDtoList = searchService.searchViewRecipe(sRequestMemberDto);
+        List<SearchResponseMemberDto> searchMemberDtoList = searchService.searchViewRecipe(memberId);
 
         return new ResponseEntity<>(searchMemberDtoList, HttpStatus.OK);
     }

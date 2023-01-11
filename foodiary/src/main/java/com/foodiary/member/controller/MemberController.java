@@ -761,26 +761,7 @@ public class MemberController {
         return new ResponseEntity<>(foodList, HttpStatus.OK);
     }
 
-    @Operation(summary = "member food recommend like", description = "회원 음식 추천 좋아요, 싫어요")
-    @ApiResponses({ 
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ResponseBody
-    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @PatchMapping(value = "/member/food/{memberId}/{memberFoodId}")
-    public ResponseEntity<String> memberFoodModify(
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) int memberId,
-        @PathVariable @ApiParam(value = "회원 음식 추천 시퀀스", required = true) int memberFoodId,
-        @RequestBody @ApiParam(value = "좋아요 Y, 싫어요 N", required = true) String like
-    ) throws Exception {
 
-        memberService.foodEdit(memberId, memberFoodId, like);
-
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
 
 
 

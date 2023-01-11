@@ -15,7 +15,6 @@ import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.search.mapper.SearchMapper;
 import com.foodiary.search.model.SearchResponseMemberDto;
-import com.foodiary.search.model.SearchRequestMemberDto;
 import com.foodiary.search.model.SearchDailyResponseDto;
 import com.foodiary.search.model.SearchRecipeResponseDto;
 import com.foodiary.search.model.SearchRequestDto;
@@ -37,6 +36,7 @@ public class SearchService {
         
         if(searchRequestDto.getMemberId() > 0) {
 
+            userService.checkUser(searchRequestDto.getMemberId());
             String hashkey = "dailySearch:"+ searchRequestDto.getMemberId();
             HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
             
@@ -78,17 +78,17 @@ public class SearchService {
     }
 
     // 하루 식단 검색 보기
-    public List<SearchResponseMemberDto> searchViewDaily(SearchRequestMemberDto sRequestMemberDto) {
-        // TODO: 유저 검사 넣기
+    public List<SearchResponseMemberDto> searchViewDaily(int memberId) {
 
+        userService.checkUser(memberId);
         HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
         List<SearchResponseMemberDto> searchMemberDtoList = new ArrayList<>();
-        Map<Integer, String> map = hashOperations.entries("dailySearch:"+sRequestMemberDto.getMemberId());
+        Map<Integer, String> map = hashOperations.entries("dailySearch:"+memberId);
         if(map.size()==0) {
             throw new BusinessLogicException(ExceptionCode.LAST_SEARCH_NOT_FOUND);
         }
         for (int key : map.keySet()) {
-            SearchResponseMemberDto searchMemberDto = new SearchResponseMemberDto(sRequestMemberDto.getMemberId(), key, map.get(key));
+            SearchResponseMemberDto searchMemberDto = new SearchResponseMemberDto(memberId, key, map.get(key));
             searchMemberDtoList.add(searchMemberDto);
         }
         return searchMemberDtoList;
@@ -96,7 +96,7 @@ public class SearchService {
 
     // 하루 식단 검색어 삭제
     public void deleteDaily(int memberId, int keywordId) {
-        // TODO: 유저 검사 넣기
+        userService.checkUser(memberId);
         HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
         if(hashOperations.hasKey("dailySearch:"+memberId, keywordId)) {
             hashOperations.delete("dailySearch:"+memberId, keywordId);
@@ -117,6 +117,7 @@ public class SearchService {
         
         if(searchRequestDto.getMemberId() > 0) {
 
+            userService.checkUser(searchRequestDto.getMemberId());
             String hashkey = "recipeSearch:" + searchRequestDto.getMemberId();
             HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
             
@@ -158,17 +159,16 @@ public class SearchService {
     }
 
     // 레시피 검색 보기
-    public List<SearchResponseMemberDto> searchViewRecipe(SearchRequestMemberDto sRequestMemberDto) {
-        // TODO: 유저 검사 넣기
-
+    public List<SearchResponseMemberDto> searchViewRecipe(int memberId) {
+        userService.checkUser(memberId);
         HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
         List<SearchResponseMemberDto> searchMemberDtoList = new ArrayList<>();
-        Map<Integer, String> map = hashOperations.entries("recipeSearch:"+sRequestMemberDto.getMemberId());
+        Map<Integer, String> map = hashOperations.entries("recipeSearch:"+memberId);
         if(map.size()==0) {
             throw new BusinessLogicException(ExceptionCode.LAST_SEARCH_NOT_FOUND);
         }
         for (int key : map.keySet()) {
-            SearchResponseMemberDto searchMemberDto = new SearchResponseMemberDto(sRequestMemberDto.getMemberId(), key, map.get(key));
+            SearchResponseMemberDto searchMemberDto = new SearchResponseMemberDto(memberId, key, map.get(key));
             searchMemberDtoList.add(searchMemberDto);
         }
         return searchMemberDtoList;
@@ -176,8 +176,8 @@ public class SearchService {
 
     // 레시피 검색어 삭제
     public void deleteRecipe(int memberId, int keywordId) {
-        // TODO: 유저 검사 넣기
 
+        userService.checkUser(memberId);
         HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
 
         if(hashOperations.hasKey("recipeSearch:"+memberId, keywordId)) {

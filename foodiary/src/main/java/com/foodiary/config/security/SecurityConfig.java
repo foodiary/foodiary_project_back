@@ -115,7 +115,10 @@ public class SecurityConfig {
                 // "/member/food/{memberId}/{memberFoodId}",
                 // "/member/image/{memberId}",
                 // "/member/scrap/{memberId}",
-
+                // "/search/daily/delete/{memberId}/{keywordId}",
+                // "/search/daily",
+                // "/search/recipe/delete/{memberId}/{keywordId}",
+                // "/search/recipe"
 
                 // 권한 필요x url
                 // "/member/find/password",
@@ -129,7 +132,10 @@ public class SecurityConfig {
                 // "/notice",
                 // "/notice/{noticeId}",
                 // "/faq",
-
+                // "/rank/month",
+                // "/rank/week",
+                // "/search/daily/result",
+                // "/search/recipe/result"
 
                 // ).permitAll()
                 
