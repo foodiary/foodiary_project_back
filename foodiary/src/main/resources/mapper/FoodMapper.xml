@@ -4,17 +4,17 @@
 <mapper namespace="com.foodiary.food.mapper.FoodMapper">
 
     <select id="findByFoodCetegory" resultType="com.foodiary.food.model.FoodDto">
-        SELECT * FROM TB_Food
+        SELECT * FROM TB_FOOD
         WHERE FOOD_CATEGORY = #{category}
     </select>
 
     <select id="findById" resultType="com.foodiary.food.model.FoodDto">
-        SELECT * FROM TB_Food
+        SELECT * FROM TB_FOOD
         WHERE FOOD_ID = #{foodId}
     </select>
 
     <select id="findAllFood" resultType="com.foodiary.food.model.FoodDto">
-        SELECT * FROM TB_Food
+        SELECT * FROM TB_FOOD
     </select>
 
     <select id="findMemberFoodByCreateAt" resultType="Integer">
@@ -68,7 +68,7 @@
         UPDATE TB_MEMBER_FOOD
         SET MEMBER_FOOD_LIKE = IF(MEMBER_FOOD_LIKE = 'Y', 'N', 'Y'),
             MEMBER_FOOD_HATE = 'N'
-        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+        WHERE MEMBER_FOOD_ID = #{memberFoodId} ;
     </update>
 
 
@@ -81,10 +81,3 @@
 
 
 </mapper>
-
-
-
-
-
-
-

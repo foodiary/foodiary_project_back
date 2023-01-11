@@ -38,7 +38,7 @@ public class DailyService {
         MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        if(dailyImage == null) {
+        if(dailyImage == null || dailyImage.getOriginalFilename().equals("")) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
             fileCheck(dailyImage);
@@ -70,6 +70,7 @@ public class DailyService {
     // 하루 식단 댓글 추가
     public void addDailyComment(DailyCommentWriteRequestDto dailyCommentWriteRequestDto) {
         userService.checkUser(dailyCommentWriteRequestDto.getMemberId());
+        // TODO : 작성자 추가해주세요~! dto에도 추가하고, 서비스에서도 값 넣어주기, verifySave 넣기
 
         dailyMapper.saveDailyComment(dailyCommentWriteRequestDto);
     }
@@ -78,7 +79,6 @@ public class DailyService {
     public void addDailyLike(int memberId, int dailyId) {
         userService.checkUser(memberId);
 
-        verifyDailyPost(dailyId);
         boolean verifyLike = dailyMapper.findByMemberIdAndDailyId(memberId, dailyId).isEmpty();
 
         if (!verifyLike) {
