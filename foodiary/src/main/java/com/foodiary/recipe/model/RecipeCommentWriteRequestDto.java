@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class RecipeCommentWriteRequestDto {
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 
+    @Setter
     @ApiModelProperty(value="작성자", required = false)
     private String writer;
 

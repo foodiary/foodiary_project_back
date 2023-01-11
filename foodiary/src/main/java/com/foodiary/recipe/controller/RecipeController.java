@@ -384,7 +384,7 @@ public class RecipeController {
                 @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
                 @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) @Positive int scrapId
         ) throws Exception {
-                recipeService.removeRecipeScrap(recipeId, memberId, scrapId);
+                recipeService.removeRecipeScrap(recipeId, memberId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
         }
 }

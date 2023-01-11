@@ -81,7 +81,8 @@ public class UserService {
     public TokenResponseDto createLoginTokenResponse(MemberLoginRequestDto loginDto) throws Exception {
         String encryptPw = encrypt(loginDto.getPassword());
         log.info(encryptPw);
-        MemberDto member = memberMapper.findByEmailAndPw(loginDto.getLoginId(), encryptPw);
+        MemberDto member = memberMapper.findByLoginIdAndPw(loginDto.getLoginId(), encryptPw)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         log.info(member.getMemberEmail());
         log.info(member.getMemberPassword());

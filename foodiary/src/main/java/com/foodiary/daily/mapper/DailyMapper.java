@@ -43,6 +43,8 @@ public interface DailyMapper {
 
     Optional<DailyCommentDetailsResponseDto> findByDailyComment(@Param("commentId") int commentId);
 
+    Optional<DailyImageDto> findImageByDailyId(@Param("dailyId") int dailyId);
+
     Optional<Integer> findByDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
     Optional<Integer> findByMemberIdAndDailyId(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
@@ -66,7 +68,7 @@ public interface DailyMapper {
 
     int deleteDailyComment(@Param("dailyId") int dailyId, @Param("commentId") int commentId);
 
-    int deleteDailyScrap(@Param("dailyId") int dailyId, @Param("scrapId") int scrapId);
+    int deleteDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
     int deleteDailyImage(@Param("dailyId") int dailyId, @Param("path") String path);
 }

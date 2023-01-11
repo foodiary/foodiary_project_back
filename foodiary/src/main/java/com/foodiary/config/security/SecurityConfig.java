@@ -131,7 +131,7 @@ public class SecurityConfig {
 
                 // ).permitAll()
                 
-                .antMatchers("/**").permitAll()
+                .antMatchers("/dailys/**", "/recipes/**", "/food/**", "/auth/**", "/oauth/**").permitAll()
                 
                 .anyRequest().authenticated() 
                 .and()

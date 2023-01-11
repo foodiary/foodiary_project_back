@@ -1,13 +1,11 @@
 package com.foodiary.daily.model;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class DailyImageDto {
 
@@ -34,16 +32,4 @@ public class DailyImageDto {
 
     @ApiModelProperty(value="이미지 확장자, png", required = true)
     private String ext;
-
-    public DailyImageDto(int dailyId, int memberId, String originalName, String originalFullName, String saveName, String path, long size, String ext) {
-        this.dailyId = dailyId;
-        this.memberId = memberId;
-        this.originalName = originalName;
-        this.originalFullName = originalFullName;
-        this.saveName = saveName;
-        this.path = path;
-        this.size = size;
-        this.ext = ext;
-    }
-
 }

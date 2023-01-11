@@ -1,6 +1,7 @@
 package com.foodiary.food.mapper;
 
 
+import com.foodiary.food.model.MemberFoodRequestDto;
 import com.foodiary.food.model.MenuRecommendRequestDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,14 +19,14 @@ public interface FoodMapper {
 
     int saveFood(FoodDto food);
 
-    int saveMemberFood(@Param("memberId") int memberId, @Param("foodId") int foodId);
+    int saveMemberFood(MemberFoodRequestDto memberFoodRequestDto);
 
     int saveWeekRecommendMenu(MenuRecommendRequestDto menuRecommendRequestDto);
 
 
-    int updateFoodLike(@Param("memberFoodId") int memberFoodId);
+    int updateFoodLike(@Param("memberFoodId") int memberFoodId, @Param("memberId") int memberId);
 
-    int updateFoodHate(@Param("memberFoodId") int memberFoodId);
+    int updateFoodHate(@Param("memberFoodId") int memberFoodId, @Param("memberId") int memberId);
 
     List<Integer> findAllHateFood(@Param("memberId") int memberId);
 
@@ -41,6 +42,8 @@ public interface FoodMapper {
     FoodDto findById(@Param("foodId") int foodId);
 
     MenuRecommendResponseDto findByMenu(@Param("menuId") int menuId, @Param("memberId") int memberId);
+
+    Optional<Integer> findByMemberFood(MemberFoodRequestDto memberFoodRequestDto);
 
 
 

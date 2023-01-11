@@ -28,7 +28,7 @@
 
     <!--    게시글 스크랩-->
     <insert id="saveRecipeScrap">
-        INSERT INTO TB_MEMBER_BOARDSCRAP_RECIPE (MEMBER_ID, RECIPE_ID)
+        INSERT INTO TB_RECIPE_SCRAP (MEMBER_ID, RECIPE_ID)
         VALUES (#{memberId}, #{recipeId});
     </insert>
 
@@ -55,7 +55,7 @@
 <update id="updateRecipe">
     UPDATE TB_RECIPE
     SET RECIPE_TITLE = #{title}, RECIPE_BODY = #{content}, RECIPE_PATH1 = #{path1}, RECIPE_PATH2 = #{path2}, RECIPE_PATH3 = #{path3}, RECIPE_UPDATE = now()
-    WHERE RECIPE_ID = #{recipeId};
+    WHERE RECIPE_ID = #{recipeId} AND #{memberId};
 </update>
 
 
@@ -64,7 +64,7 @@
 <update id="updateRecipeComment">
 UPDATE TB_RECIPE_COMMENT
 SET RECIPE_COMMENT_BODY = #{content}, RECIPE_COMMENT_UPDATE = now()
-WHERE RECIPE_COMMENT_ID = #{commentId} AND RECIPE_ID = #{recipeId};
+WHERE RECIPE_COMMENT_ID = #{commentId} AND RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId};
 </update>
 
 <update id="updateRecipeView">
@@ -178,7 +178,7 @@ WHERE  RECIPE_COMMENT_ID = #{commentId}
 
         <!--    스크랩 유무 확인용-->
 <select id="findByRecipeScrap" resultType="Integer">
-SELECT * FROM TB_MEMBER_BOARDSCRAP_RECIPE
+SELECT * FROM TB_RECIPE_SCRAP
 WHERE  RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
 </select>
 
@@ -187,6 +187,12 @@ WHERE  RECIPE_ID = #{recipeId} AND MEMBER_ID = #{memberId}
 <select id="findByRecipeImage" resultType="String">
 SELECT RECIPE_FILE_PATH FROM TB_RECIPE_IMAGE
 WHERE  RECIPE_ID = #{recipeId}
+</select>
+
+        <!--    게시글 이미지 리스트 가져오기-->
+<select id="findImageByRecipeId" resultType="com.foodiary.recipe.model.RecipeImageDto">
+    SELECT * FROM TB_RECIPE_IMAGE
+    WHERE  RECIPE_ID = #{recipeId}
 </select>
 
 
@@ -233,12 +239,12 @@ WHERE RECIPE_ID = #{recipeId}
         <!--    댓글 삭제-->
 <delete id="deleteRecipeComment">
 DELETE FROM TB_RECIPE_COMMENT
-WHERE RECIPE_ID = #{recipeId} AND RECIPE_COMMENT_ID = #{commentId}
+WHERE MEMBER_ID = #{memberId} AND RECIPE_COMMENT_ID = #{commentId} AND MEMBER_ID = #{memberId}
 </delete>
 
 <delete id="deleteRecipeScrap">
-DELETE FROM TB_MEMBER_SCRAP_RECIPE
-WHERE RECIPE_ID = #{recipeId} AND MEMBER_RECIPE_BOARDSCRAP_ID = #{scrapId}
+DELETE FROM TB_RECIPE_SCRAP
+WHERE MEMBER_ID = #{memberId} AND RECIPE_ID = #{recipeId}
 </delete>
 
 <delete id="deleteRecipeImage">

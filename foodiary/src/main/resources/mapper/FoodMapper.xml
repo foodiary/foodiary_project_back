@@ -37,7 +37,15 @@
         WHERE MEMBER_FOOD_HATE = 'Y' AND MEMBER_ID = #{memberId}
     </select>
 
-    <insert id="saveMemberFood">
+    <select id="findByMemberFood" resultType="Integer">
+        SELECT MEMBER_FOOD_ID FROM TB_MEMBER_FOOD
+        WHERE FOOD_ID = #{foodId} AND MEMBER_ID = #{memberId}
+    </select>
+
+
+
+
+    <insert id="saveMemberFood" useGeneratedKeys="true" keyProperty="memberFoodId" keyColumn="MEMBER_FOOD_ID">
         INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_HATE, MEMBER_FOOD_CREATE)
         VALUES (#{memberId}, #{foodId}, 0, 0, now());
     </insert>
@@ -68,7 +76,7 @@
         UPDATE TB_MEMBER_FOOD
         SET MEMBER_FOOD_LIKE = IF(MEMBER_FOOD_LIKE = 'Y', 'N', 'Y'),
             MEMBER_FOOD_HATE = 'N'
-        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+        WHERE MEMBER_FOOD_ID = #{memberFoodId} AND MEMBER_ID = #{memberId};
     </update>
 
 
@@ -76,7 +84,7 @@
         UPDATE TB_MEMBER_FOOD
         SET MEMBER_FOOD_HATE = IF(MEMBER_FOOD_LIKE = 'Y', 'N', 'Y'),
             MEMBER_FOOD_LIKE = 'N'
-        WHERE MEMBER_FOOD_ID = #{memberFoodId};
+        WHERE MEMBER_FOOD_ID = #{memberFoodId} AND MEMBER_ID = #{memberId};
     </update>
 
 

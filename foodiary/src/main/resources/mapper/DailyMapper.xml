@@ -28,7 +28,7 @@
 
 <!--    게시글 스크랩-->
     <insert id="saveDailyScrap">
-        INSERT INTO TB_MEMBER_BOARDSCRAP_DAILY (MEMBER_ID, DAILY_ID)
+        INSERT INTO TB_DAILY_SCRAP (MEMBER_ID, DAILY_ID)
         VALUES (#{memberId}, #{dailyId});
     </insert>
 
@@ -49,7 +49,7 @@
     <update id="updateDaily">
         UPDATE TB_DAILY
         SET DAILY_TITLE = #{title}, DAILY_BODY = #{content}, DAILY_PATH = #{path}, DAILY_UPDATE = now()
-        WHERE DAILY_ID = #{dailyId};
+        WHERE DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId};
     </update>
 
 
@@ -58,7 +58,7 @@
     <update id="updateDailyComment">
         UPDATE TB_DAILY_COMMENT
         SET DAILY_COMMENT_BODY = #{content}, DAILY_COMMENT_UPDATE = now()
-        WHERE DAILY_COMMENT_ID = #{commentId} AND DAILY_ID = #{dailyId};
+        WHERE DAILY_COMMENT_ID = #{commentId} AND DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId};
     </update>
 
 <!--    조회수 증가-->
@@ -156,7 +156,7 @@
 
 <!--    스크랩 유무 확인용-->
     <select id="findByDailyScrap" resultType="Integer">
-        SELECT * FROM TB_MEMBER_BOARDSCRAP_DAILY
+        SELECT * FROM TB_DAILY_SCRAP
         WHERE  DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId}
     </select>
 
@@ -167,7 +167,10 @@
         WHERE  DAILY_ID = #{dailyId}
     </select>
 
-
+    <select id="findByImageByDailyId" resultType="com.foodiary.daily.model.DailyImageDto">
+        SELECT * FROM TB_DAILY_IMAGE
+        WHERE  DAILY_ID = #{dailyId}
+    </select>
 
 
 
@@ -193,12 +196,12 @@
 <!--    댓글 삭제-->
     <delete id="deleteDailyComment">
         DELETE FROM TB_DAILY_COMMENT
-        WHERE DAILY_ID = #{dailyId} AND DAILY_COMMENT_ID = #{commentId}
+        WHERE DAILY_ID = #{dailyId} AND DAILY_COMMENT_ID = #{commentId} AND MEMBER_ID = #{memberId}
     </delete>
 
     <delete id="deleteDailyScrap">
-        DELETE FROM TB_MEMBER_BOARDSCRAP_DAILY
-        WHERE DAILY_ID = #{dailyId} AND MEMBER_DAILY_BOARDSCRAP_ID = #{scrapId}
+        DELETE FROM TB_DAILY_SCRAP
+        WHERE DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId}
     </delete>
 
     <delete id="deleteDailyImage">

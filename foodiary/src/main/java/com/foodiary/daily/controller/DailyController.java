@@ -349,23 +349,4 @@ public class DailyController {
         dailyService.addDailyScrap(dailyId, memberId);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
-
-    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @Operation(summary = "daily scrap remove", description = "하루 식단 게시글 스크랩 삭제")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ResponseBody
-    @DeleteMapping("/daily/scrap/{dailyId}/{memberId}/{scrapId}")
-    public ResponseEntity<String> dailyScrapRemove(
-        @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
-        @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
-        @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) @Positive int scrapId
-    ) throws Exception {
-        dailyService.removeDailyScrap(dailyId, memberId, scrapId);
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
 }

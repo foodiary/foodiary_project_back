@@ -61,6 +61,8 @@ public interface RecipeMapper {
 
     List<RecipesResponseDto> findCreateAll(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    List<RecipeImageDto> findImageByRecipeId(@Param("recipeId") int recipeId);
+
 
 
     // =================== DELETE ====================
@@ -71,7 +73,7 @@ public interface RecipeMapper {
 
     int deleteRecipeComment(@Param("recipeId") int recipeId, @Param("commentId") int commentId);
 
-    int deleteRecipeScrap(@Param("recipeId") int recipeId, @Param("scrapId") int scrapId);
+    int deleteRecipeScrap(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
 
     int deleteRecipeImage(@Param("recipeId") int recipeId, @Param("path") String path);
 

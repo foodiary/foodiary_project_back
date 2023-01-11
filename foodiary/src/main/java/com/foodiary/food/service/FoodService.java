@@ -8,9 +8,11 @@ import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.food.mapper.FoodMapper;
 import com.foodiary.food.model.FoodDto;
+import com.foodiary.food.model.MemberFoodRequestDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
+import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,7 @@ public class FoodService {
     private final UserService userService;
 
 
-    public FoodDto randomFood(int memberId) {
+    public FoodDto randomFood(Integer memberId) {
 
         //추천 횟수 제한 로직
 //        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0));
@@ -43,25 +45,34 @@ public class FoodService {
 //        if(verifyMemberFood.size() > 4) {
 //            throw new BusinessLogicException(ExceptionCode.OVER_REQUEST);
 //        }
-
-        List<Integer> hateFoodList = foodMapper.findAllHateFood(memberId);
-        log.info(String.valueOf(hateFoodList.size()));
         Random random = new Random();
-        int randomIndex = random.nextInt(685) + 1;
-        System.out.println(randomIndex);
-        for (int i = 0; i < hateFoodList.size(); i++) {
-            if(hateFoodList.get(i) == randomIndex){
-                randomIndex = random.nextInt(685) + 1;
-                log.info("싫어하는 음식이 나왔습니다.");
-                i = 0;
+
+        if(memberId == null){
+            int randomIndex = random.nextInt(685) + 1;
+            FoodDto foodRecommend = foodMapper.findById(randomIndex);
+
+            return foodRecommend;
+        } else {
+
+            List<Integer> hateFoodList = foodMapper.findAllHateFood(memberId);
+            log.info(String.valueOf(hateFoodList.size()));
+
+            int randomIndex = random.nextInt(685) + 1;
+            System.out.println(randomIndex);
+            for (int i = 0; i < hateFoodList.size(); i++) {
+                if(hateFoodList.get(i) == randomIndex){
+                    randomIndex = random.nextInt(685) + 1;
+                    log.info("싫어하는 음식이 나왔습니다.");
+                    i = 0;
+                }
             }
+
+
+            FoodDto foodRecommend = foodMapper.findById(randomIndex);
+
+
+            return foodRecommend;
         }
-
-
-        FoodDto foodRecommend = foodMapper.findById(randomIndex);
-        foodMapper.saveMemberFood(memberId, foodRecommend.getFoodId());
-
-        return foodRecommend;
     }
     public MenuRecommendResponseDto weekRecommendMenu(int memberId) throws JsonProcessingException {
 
@@ -134,20 +145,24 @@ public class FoodService {
     }
 
 
-    public void patchLikeFood(int memberFoodId, int memberId){
-        userService.checkUser(memberId);
-        foodMapper.findMemberFoodById(memberFoodId)
-                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.LIKE_NOT_FOUND));
-        int updateCheck = foodMapper.updateFoodLike(memberFoodId);
-        userService.verifyUpdate(updateCheck);
+    public void patchLikeFood(MemberFoodRequestDto memberFoodRequestDto) {
+        userService.checkUser(memberFoodRequestDto.getMemberId());
+
+        if(foodMapper.findByMemberFood(memberFoodRequestDto).isPresent()){
+            throw new BusinessLogicException(ExceptionCode.FOOD_EXISTS);
+        }
+        userService.verifySave( foodMapper.saveMemberFood(memberFoodRequestDto));
+        userService.verifyUpdate(foodMapper.updateFoodLike(memberFoodRequestDto.getMemberFoodId(), memberFoodRequestDto.getMemberId()));
     }
 
-    public void patchHateFood(int memberFoodId, int memberId){
-        userService.checkUser(memberId);
-        foodMapper.findMemberFoodById(memberFoodId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.LIKE_NOT_FOUND));
-        int updateCheck = foodMapper.updateFoodHate(memberFoodId);
-        userService.verifyUpdate(updateCheck);
+    public void patchHateFood(MemberFoodRequestDto memberFoodRequestDto) {
+        userService.checkUser(memberFoodRequestDto.getMemberId());
+
+        if(foodMapper.findByMemberFood(memberFoodRequestDto).isPresent()){
+            throw new BusinessLogicException(ExceptionCode.FOOD_EXISTS);
+        }
+        userService.verifySave(foodMapper.saveMemberFood(memberFoodRequestDto));
+        userService.verifyUpdate(foodMapper.updateFoodHate(memberFoodRequestDto.getMemberFoodId(), memberFoodRequestDto.getMemberId()));
     }
     
     public FoodDto recommendFood(List<FoodDto> foodDto) {

@@ -3,8 +3,10 @@ package com.foodiary.food.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.foodiary.food.model.FoodDto;
 import com.foodiary.food.model.FoodRecommendResponseDto;
+import com.foodiary.food.model.MemberFoodRequestDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
 import com.foodiary.food.service.FoodService;
+import com.foodiary.member.model.MemberFoodsResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -31,7 +33,7 @@ public class FoodController {
     })
     // 랜덤 추천
     @GetMapping
-    public ResponseEntity<FoodRecommendResponseDto> foodRecommend(@RequestParam int memberId) {
+    public ResponseEntity<FoodRecommendResponseDto> foodRecommend(@RequestParam(required = false) Integer memberId) {
         FoodDto food = foodService.randomFood(memberId);
         FoodRecommendResponseDto response = FoodRecommendResponseDto.builder()
                 .foodName(food.getFoodName())
@@ -74,9 +76,9 @@ public class FoodController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @PatchMapping("/like/{member-id}/{member-food-id}")
-    public ResponseEntity<String> foodLike(@PathVariable("member-id") int memberId, @PathVariable("member-food-id") int memberFoodId) {
-        foodService.patchLikeFood(memberFoodId, memberId);
+    @PostMapping("/like")
+    public ResponseEntity<String> foodLike(@RequestBody MemberFoodRequestDto memberFoodRequestDto) {
+        foodService.patchLikeFood(memberFoodRequestDto);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -87,9 +89,9 @@ public class FoodController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @PatchMapping("/hate/{member-id}/{member-food-id}")
-    public ResponseEntity<String> foodHate(@PathVariable("member-id") int memberId, @PathVariable("member-food-id") int memberFoodId) {
-        foodService.patchHateFood(memberFoodId, memberId);
+    @PostMapping("/hate")
+    public ResponseEntity<String> foodHate(@RequestBody MemberFoodRequestDto memberFoodRequestDto) {
+        foodService.patchHateFood(memberFoodRequestDto);
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }

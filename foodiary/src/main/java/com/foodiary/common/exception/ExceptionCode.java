@@ -6,8 +6,8 @@ public enum ExceptionCode {
     OVER_REQUEST(400, "오늘 추천 횟수가 초과되었습니다."),
 
     MEMBER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
-    POST_NOT_FOUND(404, "존재하지 않는 게시글입니다."),
-    COMMENT_NOT_FOUND(404, "존재하지 않는 댓글입니다."),
+    POST_NOT_FOUND(404, "게시글이 존재하지 않습니다."),
+    COMMENT_NOT_FOUND(404, "댓글이 존재하지 않습니다."),
     LIKE_NOT_FOUND(404, "좋아요 한 적 없는 게시글입니다."),
     SCRAP_NOT_FOUND(404, "저장한 스크랩이 없습니다.."),
 
@@ -16,6 +16,7 @@ public enum ExceptionCode {
     MEMBER_EXISTS(409, "이미 존재하는 회원입니다."),
     LIKE_EXISTS(409, "이미 좋아요 한 게시글입니다."),
     SCRAP_EXISTS(409, "이미 저장한 스크랩입니다."),
+    FOOD_EXISTS(409, "이미 좋아요 또는 싫어요 한 음식입니다."),
 
     INTERNAL_SERVER_ERROR(500, "INTERNAL SERVER ERROR"),
 

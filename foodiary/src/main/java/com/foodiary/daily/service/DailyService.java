@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -62,7 +63,7 @@ public class DailyService {
                 saveImage.setDailyId(dailyWriteRequestDto.getDailyId());
                 userService.verifySave(dailyMapper.saveImage(saveImage));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException(e);
             }
         }
     }
@@ -70,6 +71,8 @@ public class DailyService {
     // 하루 식단 댓글 추가
     public void addDailyComment(DailyCommentWriteRequestDto dailyCommentWriteRequestDto) {
         userService.checkUser(dailyCommentWriteRequestDto.getMemberId());
+        MemberDto member = memberMapper.findByMemberId(dailyCommentWriteRequestDto.getMemberId()).get();
+        dailyCommentWriteRequestDto.setWriter(member.getMemberNickName());
 
         dailyMapper.saveDailyComment(dailyCommentWriteRequestDto);
     }
@@ -93,12 +96,14 @@ public class DailyService {
     public void addDailyScrap(int dailyId, int memberId) {
         userService.checkUser(memberId);
 
-        boolean verifyDailyScrap = dailyMapper.findByDailyScrap(dailyId, memberId).isEmpty();
-        if(!verifyDailyScrap) {
-            throw new BusinessLogicException(ExceptionCode.SCRAP_EXISTS);
+        if(!dailyMapper.findByDailyScrap(dailyId, memberId).isEmpty()) {
+            removeDailyScrap(dailyId, memberId);
+        } else {
+            userService.verifySave(dailyMapper.saveDailyScrap(dailyId, memberId));
         }
-        userService.verifySave(dailyMapper.saveDailyScrap(dailyId, memberId));
+
     }
+
 
     // 하루 식단 게시글 수정
     public void modifyDaily(DailyEditRequestDto dailyEditRequestDto, MultipartFile dailyImage) {
@@ -193,7 +198,11 @@ public class DailyService {
     public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId) {
         verifyDailyPost(dailyId);
 
-        return dailyMapper.findAllDailyComment(dailyId);
+        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComment(dailyId);
+        if (commentList.size() == 0) {
+            throw new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND);
+        }
+        return commentList;
     }
 
     
@@ -206,9 +215,11 @@ public class DailyService {
     public void removeDaily(int dailyId, int memberId) {
         userService.checkUser(memberId);
         DailyDetailsResponseDto verifyDaily = verifyDailyPost(dailyId);
+        DailyImageDto dailyImageDto = dailyMapper.findImageByDailyId(dailyId).get();
 
         if(verifyDaily.getDailyPath() != null) {
-            s3Service.deleteImage(verifyDaily.getDailyPath());
+            String url = "daily/" + dailyImageDto.getSaveName();
+            s3Service.deleteImage(url);
             dailyMapper.deleteDailyImage(dailyId, verifyDaily.getDailyPath());
         }
 
@@ -225,16 +236,13 @@ public class DailyService {
 
 
     // 하루식단 게시글 스크랩 삭제
-    public void removeDailyScrap(int dailyId, int memberId, int scrapId) {
-        userService.checkUser(memberId);
-        verifyDailyScrap(dailyId, memberId);
-
-        userService.verifyDelete(dailyMapper.deleteDailyScrap(dailyId, scrapId));
+    public void removeDailyScrap(int dailyId, int memberId) {
+        userService.verifyDelete(dailyMapper.deleteDailyScrap(dailyId, memberId));
     }
 
 
 
-    //이미지 확장자 체크
+    //이미지 확장자 체크제
     public void fileCheck(MultipartFile image) {
         String ext = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
 
@@ -249,17 +257,5 @@ public class DailyService {
     private DailyDetailsResponseDto verifyDailyPost(int dailyId) {
         return dailyMapper.findByDailyId(dailyId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
-    }
-
-    //데일리 스크랩 유무 확인
-    private void verifyDailyScrap(int dailyId, int memberId) {
-        dailyMapper.findByDailyScrap(dailyId, memberId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCRAP_NOT_FOUND));
-    }
-
-    // 데일리 코멘트 유무 확인
-    private void verifyDailyComment(int commentId) {
-        dailyMapper.findByDailyComment(commentId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
     }
 }
