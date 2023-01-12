@@ -1,9 +1,5 @@
 package com.foodiary.rank.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.foodiary.recipe.model.RecipesResponseDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,10 +15,6 @@ public class RanksResponseDto {
     
     @ApiModelProperty(value="게시글 제목", required = true)
     private String recipeTitle;
-
-
-    @ApiModelProperty(value="사용자 레시피 공유 게시글")
-    private List<RecipesResponseDto> recipeList = new ArrayList<>();
 
     @ApiModelProperty(value="게시글 직상지", required = true)
     private String recipeWriter;
