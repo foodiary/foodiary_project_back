@@ -5,7 +5,6 @@ import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.daily.model.*;
 import com.foodiary.daily.service.DailyService;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -102,7 +101,7 @@ public class DailyController {
 
 
         List<DailysResponseDto> response = dailyService.findDailys();
-        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -128,7 +127,7 @@ public class DailyController {
         LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
         List<DailysResponseDto> response = dailyService.findCreateDailys(start, end);
-        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "week daily list", description = "주간 하루 식단 게시판 보기")
@@ -151,7 +150,7 @@ public class DailyController {
         LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
         List<DailysResponseDto> response = dailyService.findCreateDailys(start, end);
-        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "month daily list", description = "월간 하루 식단 게시판 보기")
@@ -174,7 +173,7 @@ public class DailyController {
         LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
         List<DailysResponseDto> response = dailyService.findCreateDailys(start, end);
-        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -190,7 +189,7 @@ public class DailyController {
     public ResponseEntity<?> topDailys() throws Exception {
 
         List<DailysResponseDto> response = dailyService.findDailys();
-        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Operation(summary = "daily list detail", description = "하루 식단 게시글 상세 보기")
@@ -268,7 +267,7 @@ public class DailyController {
         PageHelper.startPage(page, 10);
 
         List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId);
-        return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")

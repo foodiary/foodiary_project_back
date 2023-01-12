@@ -39,7 +39,7 @@ public class DailyService {
         MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        if(dailyImage == null) {
+        if(dailyImage == null || dailyImage.getOriginalFilename().equals("")) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
             fileCheck(dailyImage);
@@ -74,14 +74,13 @@ public class DailyService {
         MemberDto member = memberMapper.findByMemberId(dailyCommentWriteRequestDto.getMemberId()).get();
         dailyCommentWriteRequestDto.setWriter(member.getMemberNickName());
 
-        dailyMapper.saveDailyComment(dailyCommentWriteRequestDto);
+        userService.verifySave(dailyMapper.saveDailyComment(dailyCommentWriteRequestDto));
     }
 
     // 하루 식단 게시글 좋아요 
     public void addDailyLike(int memberId, int dailyId) {
         userService.checkUser(memberId);
 
-        verifyDailyPost(dailyId);
         boolean verifyLike = dailyMapper.findByMemberIdAndDailyId(memberId, dailyId).isEmpty();
 
         if (!verifyLike) {

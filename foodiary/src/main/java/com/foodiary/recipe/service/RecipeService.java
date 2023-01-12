@@ -109,6 +109,7 @@ public class RecipeService {
         userService.verifySave(recipeMapper.saveRecipeComment(recipeCommentWriteRequestDto));
     }
 
+    
     // 레시피 식단 게시글 좋아요
     public void addRecipeLike(int memberId, int recipeId) {
         userService.checkUser(memberId);
