@@ -9,7 +9,7 @@ public enum ExceptionCode {
     POST_NOT_FOUND(404, "게시글이 존재하지 않습니다."),
     COMMENT_NOT_FOUND(404, "댓글이 존재하지 않습니다."),
     LIKE_NOT_FOUND(404, "좋아요 한 적 없는 게시글입니다."),
-    SCRAP_NOT_FOUND(404, "저장한 스크랩이 없습니다.."),
+    SCRAP_NOT_FOUND(404, "저장한 스크랩이 없습니다."),
 
     METHOD_NOT_ALLOWED(405, "METHOD NOT ALLOWED"),
 
@@ -39,7 +39,8 @@ public enum ExceptionCode {
     SAVE_ERROR(500, "저장 실패했습니다. 다시 시도해주세요"),
     UPDATE_ERROR(500, "업데이트 실패했습니다. 다시 시도해주세요"),
     DELETE_ERROR(500, "삭제 실패했습니다. 다시 시도해주세요"),
-    MYPAGE_NOT_FOUND(404, "게시글이 없습니다.")
+    MYPAGE_NOT_FOUND(404, "게시글이 없습니다."),
+    FILE_NOT_FOUND(404, "파일이 없습니다.")
     ;
 
 

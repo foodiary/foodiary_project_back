@@ -19,8 +19,8 @@ public class MemberFoodsResponseDto {
     @ApiModelProperty(value="음식 시퀀스", required = true)
     private int foodId;
 
-    @ApiModelProperty(value="음식 시퀀스", required = true)
-    private int foodName;
+    @ApiModelProperty(value="음식 이름", required = true)
+    private String foodName;
 
     @ApiModelProperty(value="음식 좋아요 상태", required = true)
     private String memberFoodLike;

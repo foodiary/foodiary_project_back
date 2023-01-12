@@ -3,15 +3,12 @@ package com.foodiary.member.mapper;
 import java.util.List;
 import java.util.Optional;
 
-import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.foodiary.daily.model.DailyDto;
 import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
-import com.foodiary.member.model.MemberDailyLikeResponseDto;
-import com.foodiary.member.model.MemberDailyScrapResponseDto;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
@@ -20,14 +17,14 @@ import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberPostLikeResponseDto;
+import com.foodiary.member.model.MemberPostScrapResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
-import com.foodiary.member.model.MemberRecipeLikeResponseDto;
-import com.foodiary.member.model.MemberRecipeScrapResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.recipe.model.RecipeDto;
 
@@ -60,6 +57,14 @@ public interface MemberMapper {
 
     int updateMemberInfo(MemberEditRequestDto memberEditDto);
 
+    int updateDailyWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
+    int updateDailyCommentWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
+    int updateRecipeWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
+    int updateRecipeCommentWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
     int deleteMemberImage(@Param("id") int id);
 
     MemberImageDto findByIdFile(@Param("id") int id);
@@ -72,13 +77,9 @@ public interface MemberMapper {
 
     List<MemberRecipeCommentDto> findByRecipeComment(@Param("id") int id);
 
-    List<MemberDailyScrapResponseDto> findByDailyScrap(@Param("id") int id);
+    List<MemberPostScrapResponseDto> postScrap(@Param("memberId") int memberId);
 
-    List<MemberRecipeScrapResponseDto> findByRecipeScrap(@Param("id") int id);
-
-    List<MemberDailyLikeResponseDto> findByDailyLike(@Param("id") int id);
-
-    List<MemberRecipeLikeResponseDto> findByRecipeLike(@Param("id") int id);
+    List<MemberPostLikeResponseDto> postLike(@Param("memberId") int memberId);
 
     int deleteDailyScrap(@Param("scrapId") int likeId, @Param("memberId") int memberId);
 
@@ -90,7 +91,9 @@ public interface MemberMapper {
 
     MemberEditResponseDto findByMemberIdEdit(@Param("memberId") int memberId);
 
-    int updateMemberImage(@Param("memberId") int memberId);
+    int updateMemberImageDelete(@Param("memberId") int memberId);
+
+    int updateMemberImage(@Param("memberId") int memberId, @Param("path") String path);
 
     int deleteMember(@Param("id") int id);
     
@@ -112,19 +115,19 @@ public interface MemberMapper {
 
     MemberQuestionImageDto findByQuestionImage(@Param("questionId") int questionId);
 
-    int deleteQuestionImage(@Param("questionId") int questionId);
+    int deleteQuestionImage(@Param("questionId") int questionId, @Param("memberId") int memberId);
 
     int updateQuetion(MemberQuestionEditResponseDto memberQuestionEditResponseDto);
 
-    int deleteQuetion(@Param("questionId") int questionId);
+    int deleteQuetion(@Param("questionId") int questionId, @Param("memberId") int memberId);
 
     List<MemberFoodsResponseDto> findByFoods(@Param("memberId") int memberId);
 
     int updateMemberFood(@Param("memberFoodId") int memberFoodId, @Param("like") String like);
 
-    Optional<MemberDailyCommentDetailResponseDto> findByDailyCommentId(@Param("dailyId") int dailyId, @Param("dailyCommentId") int dailyCommentId);
+    Optional<MemberDailyCommentDetailResponseDto> findByDailyCommentId(@Param("memberId") int memberId, @Param("dailyId") int dailyId, @Param("dailyCommentId") int dailyCommentId);
 
-    Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
+    Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("memberId") int memberId, @Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
 
 }
 
