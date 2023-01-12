@@ -82,7 +82,7 @@ public class UserService {
         String encryptPw = encrypt(loginDto.getPassword());
         log.info(encryptPw);
         MemberDto member = memberMapper.findByLoginIdAndPw(loginDto.getLoginId(), encryptPw)
-                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_EXISTS));
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ID_PW_BAD_REQUEST));
 
         log.info(member.getMemberEmail());
         log.info(member.getMemberPassword());
