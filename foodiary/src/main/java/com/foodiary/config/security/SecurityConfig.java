@@ -60,40 +60,12 @@ public class SecurityConfig {
                     .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
                 
                 
-                // .antMatchers(
-                // "/",
-                // "/v3/api-docs/**",
-                // "/swagger-ui/**",
-                // "/swagger-resources/**",
-                // // 여기부터는 스웨거 테스트용, permitAll에 오면 안됨
-                // "/member/{memberId}",
-                // "/member",
-                // "/member/logout",
-                // "/member/search/{memberId}",
-                // "/member/reissue",
-                // "/member/scrap",
-                // "/member/scrap/daily/{scrapId}/{memberId}",
-                // "/member/scrap/recipe/{scrapId}/{memberId}",
-                // "/member/food/{memberId}",
-                // "/member/food/list/{memberId}",
-                // "/daily",
-                // "/daily/{dailyId}/{memberId}",
-                // "/daily/comment",
-                // "/daily/comment/{dailyId}/{memberId}",
-                // "/daily/comment/{dailyId}/{commentId}/{memberId}",
-                // "/daily/like/{dailyId}/{memberId}",
-                // "/daily/like/{dailyId}/{dailyLikeId}/{memberId}",
-                // "/daily/scrap/{dailyId}/{memberId}",
+                .antMatchers(
+                "/",
+                "/v3/api-docs/**",
+                "/swagger-ui/**",
+                "/swagger-resources/**",
 
-                // "/recipe",
-                // "/recipe/{recipeId}/{memberId}",
-                // "/recipe/comment",
-                // "/recipe/comment/{recipeId}/{memberId}",
-                // "/recipe/comment/{recipeId}/{commentId}/{memberId}",
-                // "/recipe/like/{recipeId}/{memberId}",
-                // "/recipe/like/{recipeId}/{recipeLikeId}/{memberId}",
-                // "/recipe/scrap/{recipeId}/{memberId}",
-                
                 // 권한 필요 url
                 // "/member/password/{memberId}",
                 // "/member/password/change/jwt",
@@ -121,23 +93,20 @@ public class SecurityConfig {
                 // "/search/recipe"
 
                 // 권한 필요x url
-                // "/member/find/password",
-                // "/member/find/id",
-                // "/member/check/loginid",
-                // "/member/check/nickname",
-                // "/member/check/email",
-                // "/member/email/send",
-                // "/member/email/send/confirm",
-                // "/member/signup",
-                // "/notice",
-                // "/notice/{noticeId}",
-                // "/faq",
-                // "/rank/month",
-                // "/rank/week",
-                // "/search/daily/result",
-                // "/search/recipe/result"
+                "/member/find/password",
+                "/member/find/id",
+                "/member/check/loginid",
+                "/member/check/nickname",
+                "/member/check/email",
+                "/member/email/send",
+                "/member/email/send/confirm",
+                "/member/signup",
+                "/notice",
+                "/notice/{noticeId}",
+                "/faq"
 
-                // ).permitAll()
+
+                ).permitAll()
                 
                 .antMatchers("/dailys/**", "/recipes/**", "/food/**", "/auth/login", "/oauth/**").permitAll()
                 
