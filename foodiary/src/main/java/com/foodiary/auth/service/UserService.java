@@ -42,7 +42,7 @@ public class UserService {
         if(providerId.equals("GOOGLE")){
             GoogleUserDto googleUser = oAuthService.getGoogleUserInfo(userInfoResponse);
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(googleUser.email) == null){
+            if (memberMapper.findByEmail(googleUser.email).isEmpty()){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(googleUser.email, googleUser.picture, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -55,7 +55,7 @@ public class UserService {
         else if (providerId.equals("NAVER")) {
             NaverUserDto naverUser = oAuthService.getNaverUserInfo(userInfoResponse);
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(naverUser.email) == null){
+            if (memberMapper.findByEmail(naverUser.email).isEmpty()){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(naverUser.email, naverUser.profile_image, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -71,6 +71,10 @@ public class UserService {
 
 
             MemberDto member = verifyMember(email);
+            String yn = member.getMemberYn().toUpperCase();
+            if(yn.equals("Y")) {
+                throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+            }
             log.info(member.getMemberEmail());
             TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
             tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
@@ -83,6 +87,10 @@ public class UserService {
         log.info(encryptPw);
         MemberDto member = memberMapper.findByLoginIdAndPw(loginDto.getLoginId(), encryptPw)
                         .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ID_PW_BAD_REQUEST));
+        String yn = member.getMemberYn().toUpperCase();
+        if(yn.equals("Y")) {
+            throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+        }
 
         log.info(member.getMemberEmail());
         log.info(member.getMemberPassword());
