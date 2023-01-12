@@ -326,7 +326,7 @@
 
     <select id="findByFoods" resultType="com.foodiary.member.model.MemberFoodsResponseDto">
         SELECT tmf.MEMBER_FOOD_ID, tmf.MEMBER_ID, tmf.FOOD_ID, 
-            tmf.MEMBER_FOOD_LIKE, tf.FOOD_NAME, tmf.MEMBER_FOOD_HATE, tmf.MEMBER_FOOD_CREATE  
+            tmf.MEMBER_FOOD_LIKE, tf.FOOD_NAME, tmf.MEMBER_FOOD_CREATE  
         FROM TB_MEMBER_FOOD tmf
         LEFT JOIN TB_FOOD tf
         ON tmf.FOOD_ID = tf.FOOD_ID

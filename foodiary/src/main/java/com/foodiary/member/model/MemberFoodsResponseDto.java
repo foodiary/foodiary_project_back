@@ -25,7 +25,4 @@ public class MemberFoodsResponseDto {
     @ApiModelProperty(value="음식 좋아요 상태", required = true)
     private String memberFoodLike;
 
-    @ApiModelProperty(value="음식 싫어요 상태", required = true)
-    private String memberFoodHate;
-
 }
