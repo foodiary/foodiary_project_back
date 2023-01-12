@@ -200,7 +200,7 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @GetMapping(value = "/daily/datils")
+    @GetMapping(value = "/dailys/datils")
     public ResponseEntity<DailyDetailsResponseDto> getDailyDetails (
         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId
     ) throws Exception {
@@ -255,7 +255,7 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @GetMapping(value = "/daily/comment")
+    @GetMapping(value = "/dailys/comment")
     public ResponseEntity<?> dailyCommentDetails(
         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
         @ApiParam(value = "댓글 페이지", required = true) @Positive int page

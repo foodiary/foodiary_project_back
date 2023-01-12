@@ -216,7 +216,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
         
-        @GetMapping(value = "/recipe/datils")
+        @GetMapping(value = "/recipes/datils")
         public ResponseEntity<RecipeDetailsResponseDto> getRecipeDetails (
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId
         ) throws Exception {
@@ -275,7 +275,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
         
-        @GetMapping(value = "/recipe/comment")
+        @GetMapping(value = "/recipes/comment")
         public ResponseEntity<?> RecipeCommentDetails(
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
                 @ApiParam(value = "댓글 페이지", required = true) @Positive int page
