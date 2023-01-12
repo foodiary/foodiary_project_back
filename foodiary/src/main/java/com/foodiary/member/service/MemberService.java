@@ -111,24 +111,51 @@ public class MemberService {
 
     }
 
+    // 회원 정보 수정
     public void updateMember(MemberEditRequestDto memberEditDto, int id) throws Exception {
 
-        // userService.checkUser(id);
+        userService.checkUser(id);
+
+        MemberDto memberDto = mapper.findById(id).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));
+
+        if(!memberDto.getMemberNickName().equals(memberEditDto.getNickName())) {
+            if(mapper.findByNickname(memberEditDto.getNickName()).isPresent()) {
+                throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
+            }
+        }
 
         memberEditDto.updateId(id);
+
+        // 회원 정보 수정
         userService.verifyUpdate(mapper.updateMemberInfo(memberEditDto));
+
+        // 데일리 테이블 작성자 업데이트
+        userService.verifyUpdate(mapper.updateDailyWriter(id, memberEditDto.getNickName()));
+
+        // 데일리 코멘트 테이블 작성자 업데이트
+        userService.verifyUpdate(mapper.updateDailyCommentWriter(id, memberEditDto.getNickName()));
+
+        // 레시피 테이블 작성자 업데이트
+        userService.verifyUpdate(mapper.updateRecipeWriter(id, memberEditDto.getNickName()));
+
+        // 레시피 코멘트 테이블 작성자 업데이트
+        userService.verifyUpdate(mapper.updateRecipeCommentWriter(id, memberEditDto.getNickName()));
+
     }
 
     // 회원 이미지 삭제 -> s3랑 이미지테이블에서 정보 삭제
     private void deleteImage(int id) {
         
         MemberImageDto memberImageDto = mapper.findByIdFile(id);
-        String url = "member/" + memberImageDto.getMemberFileSaveName();
         
-        // s3에서 데이터 삭제
-        s3Service.deleteImage(url);
+        if(memberImageDto!=null) {
+            String url = "member/" + memberImageDto.getMemberFileSaveName();
         
-        userService.verifyDelete(mapper.deleteMemberImage(id));
+            // s3에서 데이터 삭제
+            s3Service.deleteImage(url);
+            
+            userService.verifyDelete(mapper.deleteMemberImage(id));
+        }
 
     }
 
@@ -165,24 +192,22 @@ public class MemberService {
     // 마이페이지에서 이미지 수정
     public void editMemberImage(int memberId, MultipartFile memberImage, String memberPath) throws IOException{
 
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
         
-        if(!memberImage.isEmpty() && memberImage!=null) {
+        if(memberImage!=null) {
+            if(!memberImage.isEmpty()) {
             fileCheck(memberImage);
 
-            if(!memberPath.isEmpty() && memberImage!=null) {
-
-                int index = memberPath.indexOf("member");
-                System.out.println("패스 확인 : "+memberPath.substring(index));
-                String deletePath = memberPath.substring(index);
-                s3Service.deleteImage(deletePath);
-    
-                // 이미지 테이블에서 이미지 정보 삭제
-                userService.verifyDelete(mapper.deleteMemberImage(memberId));
-    
-                // // 멤버 테이블에서 이미지 경로 삭제
-                // userService.verifyUpdate(mapper.updateMemberImageDelete(memberId));
-    
+            if(memberPath!=null) {
+                if(!memberPath.isBlank()) {
+                    int index = memberPath.indexOf("member");
+                    System.out.println("패스 확인 : "+memberPath.substring(index));
+                    String deletePath = memberPath.substring(index);
+                    s3Service.deleteImage(deletePath);
+        
+                    // 이미지 테이블에서 이미지 정보 삭제
+                    userService.verifyDelete(mapper.deleteMemberImage(memberId));
+                }
             }
             HashMap<String, String> fileMap = s3Service.upload(memberImage, "member");
 
@@ -198,7 +223,13 @@ public class MemberService {
 
             // 이미지 경로만 업데이트 추가
             userService.verifyUpdate(mapper.updateMemberImage(memberId , fileMap.get("url")));
-
+            }
+            else {
+                throw new BusinessLogicException(ExceptionCode.FILE_NOT_FOUND);
+            }
+        }
+        else {
+            throw new BusinessLogicException(ExceptionCode.FILE_NOT_FOUND);
         }
 
     }
@@ -206,7 +237,7 @@ public class MemberService {
     // 마이페이지에서 비밀번호 수정
     public void editMemberPassword(MemberEditPasswordRequestDto memberEditPasswordRequestDto, int id) {
         
-        // userService.checkUser(id);
+        userService.checkUser(id);
 
         if(memberEditPasswordRequestDto.getMore_password().equals(memberEditPasswordRequestDto.getPassword())) {
             String newPassword = userService.encrypt(memberEditPasswordRequestDto.getPassword());
@@ -271,7 +302,7 @@ public class MemberService {
     // 본인이 스크랩 한 글
     public List<MemberPostScrapResponseDto> detailScrap(int memberId) {
 
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         List<MemberPostScrapResponseDto> memberPostScrapResponseDtoList  = mapper.postScrap(memberId);
 
@@ -282,7 +313,7 @@ public class MemberService {
 
     // 본인이 좋아요 한 글
     public List<MemberPostLikeResponseDto> detailLike(int memberId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         List<MemberPostLikeResponseDto> memberPostLikeResponseDtoList = mapper.postLike(memberId);
 
@@ -291,15 +322,17 @@ public class MemberService {
         return memberPostLikeResponseDtoList;
     }
 
+    // 회원 정보 보기(본인꺼) 마이페이지
     public MemberDto findByMemberIdInfo(int memberId) {
 
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
         return mapper.findById(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));
     }
 
+    // 회원 이미지 삭제
     public void deleteMemberImage(int memberId) {
 
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         deleteImage(memberId);
 
@@ -312,10 +345,10 @@ public class MemberService {
 
         userService.checkUser(memberId);
 
-        userService.verifyDelete(mapper.deleteMember(memberId));
-        
         // 회원 이미지 삭제
         deleteImage(memberId);
+
+        userService.verifyDelete(mapper.deleteMember(memberId));
 
     }
 
@@ -354,7 +387,7 @@ public class MemberService {
 
     // 하루 식단 본인이 쓴 글
     public List<DailyDto> postDailyFind(int memberId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         List<DailyDto> dailyList = mapper.findByDaily(memberId);
 
@@ -365,7 +398,7 @@ public class MemberService {
 
     // 레시피 본인이 쓴 글
     public List<RecipeDto> postRecipeFind(int memberId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         List<RecipeDto> recipeList = mapper.findByRecipe(memberId);
 
@@ -376,7 +409,7 @@ public class MemberService {
 
     // 하루 식단 본인이 쓴 댓글
     public List<MemberDailyCommentDto> commentDailyList(int memberId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         List<MemberDailyCommentDto> dailyList = mapper.findByDailyComment(memberId);
         
@@ -387,7 +420,7 @@ public class MemberService {
 
     // 레시피 본인이 쓴 댓글
     public List<MemberRecipeCommentDto> commentRecipeList(int memberId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         List<MemberRecipeCommentDto> recipeList = mapper.findByRecipeComment(memberId);
 
@@ -398,9 +431,9 @@ public class MemberService {
 
         // 하루 식단 본인이 쓴 댓글 상세조회
         public MemberDailyCommentDetailResponseDto commentDailyDetail(int memberId, int dailyId, int dailyCommentId) {
-            // userService.checkUser(memberId);
+            userService.checkUser(memberId);
     
-            MemberDailyCommentDetailResponseDto memberDailyCommentDetailResponseDto = mapper.findByDailyCommentId(dailyId, dailyCommentId)
+            MemberDailyCommentDetailResponseDto memberDailyCommentDetailResponseDto = mapper.findByDailyCommentId(memberId, dailyId, dailyCommentId)
                             .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
             
             return memberDailyCommentDetailResponseDto;
@@ -408,9 +441,9 @@ public class MemberService {
     
         // 레시피 본인이 쓴 댓글 상세조회
         public MemberRecipeCommentDetailResponseDto commentRecipeDetail(int memberId, int recipeId, int recipeCommentId) {
-            // userService.checkUser(memberId);
+            userService.checkUser(memberId);
     
-            MemberRecipeCommentDetailResponseDto memberRecipeCommentDetailResponseDto = mapper.findByRecipeCommentId(recipeId, recipeCommentId)
+            MemberRecipeCommentDetailResponseDto memberRecipeCommentDetailResponseDto = mapper.findByRecipeCommentId(memberId, recipeId, recipeCommentId)
                             .orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
     
             return memberRecipeCommentDetailResponseDto;
@@ -447,7 +480,7 @@ public class MemberService {
     // question 보기
     public List<MemberQuestionResponseDto> questionList(int memberId) {
 
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
         
         List<MemberQuestionResponseDto> memberQuestionResponseDtoList = mapper.findByQuestion(memberId);
 
@@ -459,7 +492,7 @@ public class MemberService {
     // question 상세보기
     public MemberQuestionResponseDto questionDetail(int memberId, int questionId) {
         
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
         
         MemberQuestionResponseDto memberQuestionResponseDto = mapper.findByQuestionId(questionId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
 
@@ -468,11 +501,13 @@ public class MemberService {
 
     // question 작성하기
     public void questionWrite(MemberQuestionWriteResponseDto memberQuestionWriteResponseDto, MultipartFile memberImage) throws IOException{
-        // userService.checkUser(memberQuestionWriteResponseDto.getMemberId());
+        userService.checkUser(memberQuestionWriteResponseDto.getMemberId());
         
         if (memberImage == null) {
             userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
-            
+        }
+        else if(memberImage.isEmpty()){
+            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
         }
         else {
             fileCheck(memberImage);
@@ -492,6 +527,8 @@ public class MemberService {
 
             // 이미지 저장
             createMemberQuestionImage(memberQuestionImageDto);
+
+            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
         }
     }
 
@@ -539,33 +576,42 @@ public class MemberService {
 
     // question 수정하기
     public void questionEdit(int memberId, int questionId, MemberQuestionEditResponseDto memberQuestionEditResponseDto, MultipartFile memberImage) throws IOException {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         // 수정하기
         if(memberQuestionEditResponseDto.getImageUpdate().equals("Y")) {
             // 기존 이미지 있을 경우
             String memberPath = memberQuestionEditResponseDto.getQuestionPath();
-            if(!memberPath.isEmpty() && memberPath!=null) {
-                // 첨부 파일이 있을경우
-                if(memberImage!=null) {
-                    if(!memberImage.getOriginalFilename().equals("")) {
-                        // 기존 이미지 삭제하고 새로운 이미지 업데이트
-                    
-                        // 이미지 테이블에서 정보 삭제
-                        qnaImageDeleteS3(memberPath, questionId, memberId);
+            if(memberPath!=null) {
+                if(!memberPath.isBlank()) {
+                    // 첨부 파일이 있을경우
+                    if(memberImage!=null) {
+                        if(!memberImage.isEmpty()) {
+                            // 기존 이미지 삭제하고 새로운 이미지 업데이트
+                        
+                            // 이미지 테이블에서 정보 삭제
+                            qnaImageDeleteS3(memberPath, questionId, memberId);
 
-                        // s3에 이미지 업로드 및 이미지 테이블에 이미지 저장
-                        String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
+                            // s3에 이미지 업로드 및 이미지 테이블에 이미지 저장
+                            String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
 
-                        memberQuestionEditResponseDto.pathUpadte(url);
+                            memberQuestionEditResponseDto.pathUpadte(url);
+                        }
+                        else {
+                            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                        }
                     }
-                    throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                    // 첨부 파일이 없을경우
+                    else {
+                        // 기존 이미지 삭제
+                        qnaImageDeleteS3(memberPath, questionId, memberId);
+                        memberQuestionEditResponseDto.pathUpadte(null);
+                    }
                 }
-                // 첨부 파일이 없을경우
                 else {
-                    // 기존 이미지 삭제
-                    qnaImageDeleteS3(memberPath, questionId, memberId);
-                    memberQuestionEditResponseDto.pathUpadte(null);
+                    // 새로운 이미지 업데이트
+                    String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
+                    memberQuestionEditResponseDto.pathUpadte(url);
                 }
             }
             // 기존 이미지가 없고, 첨부파일이 있을 경우 
@@ -590,9 +636,9 @@ public class MemberService {
 
     // 문의 내용 삭제
     public void deleteQeustion(int memberId, int questionId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
         
-        mapper.deleteQuetion(questionId);
+        userService.verifyDelete(mapper.deleteQuetion(questionId, memberId));
 
         MemberQuestionImageDto memberQuestionImageDto = mapper.findByQuestionImage(questionId);
 
@@ -610,14 +656,14 @@ public class MemberService {
 
     // 음식 추천 리스트
     public List<MemberFoodsResponseDto> foods(int memberId) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
 
         return mapper.findByFoods(memberId);
     }
 
     // 음식 추천 좋아요, 싫어요 수정
     public void foodEdit(int memberId, int memberFoodId, String like) {
-        // userService.checkUser(memberId);
+        userService.checkUser(memberId);
         if(like.equals("Y") || like.equals("N")) {
             userService.verifyUpdate(mapper.updateMemberFood(memberFoodId, like));
         }

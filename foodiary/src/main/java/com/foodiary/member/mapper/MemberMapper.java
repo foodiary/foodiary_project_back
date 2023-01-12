@@ -57,6 +57,14 @@ public interface MemberMapper {
 
     int updateMemberInfo(MemberEditRequestDto memberEditDto);
 
+    int updateDailyWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
+    int updateDailyCommentWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
+    int updateRecipeWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
+    int updateRecipeCommentWriter(@Param("memberId") int memberId, @Param("nickname") String nickname);
+
     int deleteMemberImage(@Param("id") int id);
 
     MemberImageDto findByIdFile(@Param("id") int id);
@@ -111,15 +119,15 @@ public interface MemberMapper {
 
     int updateQuetion(MemberQuestionEditResponseDto memberQuestionEditResponseDto);
 
-    int deleteQuetion(@Param("questionId") int questionId);
+    int deleteQuetion(@Param("questionId") int questionId, @Param("memberId") int memberId);
 
     List<MemberFoodsResponseDto> findByFoods(@Param("memberId") int memberId);
 
     int updateMemberFood(@Param("memberFoodId") int memberFoodId, @Param("like") String like);
 
-    Optional<MemberDailyCommentDetailResponseDto> findByDailyCommentId(@Param("dailyId") int dailyId, @Param("dailyCommentId") int dailyCommentId);
+    Optional<MemberDailyCommentDetailResponseDto> findByDailyCommentId(@Param("memberId") int memberId, @Param("dailyId") int dailyId, @Param("dailyCommentId") int dailyCommentId);
 
-    Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
+    Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("memberId") int memberId, @Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
 
 }
 

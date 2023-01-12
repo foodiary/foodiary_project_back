@@ -9,6 +9,7 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,13 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.foodiary.auth.jwt.CustomUserDetails;
+import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.daily.model.DailyDto;
@@ -53,6 +57,7 @@ import com.foodiary.recipe.model.RecipeDto;
 import com.foodiary.recipe.model.RecipesResponseDto;
 import com.github.pagehelper.PageHelper;
 
+import io.jsonwebtoken.JwtException;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,6 +71,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
     
     private final MemberService memberService;
+
+    private final UserService userService;
 
     @Operation(summary = "member password edit", description = "마이페이지에서 비밀번호 수정하기")
     @ApiResponses({ 
@@ -324,10 +331,13 @@ public class MemberController {
     @ResponseBody
     @DeleteMapping(value = "/member/{memberId}")
     public ResponseEntity<String> memberDelete(
-        @PathVariable @ApiParam(value = "회원 시퀀스")int memberId
-    ) throws Exception {
-
+        @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
+        @AuthenticationPrincipal CustomUserDetails memberDetails,
+        @RequestHeader("Authorization") String bearerAtk) throws JwtException
+    {
         memberService.deleteMember(memberId);
+
+        userService.memberLogout(memberDetails, bearerAtk);
         
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
