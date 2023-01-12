@@ -118,10 +118,8 @@ public class MemberService {
 
         MemberDto memberDto = mapper.findById(id).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));
 
-        if(!memberDto.getMemberNickName().equals(memberEditDto.getNickName())) {
-            if(mapper.findByNickname(memberEditDto.getNickName()).isPresent()) {
-                throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
-            }
+        if(!memberDto.getMemberNickName().equals(memberEditDto.getNickName()) && mapper.findByNickname(memberEditDto.getNickName()).isPresent()) {
+            throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
         }
 
         memberEditDto.updateId(id);
