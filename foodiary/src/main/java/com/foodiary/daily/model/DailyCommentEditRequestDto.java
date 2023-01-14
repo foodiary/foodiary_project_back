@@ -14,7 +14,9 @@ import javax.validation.constraints.NotBlank;
 public class DailyCommentEditRequestDto {
 
 
-    @NotBlank(message = "게시글 시퀀스를 입력해주세요.")
+    @ApiModelProperty(value="댓글 시퀀스", required = true)
+    @Setter private int commentId;
+
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     @Setter private int dailyId;
 

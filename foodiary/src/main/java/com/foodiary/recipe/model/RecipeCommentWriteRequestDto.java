@@ -17,11 +17,11 @@ public class RecipeCommentWriteRequestDto {
     @ApiModelProperty(value="댓글 시퀀스", required = true)
     private int commentId;
 
-    @NotBlank(message = "게시글 시퀀스를 입력해주세요.")
+
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int recipeId;
 
-    @NotBlank(message = "회 시퀀스를 입력해주세요.")
+
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 

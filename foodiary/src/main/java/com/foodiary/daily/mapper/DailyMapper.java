@@ -68,7 +68,7 @@ public interface DailyMapper {
 
     int deleteDaily(@Param("dailyId") int dailyId);
 
-    int deleteDailyComment(@Param("dailyId") int dailyId, @Param("commentId") int commentId);
+    int deleteDailyComment(@Param("dailyId") int dailyId, @Param("commentId") int commentId, @Param("memberId") int memberId);
 
     int deleteDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 

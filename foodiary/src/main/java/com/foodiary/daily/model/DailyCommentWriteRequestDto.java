@@ -13,11 +13,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class DailyCommentWriteRequestDto {
 
-    @NotBlank(message = "게시글 시퀀스를 입력해주세요.")
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;
 
-    @NotBlank(message = "회원 시퀀스를 입력해주세요.")
+
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 

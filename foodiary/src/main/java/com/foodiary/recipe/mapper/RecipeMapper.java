@@ -71,7 +71,7 @@ public interface RecipeMapper {
 
     int deleteRecipe(@Param("recipeId") int recipeId);
 
-    int deleteRecipeComment(@Param("recipeId") int recipeId, @Param("commentId") int commentId);
+    int deleteRecipeComment(@Param("recipeId") int recipeId, @Param("commentId") int commentId, @Param("memberId") int memberId);
 
     int deleteRecipeScrap(@Param("memberId") int memberId, @Param("recipeId") int recipeId);
 
