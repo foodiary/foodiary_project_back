@@ -3,6 +3,7 @@ package com.foodiary.common.exception;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,13 +51,19 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<?> handleMissRequestParameterException(MissingServletRequestParameterException exception) {
+    public ResponseEntity<?> handleMissRequestParameterException() {
         return ResponseEntity.status(400).body(ExceptionCode.BAD_REQUEST.getMessage());
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<?> handleIllParameterException(IllegalStateException exception) {
+    public ResponseEntity<?> handleIllParameterException() {
         return ResponseEntity.status(400).body(ExceptionCode.BAD_REQUEST.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleSQLIntegrityConstraintViolationException() {
+        ExceptionResponseDto response = new ExceptionResponseDto(new Date(), ExceptionCode.SQL_BAD_REQUEST.getMessage());
+        return ResponseEntity.status(400).body(response);
     }
 
     @ExceptionHandler({BindException.class})

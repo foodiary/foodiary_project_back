@@ -4,6 +4,7 @@ package com.foodiary.common.exception;
 public enum ExceptionCode {
     BAD_REQUEST(400, "요청 정보를 다시 입력해주세요."),
     OVER_REQUEST(400, "오늘 추천 횟수가 초과되었습니다."),
+    SQL_BAD_REQUEST(400, "SQL 제약 조건에 위배되었습니다. 요청 정보를 다시 입력주세요."),
 
     MEMBER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
     POST_NOT_FOUND(404, "게시글이 존재하지 않습니다."),
