@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @PostMapping("auth/login")
-    public ResponseEntity<?> memberLogin(@RequestBody MemberLoginRequestDto loginDto) throws Exception {
+    public ResponseEntity<?> memberLogin(@Valid @RequestBody MemberLoginRequestDto loginDto) throws Exception {
         TokenResponseDto response = userService.createLoginTokenResponse(loginDto);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
