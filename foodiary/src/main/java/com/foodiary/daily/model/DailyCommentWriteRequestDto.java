@@ -7,16 +7,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class DailyCommentWriteRequestDto {
 
+    @NotNull
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;
 
-
+    @NotNull
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 

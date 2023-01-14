@@ -1,6 +1,7 @@
 package com.foodiary.daily.model;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,8 @@ public class DailyWriteRequestDto {
 
     @Setter
     private int dailyId;
-    
+
+    @NotNull
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
     

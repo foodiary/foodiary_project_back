@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Builder
@@ -12,9 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 public class RecipeWriteRequestDto {
 
+    @Setter
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int recipeId;
-    
+
+    @NotNull
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
     

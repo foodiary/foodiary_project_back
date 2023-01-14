@@ -7,21 +7,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecipeCommentWriteRequestDto {
 
-    @Setter
-    @ApiModelProperty(value="댓글 시퀀스", required = true)
-    private int commentId;
 
-
+    @NotNull
     @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int recipeId;
 
-
+    @NotNull
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 
