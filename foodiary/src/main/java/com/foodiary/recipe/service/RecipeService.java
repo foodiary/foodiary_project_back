@@ -318,7 +318,7 @@ public class RecipeService {
         userService.checkUser(memberId);
         verifyRecipeComment(commentId);
 
-        userService.verifyDelete(recipeMapper.deleteRecipeComment(recipeId, commentId));
+        userService.verifyDelete(recipeMapper.deleteRecipeComment(recipeId, commentId, memberId));
     }
 
 

@@ -285,7 +285,7 @@ public class DailyService {
     public void removeDailyComment(int dailyId, int memberId, int commentId) {
         userService.checkUser(memberId);
 
-        userService.verifyDelete(dailyMapper.deleteDailyComment(dailyId, commentId));
+        userService.verifyDelete(dailyMapper.deleteDailyComment(dailyId, commentId, memberId));
     }
 
 
