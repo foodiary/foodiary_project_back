@@ -23,6 +23,7 @@ import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -47,8 +48,17 @@ public class DailyController {
     public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "dailyImage", required = true) MultipartFile dailyImage
+        @RequestPart(value = "dailyImage1", required = true) MultipartFile dailyImage1,
+        @RequestPart(value = "dailyImage2", required = false) MultipartFile dailyImage2,
+        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3
     ) throws Exception {
+
+        List<MultipartFile> dailyImage = new ArrayList<>();
+        if(dailyImage1 != null){
+            dailyImage.add(dailyImage1);
+        } else throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
+        if(dailyImage2 != null) dailyImage.add(dailyImage2);
+        if(dailyImage3 != null) dailyImage.add(dailyImage3);
 
         dailyService.addDaily(dailyWriteRequestDto, dailyImage);
 
@@ -73,8 +83,16 @@ public class DailyController {
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
         @RequestPart("dailyEdit") DailyEditRequestDto dailyEditRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "dailyImage", required = false) MultipartFile dailyImage
+        @RequestPart(value = "dailyImage1", required = false) MultipartFile dailyImage1,
+        @RequestPart(value = "dailyImage2", required = false) MultipartFile dailyImage2,
+        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3
     ) throws Exception {
+
+        List<MultipartFile> dailyImage = new ArrayList<>();
+        if(dailyImage1 != null) dailyImage.add(dailyImage1);
+        if(dailyImage2 != null) dailyImage.add(dailyImage2);
+        if(dailyImage3 != null) dailyImage.add(dailyImage3);
+        
         dailyEditRequestDto.setDailyId(dailyId);
         dailyEditRequestDto.setMemberId(memberId);
         dailyService.modifyDaily(dailyEditRequestDto, dailyImage);
@@ -238,7 +256,7 @@ public class DailyController {
     })
     @ResponseBody
     @PostMapping(value = "/daily/comment")
-    public ResponseEntity<String> dailyCommentWrite(@RequestBody DailyCommentWriteRequestDto dailyCommentWriteRequestDto)
+    public ResponseEntity<String> dailyCommentWrite(@Valid @RequestBody DailyCommentWriteRequestDto dailyCommentWriteRequestDto)
             throws Exception {
         dailyService.addDailyComment(dailyCommentWriteRequestDto);
         return new ResponseEntity<>("OK", HttpStatus.OK);

@@ -28,8 +28,14 @@ public class DailyWriteRequestDto {
     private String content;
 
     @ApiModelProperty(value="게시글 작성자", required = true)
-    @Setter private String write;
+    @Setter private String writer;
 
     @ApiModelProperty(value="이미지 경로1", required = true)
-    @Setter private String path;
+    @Setter private String path1;
+
+    @ApiModelProperty(value="이미지 경로2", required = true)
+    @Setter private String path2;
+
+    @ApiModelProperty(value="이미지 경로3", required = true)
+    @Setter private String path3;
 }

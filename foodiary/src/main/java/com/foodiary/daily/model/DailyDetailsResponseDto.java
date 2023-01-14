@@ -28,8 +28,14 @@ public class DailyDetailsResponseDto {
     @ApiModelProperty(value="게시글 작성자", required = true)
     private String dailyWriter;
 
-    @ApiModelProperty(value="게시글 이미지 경로", required = false)
-    private String dailyPath;
+    @ApiModelProperty(value="게시글 이미지 경로1", required = true)
+    private String dailyPath1;
+
+    @ApiModelProperty(value="게시글 이미지 경로2", required = false)
+    private String dailyPath2;
+
+    @ApiModelProperty(value="게시글 이미지 경로3", required = false)
+    private String dailyPath3;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
      private Integer dailyLike;

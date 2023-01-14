@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,5 +23,7 @@ public class DailyCommentDetailsResponseDto {
 
     @ApiModelProperty(value="내용", required = true)
     private String dailyCommentBody;
-    
+
+    @ApiModelProperty(value="댓글 생성일", required = true)
+    private LocalDateTime dailyCommentCreate;
 }

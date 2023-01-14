@@ -26,10 +26,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint{
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+        String exceptionMessage = (String) request.getAttribute("exception");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        Message message = new Message(ExceptionCode.NOT_AUTHORIZED.getMessage(), HttpStatus.UNAUTHORIZED);
+        Message message = new Message(exceptionMessage, HttpStatus.UNAUTHORIZED);
         String res = this.convertObjectToJson(message);
         response.getWriter().print(res);
     }

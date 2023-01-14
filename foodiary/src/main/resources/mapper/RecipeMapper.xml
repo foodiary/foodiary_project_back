@@ -28,8 +28,8 @@
 
     <!--    게시글 스크랩-->
     <insert id="saveRecipeScrap">
-        INSERT INTO TB_RECIPE_SCRAP (MEMBER_ID, RECIPE_ID)
-        VALUES (#{memberId}, #{recipeId});
+        INSERT INTO TB_RECIPE_SCRAP (MEMBER_ID, RECIPE_ID, RECIPE_SCRAP_CREATE)
+        VALUES (#{memberId}, #{recipeId}, now());
     </insert>
 
 

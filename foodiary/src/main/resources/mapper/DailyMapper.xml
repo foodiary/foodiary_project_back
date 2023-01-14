@@ -7,8 +7,8 @@
 
 <!--    게시글 추가-->
     <insert id="saveDaily" useGeneratedKeys="true" keyProperty="dailyId" keyColumn="DAILY_ID">
-        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_WRITER, DAILY_VIEW, DAILY_PATH, DAILY_CREATE, DAILY_UPDATE)
-        VALUES (#{memberId}, #{title}, #{content}, #{write}, 0, #{path}, now(), now());
+        INSERT INTO TB_DAILY (MEMBER_ID, DAILY_TITLE, DAILY_BODY, DAILY_WRITER, DAILY_VIEW, DAILY_PATH1, DAILY_PATH2, DAILY_PATH3, DAILY_CREATE, DAILY_UPDATE)
+        VALUES (#{memberId}, #{title}, #{content}, #{writer}, 0, #{path1}, #{path2}, #{path3}, now(), now());
     </insert>
 
 
@@ -28,8 +28,8 @@
 
 <!--    게시글 스크랩-->
     <insert id="saveDailyScrap">
-        INSERT INTO TB_DAILY_SCRAP (MEMBER_ID, DAILY_ID)
-        VALUES (#{memberId}, #{dailyId});
+        INSERT INTO TB_DAILY_SCRAP (MEMBER_ID, DAILY_ID, DAILY_SCRAP_CREATE)
+        VALUES (#{memberId}, #{dailyId}, now());
     </insert>
 
     <insert id="saveImage">
@@ -48,7 +48,7 @@
 <!--    게시글 수정-->
     <update id="updateDaily">
         UPDATE TB_DAILY
-        SET DAILY_TITLE = #{title}, DAILY_BODY = #{content}, DAILY_PATH = #{path}, DAILY_UPDATE = now()
+        SET DAILY_TITLE = #{title}, DAILY_BODY = #{content}, DAILY_PATH1 = #{path1}, DAILY_PATH2 = #{path2} ,DAILY_PATH3 = #{path3}, DAILY_UPDATE = now()
         WHERE DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId};
     </update>
 
@@ -77,7 +77,7 @@
 
     <!--    게시판 조회-->
     <select id="findAll" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH1, d.DAILY_VIEW, d.DAILY_CREATE,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -87,7 +87,7 @@
 
 <!--    게시판 조회(일, 주, 월)-->
     <select id="findAllCreate" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH1, d.DAILY_VIEW, d.DAILY_CREATE,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -98,7 +98,7 @@
 
     <!--    게시판 최신글 10개 조회-->
     <select id="findTopDaily" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_PATH1, d.DAILY_VIEW, d.DAILY_CREATE,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -111,7 +111,7 @@
 <!--    게시글 조회-->
     <select id="findByDailyId" resultType="com.foodiary.daily.model.DailyDetailsResponseDto">
         SELECT d.DAILY_ID, d.MEMBER_ID, d.DAILY_TITLE, d.DAILY_BODY, d.DAILY_WRITER,
-               d.DAILY_PATH, d.DAILY_VIEW, d.DAILY_CREATE,
+               d.DAILY_PATH1, d.DAILY_PATH2, d.DAILY_PATH3, d.DAILY_VIEW, d.DAILY_CREATE,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -167,10 +167,18 @@
         WHERE  DAILY_ID = #{dailyId}
     </select>
 
-    <select id="findByImageByDailyId" resultType="com.foodiary.daily.model.DailyImageDto">
+    <select id="findImageByDailyId" resultType="com.foodiary.daily.model.DailyImageDto">
         SELECT * FROM TB_DAILY_IMAGE
         WHERE  DAILY_ID = #{dailyId}
     </select>
+
+
+    <select id="findDailyIdByPath" resultType="Integer">
+        SELECT DAILY_ID FROM TB_DAILY
+        WHERE  DAILY_PATH1 = #{path}
+    </select>
+
+
 
 
 

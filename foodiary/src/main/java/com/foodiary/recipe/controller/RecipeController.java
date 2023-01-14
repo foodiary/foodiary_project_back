@@ -117,7 +117,7 @@ public class RecipeController {
                 PageHelper.startPage(page, 10);
 
                 List<RecipesResponseDto> response = recipeService.findRecipes();
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
 
@@ -143,7 +143,7 @@ public class RecipeController {
                 LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         @Operation(summary = "week recipe list", description = "주간 레시피 게시판 보기")
@@ -166,7 +166,7 @@ public class RecipeController {
                 LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         @Operation(summary = "month recipe list", description = "월간 레시피 게시판 보기")
@@ -189,7 +189,7 @@ public class RecipeController {
                 LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
 
@@ -204,7 +204,7 @@ public class RecipeController {
         public ResponseEntity<?> topRecipe() throws Exception {
 
                 List<RecipesResponseDto> response = recipeService.findTopRecipes();
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
 
@@ -258,7 +258,7 @@ public class RecipeController {
         })
         
         @PostMapping(value = "/recipe/comment")
-        public ResponseEntity<String> RecipeCommentWrite(@RequestBody RecipeCommentWriteRequestDto recipeCommentWriteRequestDto)
+        public ResponseEntity<String> RecipeCommentWrite(@Valid @RequestBody RecipeCommentWriteRequestDto recipeCommentWriteRequestDto)
                 throws Exception {
                 recipeService.addRecipeComment(recipeCommentWriteRequestDto);
                 return new ResponseEntity<>("OK", HttpStatus.OK);

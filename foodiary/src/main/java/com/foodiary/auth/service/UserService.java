@@ -77,6 +77,7 @@ public class UserService {
             }
             log.info(member.getMemberEmail());
             TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
+            tokenResponseDto.setMemberId(member.getMemberId());
             tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
             tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
             return tokenResponseDto;
@@ -96,6 +97,7 @@ public class UserService {
         log.info(member.getMemberPassword());
 
         TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
+        tokenResponseDto.setMemberId(member.getMemberId());
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;

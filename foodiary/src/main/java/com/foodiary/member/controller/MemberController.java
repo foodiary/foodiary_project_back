@@ -356,20 +356,20 @@ public class MemberController {
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "작성자", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
         List<DailysResponseDto> dailyList = new ArrayList<>();
 
         dailyList.add(dailysResponseDto);
 
-        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "작성자", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
 
         List<RecipesResponseDto> recipeList = new ArrayList<>();
 
         recipeList.add(recipesResponseDto);
 
         MemberSerchResponseDto memberSerchDto = new MemberSerchResponseDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
-        
+
         return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
     }
 

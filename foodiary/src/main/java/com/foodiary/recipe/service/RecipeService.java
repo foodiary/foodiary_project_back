@@ -51,7 +51,7 @@ public class RecipeService {
             for(int i=0; i < recipeImage.size(); i++) {
                 MultipartFile file = recipeImage.get(i);
                 fileCheck(file);
-                HashMap<String, String> fileMap = s3Service.upload(file, "daily");
+                HashMap<String, String> fileMap = s3Service.upload(file, "recipe");
                 fileUrlList.add(fileMap.get("url"));
 
                 String fileFullName = file.getOriginalFilename();
@@ -193,7 +193,7 @@ public class RecipeService {
             for (int i = 0; i < recipeImage.size(); i++) {
                 MultipartFile file = recipeImage.get(i);
                 fileCheck(file);
-                HashMap<String, String> fileMap = s3Service.upload(file, "daily");
+                HashMap<String, String> fileMap = s3Service.upload(file, "recipe");
                 fileUrlList.add(fileMap.get("url"));
 
                 String fileFullName = file.getOriginalFilename();
@@ -258,7 +258,6 @@ public class RecipeService {
         recipeMapper.updateRecipeView(recipeId);
         RecipeDetailsResponseDto recipeResponse = verifyRecipePost(recipeId);
         recipeResponse.setIngredient(recipeMapper.findAllIngredient(recipeId));
-        recipeResponse.setUserCheck(userService.verifyUser(recipeResponse.getMemberId()));
 
         return recipeResponse;
     }
