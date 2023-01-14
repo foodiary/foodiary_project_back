@@ -25,6 +25,7 @@ import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
+import com.foodiary.member.model.MemberResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.recipe.model.RecipeDto;
 
@@ -47,7 +48,7 @@ public interface MemberMapper {
 
     Optional<MemberDto> findByNickname(@Param("nickname") String nickname);
 
-    Optional<MemberDto> findById(@Param("id") int id);
+    Optional<MemberResponseDto> findById(@Param("id") int id);
 
     List<MemberDto> findAll();
 

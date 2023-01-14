@@ -49,8 +49,8 @@ public class SchedulerController {
         List<MemberDto> memberList = memberMapper.findAll();
         List<FoodDto> FoodList = foodMapper.findAllFood();
 
-        for (int k = 1; k <= memberList.size() ; k++) {
-            List<Integer> hateFoodList = foodMapper.findAllHateFood(k);
+        for (int k = 0; k < memberList.size() ; k++) {
+            List<Integer> hateFoodList = foodMapper.findAllHateFood(memberList.get(k).getMemberId());
             List<FoodDto> list = new ArrayList<>();
 
             //중복 음식 방지 로직
@@ -73,7 +73,7 @@ public class SchedulerController {
                 }
             }
             MenuRecommendResponseDto recommendMenu = MenuRecommendResponseDto.builder()
-                    .memberId(k)
+                    .memberId(memberList.get(k).getMemberId())
                     .menuMonLunchCategory(list.get(0).getFoodCategory()).menuMonLunch(list.get(0).getFoodName())
                     .menuMonDinnerCategory(list.get(1).getFoodCategory()).menuMonDinner(list.get(1).getFoodName())
                     .menuTueLunchCategory(list.get(2).getFoodCategory()).menuTueLunch(list.get(2).getFoodName())
@@ -90,8 +90,6 @@ public class SchedulerController {
                     .menuSunDinnerCategory(list.get(13).getFoodCategory()).menuSunDinner(list.get(13).getFoodName())
                     .build();
 
-            MemberDto member = memberMapper.findByMemberId(k)
-                    .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
             ObjectMapper objectMapper = new ObjectMapper();
             String saveMenu = null;
@@ -100,7 +98,9 @@ public class SchedulerController {
             } catch ( JsonProcessingException e) {
                 e.printStackTrace();
             }
-            redisDao.setValues(member.getMemberNickName(), saveMenu);
+
+            String keyMemberId = String.valueOf(memberList.get(k).getMemberId());
+            redisDao.setValues("memberId : " + keyMemberId, saveMenu);
 
         }
         log.info("모든 회원의 식단 구성을 완료하였습니다.");

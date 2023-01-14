@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -118,8 +119,6 @@ public class FoodService {
                 .build();
 
 
-        MemberDto member = memberMapper.findByMemberId(memberId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         ObjectMapper objectMapper = new ObjectMapper();
         String saveMenu = null;
@@ -128,9 +127,12 @@ public class FoodService {
         } catch ( JsonProcessingException e) {
             e.printStackTrace();
         }
-        redisDao.setValues(member.getMemberNickName(), saveMenu);
 
-         String findMenu = redisDao.getValues(member.getMemberNickName());
+        String keyMemberId = String.valueOf(memberId);
+        redisDao.setValues("memberId : " + keyMemberId, saveMenu);
+
+
+         String findMenu = redisDao.getValues("memberId : " + keyMemberId);
         return objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
     }
 
@@ -138,9 +140,9 @@ public class FoodService {
 
     public MenuRecommendResponseDto findMenuRecommendWeek(int memberId) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        MemberDto member = memberMapper.findByMemberId(memberId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        String findMenu = redisDao.getValues(member.getMemberNickName());
+
+        String keyMemberId = String.valueOf(memberId);
+        String findMenu = redisDao.getValues("memberId : " + keyMemberId);
         return objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
     }
 

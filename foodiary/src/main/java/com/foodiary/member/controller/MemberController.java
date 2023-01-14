@@ -36,7 +36,6 @@ import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
-import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberFaqDto;
@@ -50,6 +49,7 @@ import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
+import com.foodiary.member.model.MemberResponseDto;
 import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.member.service.MemberService;
@@ -312,11 +312,11 @@ public class MemberController {
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
     @GetMapping(value = "/member/{memberId}")
-    public ResponseEntity<MemberDto> memberDetails(
+    public ResponseEntity<MemberResponseDto> memberDetails(
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        MemberDto memberdto = memberService.findByMemberIdInfo(memberId);
+        MemberResponseDto memberdto = memberService.findByMemberIdInfo(memberId);
         return new ResponseEntity<>(memberdto, HttpStatus.OK);
     }
 
