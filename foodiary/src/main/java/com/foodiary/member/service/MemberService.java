@@ -42,6 +42,7 @@ import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
+import com.foodiary.member.model.MemberResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.recipe.model.RecipeDto;
 
@@ -116,7 +117,7 @@ public class MemberService {
 
         userService.checkUser(id);
 
-        MemberDto memberDto = mapper.findById(id).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));
+        MemberResponseDto memberDto = mapper.findById(id).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));
 
         if(!memberDto.getMemberNickName().equals(memberEditDto.getNickName()) && mapper.findByNickname(memberEditDto.getNickName()).isPresent()) {
             throw new BusinessLogicException(ExceptionCode.NICKNAME_BAD_REQUEST);
@@ -321,7 +322,7 @@ public class MemberService {
     }
 
     // 회원 정보 보기(본인꺼) 마이페이지
-    public MemberDto findByMemberIdInfo(int memberId) {
+    public MemberResponseDto findByMemberIdInfo(int memberId) {
 
         userService.checkUser(memberId);
         return mapper.findById(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.SELECT_ERROR));

@@ -103,8 +103,8 @@ public class SecurityConfig {
                 "/member/signup",
                 "/notice",
                 "/notice/{noticeId}",
-                "/faq"
-
+                "/faq",
+                "/rank/**"
 
                 ).permitAll()
                 
