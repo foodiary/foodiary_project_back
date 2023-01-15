@@ -26,7 +26,6 @@ import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
-import com.foodiary.daily.model.DailyDto;
 import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
@@ -36,6 +35,7 @@ import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
+import com.foodiary.member.model.MemberDailyResponseDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberFaqDto;
@@ -383,7 +383,7 @@ public class MemberController {
     @ResponseBody
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @GetMapping(value = "/member/post/daily/{memberId}")
-    public ResponseEntity<List<DailyDto>> memberViewDailyPosts(
+    public ResponseEntity<List<MemberDailyResponseDto>> memberViewDailyPosts(
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
@@ -392,7 +392,7 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<DailyDto> dailyList = memberService.postDailyFind(memberId);
+        List<MemberDailyResponseDto> dailyList = memberService.postDailyFind(memberId);
 
         return new ResponseEntity<>(dailyList, HttpStatus.OK);
     }
@@ -406,7 +406,7 @@ public class MemberController {
     })
     @ResponseBody
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @GetMapping(value = "/member/post/recipe/{memberId}")
+    // @GetMapping(value = "/member/post/recipe/{memberId}")
     public ResponseEntity<List<RecipeDto>> memberViewRecipePosts(
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
@@ -459,7 +459,7 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<MemberPostScrapResponseDto>  memberPostScrapResponseDtoList= memberService.detailScrap(memberId);
+        List<MemberPostScrapResponseDto> memberPostScrapResponseDtoList= memberService.detailScrap(memberId);
 
         return new ResponseEntity<>(memberPostScrapResponseDtoList, HttpStatus.OK);
     }
@@ -521,7 +521,7 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/comment/recipe/{memberId}")
+    // @GetMapping(value = "/member/comment/recipe/{memberId}")
     public ResponseEntity<List<MemberRecipeCommentDto>> recipeComments(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
@@ -566,7 +566,7 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}")
+    // @GetMapping(value = "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}")
     public ResponseEntity<MemberRecipeCommentDetailResponseDto> recipeCommentsDetail(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,

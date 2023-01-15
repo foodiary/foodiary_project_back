@@ -86,13 +86,12 @@
         WHERE MEMBER_ID = #{id}
     </select>
 
-    <select id="findByDaily" resultType="com.foodiary.daily.model.DailyDto">
+    <select id="findByDaily" resultType="com.foodiary.member.model.MemberDailyResponseDto">
         SELECT 
-            DAILY_ID, MEMBER_ID, DAILY_WRITER, DAILY_TITLE, DAILY_BODY, DAILY_PATH, DAILY_CREATE, DAILY_VIEW, 
-            (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS DAILY_COMMENT,
-            (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS DAILY_LIKE 
+            DAILY_ID, MEMBER_ID, DAILY_PATH, DAILY_CREATE
         FROM TB_DAILY td
-        WHERE MEMBER_ID = #{id} AND DAILY_YN = 'N'
+        WHERE MEMBER_ID = #{memberId} AND DAILY_YN = 'N'
+        ORDER BY DAILY_CREATE DESC
     </select>
 
     <select id="findByRecipe" resultType="com.foodiary.recipe.model.RecipeDto">
@@ -106,54 +105,23 @@
     </select>
 
     <select id="postScrap" resultType="com.foodiary.member.model.MemberPostScrapResponseDto">
-        (SELECT tmsd.MEMBER_DAILY_SCRAP_ID AS SCRAP_ID, tmsd.MEMBER_ID AS MEMBER_ID, tmsd.DAILY_SCRAP_CREATE AS SCRAP_CREATE,
-	    (CASE td.DAILY_ID WHEN 1 THEN "DAILY" ELSE "DAILY" END) AS TYPE,
-            tmsd.DAILY_ID AS POST_ID, td.DAILY_TITLE AS POST_TITLE, td.DAILY_WRITER AS POST_WRITER, 
-            td.DAILY_VIEW AS POST_VIEW, td.DAILY_PATH AS POST_PATH, td.DAILY_CREATE AS POST_CREATE,
-	        (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS POST_COMMENT,
-	        (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS POST_LIKE
+        SELECT tmsd.MEMBER_DAILY_SCRAP_ID, tmsd.DAILY_ID, tmsd.MEMBER_ID, 
+        tmsd.DAILY_SCRAP_CREATE, td.DAILY_PATH
         from TB_DAILY_SCRAP tmsd 
             left join TB_DAILY td 
             ON tmsd.DAILY_ID = td.DAILY_ID
-        WHERE tmsd.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N')
-        UNION ALL
-		(SELECT tmsr.MEMBER_RECIPE_SCRAP_ID, tmsr.MEMBER_ID, tmsr.RECIPE_SCRAP_CREATE,  
-		    (CASE tr.RECIPE_ID WHEN 1 THEN "RECIPE" ELSE "RECIPE" END) AS TYPE,
-            tmsr.RECIPE_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, 
-            tr.RECIPE_VIEW, tr.RECIPE_PATH1, tr.RECIPE_CREATE,
-	        (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID=tr.RECIPE_ID),
-	        (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID=tr.RECIPE_ID)
-        from TB_RECIPE_SCRAP tmsr 
-            left join TB_RECIPE tr 
-            ON tmsr.RECIPE_ID = tr.RECIPE_ID
-        WHERE tmsr.MEMBER_ID = #{memberId} AND tr.RECIPE_YN = 'N')
-        ORDER BY SCRAP_CREATE DESC
+        WHERE tmsd.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N'
+        ORDER BY DAILY_SCRAP_CREATE DESC
     </select>
 
     <select id="postLike" resultType="com.foodiary.member.model.MemberPostLikeResponseDto">
-        (SELECT tdl.DAILY_LIKE_ID AS LIKE_ID, tdl.DAILY_ID AS POST_ID, 
-            tdl.MEMBER_ID, td.DAILY_TITLE AS POST_TITLE, td.DAILY_WRITER AS POST_WRITER, tdl.DAILY_LIKE_CREATE AS LIKE_CREATE,
-            td.DAILY_VIEW AS POST_VIEW, td.DAILY_PATH AS POST_PATH, td.DAILY_CREATE AS POST_CREATE, (CASE
-            tdl.DAILY_ID WHEN 1 THEN "DAILY" ELSE "DAILY" END) AS TYPE,
-            (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID=td.DAILY_ID) AS POST_COMMENT,
-            (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID=td.DAILY_ID) AS POST_LIKE
+        SELECT tdl.DAILY_LIKE_ID, tdl.DAILY_ID, 
+            tdl.MEMBER_ID, tdl.DAILY_LIKE_CREATE, td.DAILY_PATH
         FROM TB_DAILY_LIKE tdl 
             right join TB_DAILY td 
             ON tdl.DAILY_ID = td.DAILY_ID 
         WHERE tdl.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N'
-       	ORDER BY tdl.DAILY_LIKE_CREATE)
-        UNION ALL
-        (SELECT trl.RECIPE_LIKE_ID, trl.RECIPE_ID, trl.MEMBER_ID, tr.RECIPE_TITLE, tr.RECIPE_WRITER, trl.RECIPE_LIKE_CREATE,
-            tr.RECIPE_VIEW, tr.RECIPE_PATH1, tr.RECIPE_CREATE, (CASE
-            trl.RECIPE_ID WHEN 1 THEN "RECIPE" ELSE "RECIPE" END) AS TYPE,
-                (SELECT COUNT(*) from TB_RECIPE_COMMENT trc WHERE trc.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_COMMENT,
-                (SELECT COUNT(*) from TB_RECIPE_LIKE trl WHERE trl.RECIPE_ID = tr.RECIPE_ID) AS RECIPE_LIKE
-        FROM TB_RECIPE_LIKE trl 
-            right join TB_RECIPE tr 
-            ON trl.RECIPE_ID = tr.RECIPE_ID  
-        WHERE trl.MEMBER_ID = #{memberId} AND tr.RECIPE_YN = 'N'
-        ORDER BY trl.RECIPE_LIKE_CREATE
-        ) ORDER BY LIKE_CREATE DESC
+        ORDER BY DAILY_LIKE_CREATE DESC
     </select>
 
     <delete id="deleteDailyLike">
