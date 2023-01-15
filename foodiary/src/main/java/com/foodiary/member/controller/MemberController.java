@@ -42,6 +42,7 @@ import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
@@ -50,11 +51,9 @@ import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
 import com.foodiary.member.model.MemberResponseDto;
-import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.member.service.MemberService;
 import com.foodiary.recipe.model.RecipeDto;
-import com.foodiary.recipe.model.RecipesResponseDto;
 import com.github.pagehelper.PageHelper;
 
 import io.jsonwebtoken.JwtException;
@@ -342,7 +341,6 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    // TODO : 디자인 나오고 수정해야할 부분
     @Operation(summary = "member search", description = "회원 정보 조회(다른 사람 및 본인 프로필 조회)")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -351,26 +349,19 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @GetMapping(value = "/member/search")
-    public ResponseEntity<MemberSerchResponseDto> memberDetailOther(
-        @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    @GetMapping(value = "/member/search/{memberId}")
+    public ResponseEntity<List<MemberOtherMemberResponseDto>> memberDetailOther(
+        @PathVariable @ApiParam(value = "조회할 회원의 시퀀스", required = true)int memberId,
+        @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
 
-        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
-
-        List<DailysResponseDto> dailyList = new ArrayList<>();
-
-        dailyList.add(dailysResponseDto);
-
-        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
-
-        List<RecipesResponseDto> recipeList = new ArrayList<>();
-
-        recipeList.add(recipesResponseDto);
-
-        MemberSerchResponseDto memberSerchDto = new MemberSerchResponseDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
+        if(page <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+        PageHelper.startPage(page, 10);
+        List<MemberOtherMemberResponseDto> dailyList = memberService.findMember(memberId);
         
-        return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
+        return new ResponseEntity<>(dailyList, HttpStatus.OK);
     }
 
     @Operation(summary = "member post view", description = "본인이 쓴 하루 식단 게시글 조회")

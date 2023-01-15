@@ -35,6 +35,7 @@ import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
@@ -386,13 +387,25 @@ public class MemberService {
         }
     }
 
-    // 하루 식단 본인이 쓴 글
+    // 하루 식단 본인이 쓴 글 
     public List<MemberDailyResponseDto> postDailyFind(int memberId) {
         // userService.checkUser(memberId);
 
         List<MemberDailyResponseDto> dailyList = mapper.findByDaily(memberId);
 
         postSize(dailyList.size());
+
+        return dailyList;
+    }
+
+    // 다른 사람 프로필 조회 (게시글, 닉네임, 프로필 이미지, 프로필 메세지) 
+    public List<MemberOtherMemberResponseDto> findMember(int memberId) {
+
+        List<MemberOtherMemberResponseDto> dailyList = mapper.findByMember(memberId);
+
+        if(dailyList.size()==0) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_EXISTS);
+        }
 
         return dailyList;
     }

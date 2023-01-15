@@ -6,6 +6,7 @@ public enum ExceptionCode {
     OVER_REQUEST(400, "오늘 추천 횟수가 초과되었습니다."),
 
     MEMBER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
+    MEMBER_NOT_EXISTS(404, "탈퇴한 회원입니다."),
     POST_NOT_FOUND(404, "존재하지 않는 게시글입니다."),
     COMMENT_NOT_FOUND(404, "존재하지 않는 댓글입니다."),
     LIKE_NOT_FOUND(404, "좋아요 한 적 없는 게시글입니다."),

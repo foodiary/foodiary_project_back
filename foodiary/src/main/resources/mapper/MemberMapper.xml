@@ -86,11 +86,13 @@
         WHERE MEMBER_ID = #{id}
     </select>
 
-    <select id="findByDaily" resultType="com.foodiary.member.model.MemberDailyResponseDto">
+    <select id="findByMember" resultType="com.foodiary.member.model.MemberOtherMemberResponseDto">
         SELECT 
-            DAILY_ID, MEMBER_ID, DAILY_PATH, DAILY_CREATE
-        FROM TB_DAILY td
-        WHERE MEMBER_ID = #{memberId} AND DAILY_YN = 'N'
+            td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH, tm.MEMBER_PATH, 
+            tm.MEMBER_PROFILE, tm.MEMBER_NICKNAME, td.DAILY_CREATE
+        FROM TB_MEMBER tm LEFT JOIN TB_DAILY td
+            ON tm.MEMBER_ID = td.MEMBER_ID 
+        WHERE tm.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N' AND tm.MEMBER_YN ='N'
         ORDER BY DAILY_CREATE DESC
     </select>
 
