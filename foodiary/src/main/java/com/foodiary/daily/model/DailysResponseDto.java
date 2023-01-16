@@ -37,4 +37,12 @@ public class DailysResponseDto {
     @ApiModelProperty(value="댓글 수", required = true)
     private int dailyComment;
 
+    @Setter
+    @ApiModelProperty(value="주간 랭킹 여부", required = true)
+    private boolean weekRank;
+
+    @Setter
+    @ApiModelProperty(value="월 랭킹 여부", required = true)
+    private boolean monRank;
+
 }

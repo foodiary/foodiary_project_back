@@ -11,6 +11,7 @@ import com.foodiary.member.model.MemberDto;
 import com.foodiary.daily.model.DailyImageDto;
 import com.foodiary.daily.model.DailyDetailsResponseDto;
 import com.foodiary.daily.model.DailyImageDto;
+import com.foodiary.rank.mapper.RankMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -32,6 +34,7 @@ public class DailyService {
 
     private final DailyMapper dailyMapper;
     private final MemberMapper memberMapper;
+    private final RankMapper rankMapper;
     private final S3Service s3Service;
     private final UserService userService;
     
@@ -213,7 +216,7 @@ public class DailyService {
         if(dailys.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
-        return dailys;
+        return setDailyRank(dailys);
     }
 
     //하루식단 게시판 조회(월, 주, 일)
@@ -222,7 +225,8 @@ public class DailyService {
         if(dailys.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
-        return dailys;
+        return setDailyRank(dailys);
+
     }
 
 
@@ -232,7 +236,7 @@ public class DailyService {
         if(dailys.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
         }
-        return dailys;
+        return setDailyRank(dailys);
     }
 
 
@@ -311,5 +315,25 @@ public class DailyService {
     private DailyDetailsResponseDto verifyDailyPost(int dailyId) {
         return dailyMapper.findByDailyId(dailyId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
+    }
+
+    private List<DailysResponseDto> setDailyRank(List<DailysResponseDto> list) {
+        List<Integer> weekDailyIdList = rankMapper.findByWeekDailyId();
+        List<Integer> monDailyIdList = rankMapper.findByMonDailyId();
+
+        return list.stream()
+                    .map(daily -> {
+                        weekDailyIdList.forEach(id -> {
+                            if (id == daily.getDailyId()) {
+                                daily.setWeekRank(true);
+                            }
+                        });
+                        monDailyIdList.forEach(id -> {
+                            if (id == daily.getDailyId()) {
+                                daily.setMonRank(true);
+                            }
+                        });
+                        return daily;
+                    }).collect(Collectors.toList());
     }
 }

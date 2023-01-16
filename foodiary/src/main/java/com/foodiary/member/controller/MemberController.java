@@ -356,7 +356,7 @@ public class MemberController {
         @ApiParam(value = "회원 시퀀스", required = true)int memberId
     ) throws Exception {
 
-        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "작성자", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
+        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "작성자", "경로입니다.", 1, 2, LocalDateTime.now(), 5, false, false);
 
         List<DailysResponseDto> dailyList = new ArrayList<>();
 

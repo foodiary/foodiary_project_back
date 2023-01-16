@@ -13,6 +13,10 @@ public interface RankMapper {
 
     List<RanksResponseDto> rankMonthList();
 
+    List<Integer> findByWeekDailyId();
+
+    List<Integer> findByMonDailyId();
+
     void weekWrite();
 
     void monthWrite();
