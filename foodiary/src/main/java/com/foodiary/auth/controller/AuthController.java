@@ -45,7 +45,7 @@ public class AuthController {
         log.info(providerId);
         String provider = providerId.toUpperCase();
         ResponseEntity<?> response = userService.oauthLogin(provider, code);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 //
 

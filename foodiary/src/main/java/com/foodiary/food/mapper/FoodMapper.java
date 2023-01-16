@@ -19,14 +19,16 @@ public interface FoodMapper {
 
     int saveFood(FoodDto food);
 
-    int saveMemberFood(MemberFoodRequestDto memberFoodRequestDto);
+    int saveMemberFoodLike(MemberFoodRequestDto memberFoodRequestDto);
+
+    int saveMemberFoodHate(MemberFoodRequestDto memberFoodRequestDto);
 
     int saveWeekRecommendMenu(MenuRecommendRequestDto menuRecommendRequestDto);
 
 
-    int updateFoodLike(@Param("memberFoodId") int memberFoodId, @Param("memberId") int memberId);
+    int updateFoodLike(@Param("foodId") int foodId, @Param("memberId") int memberId);
 
-    int updateFoodHate(@Param("memberFoodId") int memberFoodId, @Param("memberId") int memberId);
+    int updateFoodHate(@Param("foodId") int foodId, @Param("memberId") int memberId);
 
     List<Integer> findAllHateFood(@Param("memberId") int memberId);
 

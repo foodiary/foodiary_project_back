@@ -45,9 +45,14 @@
 
 
 
-    <insert id="saveMemberFood" useGeneratedKeys="true" keyProperty="memberFoodId" keyColumn="MEMBER_FOOD_ID">
+    <insert id="saveMemberFoodLike" useGeneratedKeys="true" keyProperty="memberFoodId" keyColumn="MEMBER_FOOD_ID">
         INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_CREATE)
-        VALUES (#{memberId}, #{foodId}, 0, now());
+        VALUES (#{memberId}, #{foodId}, Y, now());
+    </insert>
+
+    <insert id="saveMemberFoodHate" useGeneratedKeys="true" keyProperty="memberFoodId" keyColumn="MEMBER_FOOD_ID">
+        INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_CREATE)
+        VALUES (#{memberId}, #{foodId}, N, now());
     </insert>
 
     <insert id="saveWeekRecommendMenu" useGeneratedKeys="true" keyProperty="menuId" keyColumn="MENU_ID">
@@ -75,14 +80,14 @@
     <update id="updateFoodLike">
         UPDATE TB_MEMBER_FOOD
         SET MEMBER_FOOD_LIKE = 'Y'
-        WHERE MEMBER_FOOD_ID = #{memberFoodId} AND MEMBER_ID = #{memberId};
+        WHERE FOOD_ID = #{foodId} AND MEMBER_ID = #{memberId};
     </update>
 
 
     <update id="updateFoodHate">
         UPDATE TB_MEMBER_FOOD
         SET MEMBER_FOOD_LIKE = 'N'
-        WHERE MEMBER_FOOD_ID = #{memberFoodId} AND MEMBER_ID = #{memberId};
+        WHERE FOOD_ID = #{foodId} AND MEMBER_ID = #{memberId};
     </update>
 
 

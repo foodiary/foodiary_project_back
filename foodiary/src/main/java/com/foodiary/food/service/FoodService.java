@@ -17,13 +17,16 @@ import com.foodiary.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @Slf4j
+@Transactional(rollbackFor = {Exception.class, SQLException.class})
 @RequiredArgsConstructor
 @Service
 public class FoodService {
@@ -151,20 +154,22 @@ public class FoodService {
         userService.checkUser(memberFoodRequestDto.getMemberId());
 
         if(foodMapper.findByMemberFood(memberFoodRequestDto).isPresent()){
-            throw new BusinessLogicException(ExceptionCode.FOOD_EXISTS);
+            userService.verifyUpdate(foodMapper.updateFoodLike(memberFoodRequestDto.getFoodId(), memberFoodRequestDto.getMemberId()));
+        }else {
+            userService.verifySave( foodMapper.saveMemberFoodLike(memberFoodRequestDto));
         }
-        userService.verifySave( foodMapper.saveMemberFood(memberFoodRequestDto));
-        userService.verifyUpdate(foodMapper.updateFoodLike(memberFoodRequestDto.getMemberFoodId(), memberFoodRequestDto.getMemberId()));
+
     }
 
     public void patchHateFood(MemberFoodRequestDto memberFoodRequestDto) {
         userService.checkUser(memberFoodRequestDto.getMemberId());
 
         if(foodMapper.findByMemberFood(memberFoodRequestDto).isPresent()){
-            throw new BusinessLogicException(ExceptionCode.FOOD_EXISTS);
+            userService.verifyUpdate(foodMapper.updateFoodHate(memberFoodRequestDto.getFoodId(), memberFoodRequestDto.getMemberId()));
+        } else {
+            userService.verifySave(foodMapper.saveMemberFoodHate(memberFoodRequestDto));
         }
-        userService.verifySave(foodMapper.saveMemberFood(memberFoodRequestDto));
-        userService.verifyUpdate(foodMapper.updateFoodHate(memberFoodRequestDto.getMemberFoodId(), memberFoodRequestDto.getMemberId()));
+
     }
     
     public FoodDto recommendFood(List<FoodDto> foodDto) {

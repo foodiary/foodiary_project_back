@@ -19,6 +19,6 @@ public class MemberFoodRequestDto {
     @ApiModelProperty(value="사용자 시퀀스", required = true)
     private int memberId;
 
-    @ApiModelProperty(value="음식 시퀀스", required = true)
+    @ApiModelProperty(value="음식 시퀀스", required = false)
     private int foodId;
 }

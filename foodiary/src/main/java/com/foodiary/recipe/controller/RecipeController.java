@@ -29,7 +29,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
-@RestController
+//@RestController
 public class RecipeController {
 
         private final RecipeService recipeService;
