@@ -9,6 +9,7 @@ public enum ExceptionCode {
     MEMBER_NOT_FOUND(404, "존재하지 않는 회원입니다."),
     POST_NOT_FOUND(404, "게시글이 존재하지 않습니다."),
     COMMENT_NOT_FOUND(404, "댓글이 존재하지 않습니다."),
+    MEMBER_NOT_EXISTS(404, "탈퇴한 회원입니다."),
     LIKE_NOT_FOUND(404, "좋아요 한 적 없는 게시글입니다."),
     SCRAP_NOT_FOUND(404, "저장한 스크랩이 없습니다."),
 

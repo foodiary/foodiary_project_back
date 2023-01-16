@@ -1,4 +1,4 @@
-package com.foodiary.rank.model;
+package com.foodiary.member.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -6,20 +6,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class RanksResponseDto {
+@NoArgsConstructor
+public class MemberDailyResponseDto {
     
     @ApiModelProperty(value="멤버 시퀀스", required = true)
-    private int memberId;    
+    private int memberId;
 
-    @ApiModelProperty(value="데일리 시퀀스", required = true)
+    @ApiModelProperty(value="게시글 시퀀스", required = true)
     private int dailyId;
-    
-    @ApiModelProperty(value="게시글 제목", required = true)
-    private String dailyTitle;
+
+    @ApiModelProperty(value="게시글 작성일자", required = true)
+    private String dailyCreate;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
     private String dailyPath;
-
+    
 }

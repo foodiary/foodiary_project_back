@@ -26,7 +26,6 @@ import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
-import com.foodiary.daily.model.DailyDto;
 import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
@@ -36,12 +35,14 @@ import com.foodiary.member.model.MemberCheckNicknameRequestDto;
 import com.foodiary.member.model.MemberCheckPwJwtRequestDto;
 import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
+import com.foodiary.member.model.MemberDailyResponseDto;
 import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
@@ -50,11 +51,9 @@ import com.foodiary.member.model.MemberQuestionWriteResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDetailResponseDto;
 import com.foodiary.member.model.MemberRecipeCommentDto;
 import com.foodiary.member.model.MemberResponseDto;
-import com.foodiary.member.model.MemberSerchResponseDto;
 import com.foodiary.member.model.MemberSignUpRequestDto;
 import com.foodiary.member.service.MemberService;
 import com.foodiary.recipe.model.RecipeDto;
-import com.foodiary.recipe.model.RecipesResponseDto;
 import com.github.pagehelper.PageHelper;
 
 import io.jsonwebtoken.JwtException;
@@ -342,7 +341,6 @@ public class MemberController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    // TODO : 디자인 나오고 수정해야할 부분
     @Operation(summary = "member search", description = "회원 정보 조회(다른 사람 및 본인 프로필 조회)")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
@@ -351,26 +349,19 @@ public class MemberController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @GetMapping(value = "/member/search")
-    public ResponseEntity<MemberSerchResponseDto> memberDetailOther(
-        @ApiParam(value = "회원 시퀀스", required = true)int memberId
+    @GetMapping(value = "/member/search/{memberId}")
+    public ResponseEntity<List<MemberOtherMemberResponseDto>> memberDetailOther(
+        @PathVariable @ApiParam(value = "조회할 회원의 시퀀스", required = true)int memberId,
+        @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
 
-        DailysResponseDto dailysResponseDto = new DailysResponseDto(1, "제목입니다.", "작성자", "경로입니다.", 1, 2, LocalDateTime.now(), 5, false, false);
-
-        List<DailysResponseDto> dailyList = new ArrayList<>();
-
-        dailyList.add(dailysResponseDto);
-
-        RecipesResponseDto recipesResponseDto = new RecipesResponseDto(1, "제목입니다.", "작성자", "경로입니다.", 1, 2, LocalDateTime.now(), 5);
-
-        List<RecipesResponseDto> recipeList = new ArrayList<>();
-
-        recipeList.add(recipesResponseDto);
-
-        MemberSerchResponseDto memberSerchDto = new MemberSerchResponseDto(dailyList, recipeList, "사용자 소개글 입니다.", "이미지 경로", 5);
-
-        return new ResponseEntity<>(memberSerchDto, HttpStatus.OK);
+        if(page <= 0){
+            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+        }
+        PageHelper.startPage(page, 10);
+        List<MemberOtherMemberResponseDto> dailyList = memberService.findMember(memberId);
+        
+        return new ResponseEntity<>(dailyList, HttpStatus.OK);
     }
 
     @Operation(summary = "member post view", description = "본인이 쓴 하루 식단 게시글 조회")
@@ -383,7 +374,7 @@ public class MemberController {
     @ResponseBody
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @GetMapping(value = "/member/post/daily/{memberId}")
-    public ResponseEntity<List<DailyDto>> memberViewDailyPosts(
+    public ResponseEntity<List<MemberDailyResponseDto>> memberViewDailyPosts(
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
@@ -392,7 +383,7 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<DailyDto> dailyList = memberService.postDailyFind(memberId);
+        List<MemberDailyResponseDto> dailyList = memberService.postDailyFind(memberId);
 
         return new ResponseEntity<>(dailyList, HttpStatus.OK);
     }
@@ -406,7 +397,7 @@ public class MemberController {
     })
     @ResponseBody
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @GetMapping(value = "/member/post/recipe/{memberId}")
+    // @GetMapping(value = "/member/post/recipe/{memberId}")
     public ResponseEntity<List<RecipeDto>> memberViewRecipePosts(
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true)int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
@@ -459,7 +450,7 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<MemberPostScrapResponseDto>  memberPostScrapResponseDtoList= memberService.detailScrap(memberId);
+        List<MemberPostScrapResponseDto> memberPostScrapResponseDtoList= memberService.detailScrap(memberId);
 
         return new ResponseEntity<>(memberPostScrapResponseDtoList, HttpStatus.OK);
     }
@@ -521,7 +512,7 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/comment/recipe/{memberId}")
+    // @GetMapping(value = "/member/comment/recipe/{memberId}")
     public ResponseEntity<List<MemberRecipeCommentDto>> recipeComments(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
@@ -566,7 +557,7 @@ public class MemberController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}")
+    // @GetMapping(value = "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}")
     public ResponseEntity<MemberRecipeCommentDetailResponseDto> recipeCommentsDetail(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) int recipeId,

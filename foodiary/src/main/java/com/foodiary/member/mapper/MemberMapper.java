@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.foodiary.daily.model.DailyDto;
 import com.foodiary.member.model.MemberDailyCommentDetailResponseDto;
 import com.foodiary.member.model.MemberDailyCommentDto;
+import com.foodiary.member.model.MemberDailyResponseDto;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
@@ -17,6 +17,7 @@ import com.foodiary.member.model.MemberFoodsResponseDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
+import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
@@ -70,7 +71,9 @@ public interface MemberMapper {
 
     MemberImageDto findByIdFile(@Param("id") int id);
 
-    List<DailyDto> findByDaily(@Param("id") int id);
+    List<MemberDailyResponseDto> findByDaily(@Param("memberId") int id);
+
+    List<MemberOtherMemberResponseDto> findByMember(@Param("memberId") int id);
 
     List<RecipeDto> findByRecipe(@Param("id") int id);
 
