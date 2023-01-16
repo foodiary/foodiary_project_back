@@ -218,7 +218,7 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @GetMapping(value = "/dailys/datils")
+    @GetMapping(value = "/dailys/details")
     public ResponseEntity<DailyDetailsResponseDto> getDailyDetails (
         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId
     ) throws Exception {
