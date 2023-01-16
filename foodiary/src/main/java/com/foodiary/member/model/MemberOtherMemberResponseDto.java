@@ -20,7 +20,7 @@ public class MemberOtherMemberResponseDto {
     private String dailyCreate;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath;
+    private String dailyPath1;
 
     @ApiModelProperty(value="사용자 닉네임", required = true)
     private String memberNickName;

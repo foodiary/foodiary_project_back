@@ -20,6 +20,6 @@ public class MemberDailyResponseDto {
     private String dailyCreate;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath;
+    private String dailyPath1;
     
 }

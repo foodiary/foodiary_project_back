@@ -13,6 +13,9 @@ public class MemberDailyCommentDetailResponseDto {
     @ApiModelProperty(value="멤버 시퀀스", required = true)
     private int memberId;
 
+    @ApiModelProperty(value="회원 프로필 이미지", required = true)
+    private String memberPath;
+
     @ApiModelProperty(value="하루 공유 댓글 시퀀스", required = true)
     private int dailyCommentId;
 

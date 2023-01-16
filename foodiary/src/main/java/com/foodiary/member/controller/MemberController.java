@@ -1,7 +1,5 @@
 package com.foodiary.member.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -26,7 +24,6 @@ import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
-import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
 import com.foodiary.member.model.MemberCheckIdEmailRequestDto;
