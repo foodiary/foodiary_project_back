@@ -50,7 +50,9 @@ public class DailyController {
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage1", required = true) MultipartFile dailyImage1,
         @RequestPart(value = "dailyImage2", required = false) MultipartFile dailyImage2,
-        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3
+        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3,
+        @RequestPart(value = "dailyImage4", required = false) MultipartFile dailyImage4,
+        @RequestPart(value = "dailyImage5", required = false) MultipartFile dailyImage5
     ) throws Exception {
 
         List<MultipartFile> dailyImage = new ArrayList<>();
@@ -59,6 +61,8 @@ public class DailyController {
         } else throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         if(dailyImage2 != null) dailyImage.add(dailyImage2);
         if(dailyImage3 != null) dailyImage.add(dailyImage3);
+        if(dailyImage4 != null) dailyImage.add(dailyImage4);
+        if(dailyImage5 != null) dailyImage.add(dailyImage5);
 
         dailyService.addDaily(dailyWriteRequestDto, dailyImage);
 
@@ -85,13 +89,18 @@ public class DailyController {
         @Parameter(description = "사진 이미지")
         @RequestPart(value = "dailyImage1", required = false) MultipartFile dailyImage1,
         @RequestPart(value = "dailyImage2", required = false) MultipartFile dailyImage2,
-        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3
+        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3,
+        @RequestPart(value = "dailyImage4", required = false) MultipartFile dailyImage4,
+        @RequestPart(value = "dailyImage5", required = false) MultipartFile dailyImage5
+
     ) throws Exception {
 
         List<MultipartFile> dailyImage = new ArrayList<>();
         if(dailyImage1 != null) dailyImage.add(dailyImage1);
         if(dailyImage2 != null) dailyImage.add(dailyImage2);
         if(dailyImage3 != null) dailyImage.add(dailyImage3);
+        if(dailyImage4 != null) dailyImage.add(dailyImage4);
+        if(dailyImage5 != null) dailyImage.add(dailyImage5);
         
         dailyEditRequestDto.setDailyId(dailyId);
         dailyEditRequestDto.setMemberId(memberId);

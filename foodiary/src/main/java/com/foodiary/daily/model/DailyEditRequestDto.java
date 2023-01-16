@@ -34,6 +34,12 @@ public class DailyEditRequestDto {
     @ApiModelProperty(value="이미지 경로3", required = false)
     @Setter private String path3;
 
+    @ApiModelProperty(value="이미지 경로4", required = false)
+    @Setter private String path4;
+
+    @ApiModelProperty(value="이미지 경로5", required = false)
+    @Setter private String path5;
+
     @ApiModelProperty(value="이미지 수정 여부", required = true)
     private char imageDelete;
 

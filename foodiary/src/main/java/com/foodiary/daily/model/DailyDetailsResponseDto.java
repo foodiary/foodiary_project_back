@@ -37,6 +37,12 @@ public class DailyDetailsResponseDto {
     @ApiModelProperty(value="게시글 이미지 경로3", required = false)
     private String dailyPath3;
 
+    @ApiModelProperty(value="게시글 이미지 경로4", required = false)
+    private String dailyPath4;
+
+    @ApiModelProperty(value="게시글 이미지 경로5", required = false)
+    private String dailyPath5;
+
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
      private Integer dailyLike;
 

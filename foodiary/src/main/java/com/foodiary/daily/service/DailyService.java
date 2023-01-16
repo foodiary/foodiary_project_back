@@ -82,10 +82,17 @@ public class DailyService {
 
             if(fileUrlList.size()>1) {
                 dailyWriteRequestDto.setPath2(fileUrlList.get(1));
-                if(fileUrlList.size()>2) {
-                    dailyWriteRequestDto.setPath3(fileUrlList.get(2));
-                }
             }
+            if (fileUrlList.size() > 2) {
+                dailyWriteRequestDto.setPath3(fileUrlList.get(2));
+            }
+            if (fileUrlList.size() > 3) {
+                dailyWriteRequestDto.setPath4(fileUrlList.get(3));
+            }
+            if (fileUrlList.size() > 4) {
+                dailyWriteRequestDto.setPath5(fileUrlList.get(4));
+            }
+
 
             dailyWriteRequestDto.setWriter(member.getMemberNickName());
             userService.verifySave(dailyMapper.saveDaily(dailyWriteRequestDto));
@@ -160,6 +167,14 @@ public class DailyService {
             s3Service.deleteImage(verifyDaily.getDailyPath3());
             dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath3());
         }
+        if(verifyDaily.getDailyPath4() != null) {
+            s3Service.deleteImage(verifyDaily.getDailyPath4());
+            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath4());
+        }
+        if(verifyDaily.getDailyPath5() != null) {
+            s3Service.deleteImage(verifyDaily.getDailyPath5());
+            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath5());
+        }
 
         // 파일 url 담을 리스트
         List<String> fileUrlList = new ArrayList<>();
@@ -198,6 +213,12 @@ public class DailyService {
         }
         if (fileUrlList.size() > 2) {
             dailyEditRequestDto.setPath3(fileUrlList.get(2));
+        }
+        if (fileUrlList.size() > 3) {
+            dailyEditRequestDto.setPath4(fileUrlList.get(3));
+        }
+        if (fileUrlList.size() > 4) {
+            dailyEditRequestDto.setPath5(fileUrlList.get(4));
         }
         userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
     }
