@@ -263,25 +263,36 @@ public class DailyService {
 
 
     //하루식단 게시글 조회
-    public DailyDetailsResponseDto findDaily(int dailyId) {
+    public DailyDetailsResponseDto findDaily(int dailyId, int memberId) {
 
         //게시글 조회수 업데이트
         userService.verifyUpdate(dailyMapper.updateDailyView(dailyId));
 
-        return verifyDailyPost(dailyId);
+        DailyDetailsResponseDto daily = verifyDailyPost(dailyId);
+        if(daily.getMemberId() == memberId){
+            daily.setUserCheck(true);
+        } else {
+            daily.setUserCheck(false);
+        }
+        return daily;
     }
 
 
 
     // 하루식단 댓글 조회
-    public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId) {
+    public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId, int memberId) {
         verifyDailyPost(dailyId);
 
         List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComment(dailyId);
         if (commentList.size() == 0) {
             throw new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND);
         }
-        return commentList;
+        return commentList.stream()
+                    .map(comment -> {
+                        if(comment.getMemberId() == memberId) comment.setUserCheck(true);
+                        else comment.setUserCheck(false);
+                        return comment;
+                    }).collect(Collectors.toList());
     }
 
     

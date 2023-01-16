@@ -229,10 +229,11 @@ public class DailyController {
     @ResponseBody
     @GetMapping(value = "/dailys/details")
     public ResponseEntity<DailyDetailsResponseDto> getDailyDetails (
-        @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId
+        @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @ApiParam(value = "회원 시퀀스", required = false) @Positive int memberId
     ) throws Exception {
 
-        DailyDetailsResponseDto response = dailyService.findDaily(dailyId);
+        DailyDetailsResponseDto response = dailyService.findDaily(dailyId, memberId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -285,6 +286,7 @@ public class DailyController {
     @GetMapping(value = "/dailys/comment")
     public ResponseEntity<?> dailyCommentDetails(
         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+        @ApiParam(value = "회원 시퀀스", required = false) @Positive int memberId,
         @ApiParam(value = "댓글 페이지", required = true) @Positive int page
     ) throws Exception {
         if(page <= 0){
@@ -293,7 +295,7 @@ public class DailyController {
 
         PageHelper.startPage(page, 10);
 
-        List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId);
+        List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId, memberId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
