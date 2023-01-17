@@ -402,10 +402,8 @@ public class MemberService {
     // 다른 사람 프로필 조회 (게시글, 닉네임, 프로필 이미지, 프로필 메세지) 
     public List<MemberOtherMemberResponseDto> findMember(int memberId) {
 
-        MemberDto memberDto = mapper.findByMemberId(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
-        if(memberDto==null) {
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        }
+        MemberDto memberDto = mapper.findByProfile(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
         if(memberDto.getMemberYn().equals("Y")) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_EXISTS);
         }

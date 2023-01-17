@@ -133,5 +133,7 @@ public interface MemberMapper {
 
     Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("memberId") int memberId, @Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
 
+    Optional<MemberDto> findByProfile(@Param("memberId") int memberId);
+
 }
 

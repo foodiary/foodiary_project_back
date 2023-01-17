@@ -346,4 +346,10 @@
             ON tr.RECIPE_ID = trc.RECIPE_ID
         WHERE tr.RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N' AND trc.RECIPE_COMMENT_ID = #{recipeCommentId} AND trc.MEMBER_ID = #{memberId}
 	</select>
+
+    <select id="findByProfile" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
 </mapper>
