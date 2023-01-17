@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,12 +42,20 @@ public class UserService {
 
         if(providerId.equals("GOOGLE")){
             GoogleUserDto googleUser = oAuthService.getGoogleUserInfo(userInfoResponse);
+
+            Optional<MemberDto> member = memberMapper.findByEmail(googleUser.email);
+
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(googleUser.email).isEmpty()){
+            if (member.isEmpty()){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(googleUser.email, googleUser.picture, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            } else{
+            }
+            // 탈퇴한 회원인지 팔별
+            else if (member.get().getMemberYn().toUpperCase().equals('Y')) {
+                    throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+            }
+            else{
                 // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(googleUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -54,12 +63,20 @@ public class UserService {
         }
         else if (providerId.equals("NAVER")) {
             NaverUserDto naverUser = oAuthService.getNaverUserInfo(userInfoResponse);
+
+            Optional<MemberDto> member = memberMapper.findByEmail(naverUser.email);
+
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(naverUser.email).isEmpty()){
+            if (member.isEmpty()){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(naverUser.email, naverUser.profile_image, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            } else{
+            }
+            // 탈퇴한 회원인지 팔별
+            else if (member.get().getMemberYn().toUpperCase().equals('Y')) {
+                throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+            }
+            else{
                 // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(naverUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
