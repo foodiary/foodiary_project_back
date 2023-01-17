@@ -104,7 +104,8 @@ public class SecurityConfig {
                 "/notice",
                 "/notice/{noticeId}",
                 "/faq",
-                "/rank/**"
+                "/rank/**",
+                "/health"
 
                 ).permitAll()
                 

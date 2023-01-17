@@ -71,6 +71,13 @@ public class MemberController {
 
     private final UserService userService;
 
+    // 빈스톡에서 체크하는 항목, 빼면 안됨
+    @ResponseBody
+    @GetMapping("/health")
+    public String health() {
+        return "OK";
+    }
+
     @Operation(summary = "member password edit", description = "마이페이지에서 비밀번호 수정하기")
     @ApiResponses({ 
             @ApiResponse(responseCode = "200", description = "OK"),
