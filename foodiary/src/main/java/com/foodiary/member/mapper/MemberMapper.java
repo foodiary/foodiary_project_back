@@ -117,7 +117,7 @@ public interface MemberMapper {
 
     int saveMemberQuestionImage(MemberQuestionImageDto memberQuestionImageDto);
 
-    MemberQuestionImageDto findByQuestionImage(@Param("questionId") int questionId);
+    MemberQuestionImageDto findByQuestionImage(@Param("questionId") int questionId, @Param("memberId") int memberId);
 
     int deleteQuestionImage(@Param("questionId") int questionId, @Param("memberId") int memberId);
 

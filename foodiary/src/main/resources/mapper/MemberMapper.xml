@@ -254,7 +254,9 @@
 	</select>
 
     <select id="findByQuestion" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
-        SELECT * FROM TB_QUESTION
+        SELECT * FROM TB_QUESTION tq
+            LEFT JOIN TB_ANSWER ta
+            ON tq.QUESTION_ID = ta.QUESTION_ID
         WHERE MEMBER_ID = #{memberId} AND QUESTION_YN = 'N'
 	</select>
 
@@ -280,7 +282,7 @@
 
     <select id="findByQuestionImage" resultType="com.foodiary.member.model.MemberQuestionImageDto">
         SELECT * FROM TB_QUESTION_IMAGE
-        WHERE QUESTION_ID = #{questionId}
+        WHERE QUESTION_ID = #{questionId} AND MEMBER_ID = #{memberId}
 	</select>
 
     <delete id="deleteQuestionImage">

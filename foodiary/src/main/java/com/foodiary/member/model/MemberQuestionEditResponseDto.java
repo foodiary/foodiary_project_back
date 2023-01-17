@@ -26,10 +26,6 @@ public class MemberQuestionEditResponseDto {
     @ApiModelProperty(value="문의 내용", required = true)
     private String questionContent;
 
-    @NotBlank(message = "필수값이 비어있습니다.")
-    @ApiModelProperty(value="문의 파일 수정 여부", required = true)
-    private String imageUpdate;
-
     @ApiModelProperty(value="기존 첨부파일 경로", required = false)
     private String questionPath;
 
