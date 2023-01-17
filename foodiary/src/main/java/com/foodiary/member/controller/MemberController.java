@@ -1,7 +1,5 @@
 package com.foodiary.member.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -26,7 +24,6 @@ import com.foodiary.auth.jwt.CustomUserDetails;
 import com.foodiary.auth.service.UserService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
-import com.foodiary.daily.model.DailysResponseDto;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
 import com.foodiary.member.model.MemberCheckIdEmailRequestDto;
@@ -45,6 +42,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
@@ -72,6 +70,13 @@ public class MemberController {
     private final MemberService memberService;
 
     private final UserService userService;
+
+    // 빈스톡에서 체크하는 항목, 빼면 안됨
+    @ResponseBody
+    @GetMapping("/health")
+    public String health() {
+        return "OK";
+    }
 
     @Operation(summary = "member password edit", description = "마이페이지에서 비밀번호 수정하기")
     @ApiResponses({ 
@@ -666,12 +671,12 @@ public class MemberController {
     @ResponseBody
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @GetMapping(value = "/question/{memberId}/{questionId}")
-    public ResponseEntity<MemberQuestionResponseDto> questionDetail(
+    public ResponseEntity<MemberQuestionDetailResponseDto> questionDetail(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @PathVariable @ApiParam(value = "문의 시퀀스", required = true) int questionId
     ) throws Exception {
 
-        MemberQuestionResponseDto memberQuestionResponseDto = memberService.questionDetail(memberId, questionId);
+        MemberQuestionDetailResponseDto memberQuestionResponseDto = memberService.questionDetail(memberId, questionId);
         
         return new ResponseEntity<>(memberQuestionResponseDto, HttpStatus.OK);
     }

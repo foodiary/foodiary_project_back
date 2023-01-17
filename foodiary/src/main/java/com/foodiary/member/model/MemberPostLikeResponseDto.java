@@ -20,7 +20,7 @@ public class MemberPostLikeResponseDto {
     private int dailyId;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath;
+    private String dailyPath1;
 
     @ApiModelProperty(value="좋아요한 일자", required = true)
     private String dailyLikeCreate;

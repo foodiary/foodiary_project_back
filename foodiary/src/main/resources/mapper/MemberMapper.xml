@@ -35,7 +35,7 @@
         WHERE MEMBER_LOGINID = #{loginId}
     </select>
 
-    <select id="findById" resultType="com.foodiary.member.model.MemberDto">
+    <select id="findById" resultType="com.foodiary.member.model.MemberResponseDto">
         SELECT * FROM TB_MEMBER
         WHERE MEMBER_ID = #{id}
     </select>
@@ -59,6 +59,13 @@
 
     <select id="findAll" resultType="com.foodiary.member.model.MemberDto">
         SELECT * FROM TB_MEMBER
+    </select>
+
+    <select id="findByDaily" resultType="com.foodiary.member.model.MemberDailyResponseDto">
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_CREATE, td.DAILY_PATH1
+        FROM TB_DAILY td 
+        WHERE td.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N'
+        ORDER by td.DAILY_CREATE DESC 
     </select>
 
     <update id="updateMemberPassword">
@@ -88,11 +95,11 @@
 
     <select id="findByMember" resultType="com.foodiary.member.model.MemberOtherMemberResponseDto">
         SELECT 
-            td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH, tm.MEMBER_PATH, 
-            tm.MEMBER_PROFILE, tm.MEMBER_NICKNAME, td.DAILY_CREATE
+            td.DAILY_ID, tm.MEMBER_ID, td.DAILY_PATH1, tm.MEMBER_PATH, 
+            tm.MEMBER_PROFILE, tm.MEMBER_NICKNAME, td.DAILY_CREATE, td.DAILY_YN
         FROM TB_MEMBER tm LEFT JOIN TB_DAILY td
             ON tm.MEMBER_ID = td.MEMBER_ID 
-        WHERE tm.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N' AND tm.MEMBER_YN ='N'
+        WHERE tm.MEMBER_ID = #{memberId} AND tm.MEMBER_YN ='N'
         ORDER BY DAILY_CREATE DESC
     </select>
 
@@ -108,7 +115,7 @@
 
     <select id="postScrap" resultType="com.foodiary.member.model.MemberPostScrapResponseDto">
         SELECT tmsd.MEMBER_DAILY_SCRAP_ID, tmsd.DAILY_ID, tmsd.MEMBER_ID, 
-        tmsd.DAILY_SCRAP_CREATE, td.DAILY_PATH
+        tmsd.DAILY_SCRAP_CREATE, td.DAILY_PATH1
         from TB_DAILY_SCRAP tmsd 
             left join TB_DAILY td 
             ON tmsd.DAILY_ID = td.DAILY_ID
@@ -118,7 +125,7 @@
 
     <select id="postLike" resultType="com.foodiary.member.model.MemberPostLikeResponseDto">
         SELECT tdl.DAILY_LIKE_ID, tdl.DAILY_ID, 
-            tdl.MEMBER_ID, tdl.DAILY_LIKE_CREATE, td.DAILY_PATH
+            tdl.MEMBER_ID, tdl.DAILY_LIKE_CREATE, td.DAILY_PATH1
         FROM TB_DAILY_LIKE tdl 
             right join TB_DAILY td 
             ON tdl.DAILY_ID = td.DAILY_ID 
@@ -247,11 +254,13 @@
 	</select>
 
     <select id="findByQuestion" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
-        SELECT * FROM TB_QUESTION
+        SELECT * FROM TB_QUESTION tq
+            LEFT JOIN TB_ANSWER ta
+            ON tq.QUESTION_ID = ta.QUESTION_ID
         WHERE MEMBER_ID = #{memberId} AND QUESTION_YN = 'N'
 	</select>
 
-    <select id="findByQuestionId" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
+    <select id="findByQuestionId" resultType="com.foodiary.member.model.MemberQuestionDetailResponseDto">
         SELECT * FROM TB_QUESTION tq
         LEFT JOIN TB_ANSWER ta 
         ON tq.QUESTION_ID = ta.QUESTION_ID
@@ -273,7 +282,7 @@
 
     <select id="findByQuestionImage" resultType="com.foodiary.member.model.MemberQuestionImageDto">
         SELECT * FROM TB_QUESTION_IMAGE
-        WHERE QUESTION_ID = #{questionId}
+        WHERE QUESTION_ID = #{questionId} AND MEMBER_ID = #{memberId}
 	</select>
 
     <delete id="deleteQuestionImage">
@@ -312,7 +321,7 @@
     
 
     <select id="findByDailyCommentId" resultType="com.foodiary.member.model.MemberDailyCommentDetailResponseDto">
-        SELECT tdc.DAILY_COMMENT_ID, tdc.DAILY_ID, tdc.MEMBER_ID, 
+        SELECT tdc.DAILY_COMMENT_ID, tdc.DAILY_ID, tdc.MEMBER_ID, tm.MEMBER_PATH,
     	tdc.DAILY_COMMENT_WRITER, tdc.DAILY_COMMENT_BODY, 
     	tdc.DAILY_COMMENT_CREATE, td.DAILY_TITLE,
         (SELECT COUNT(*) from TB_DAILY_SCRAP tds WHERE tds.DAILY_ID=td.DAILY_ID) AS DAILY_SCRAP,
@@ -320,6 +329,8 @@
         FROM TB_DAILY td 
             LEFT JOIN TB_DAILY_COMMENT tdc
             ON td.DAILY_ID = tdc.DAILY_ID
+            LEFT JOIN TB_MEMBER tm
+            ON tdc.MEMBER_ID = tm.MEMBER_ID
         WHERE td.DAILY_ID = #{dailyId} AND DAILY_YN = 'N' AND tdc.DAILY_COMMENT_ID = #{dailyCommentId} AND tdc.MEMBER_ID = #{memberId}
 
 	</select>
@@ -335,4 +346,10 @@
             ON tr.RECIPE_ID = trc.RECIPE_ID
         WHERE tr.RECIPE_ID = #{recipeId} AND RECIPE_YN = 'N' AND trc.RECIPE_COMMENT_ID = #{recipeCommentId} AND trc.MEMBER_ID = #{memberId}
 	</select>
+
+    <select id="findByProfile" resultType="com.foodiary.member.model.MemberDto">
+        SELECT * FROM TB_MEMBER
+        WHERE MEMBER_ID = #{memberId}
+    </select>
+
 </mapper>

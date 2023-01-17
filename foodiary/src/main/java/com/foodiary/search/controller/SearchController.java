@@ -105,7 +105,7 @@ public class SearchController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @DeleteMapping(value = "/search/recipe/delete/{memberId}/{keywordId}")
+    // @DeleteMapping(value = "/search/recipe/delete/{memberId}/{keywordId}")
     public ResponseEntity<String> searchDeleteRecipe(
         @PathVariable @ApiParam(value = "회원 시퀀스")int memberId,
         @PathVariable @ApiParam(value = "키워드 시퀀스")int keywordId
@@ -123,7 +123,7 @@ public class SearchController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ResponseBody
-    @PostMapping(value = "/search/recipe/result")
+    // @PostMapping(value = "/search/recipe/result")
     public ResponseEntity<List<SearchRecipeResponseDto>> searchFind(
         @RequestBody @Valid SearchRequestDto searchRequestDto
     ) throws Exception {
@@ -145,7 +145,7 @@ public class SearchController {
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @ResponseBody
-    @GetMapping(value = "/search/recipe")
+    // @GetMapping(value = "/search/recipe")
     public ResponseEntity<List<SearchResponseMemberDto>> searchsRecipe(
         @ApiParam(value="멤버 시퀀스", required = true) int memberId
     ) throws Exception {
