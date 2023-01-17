@@ -612,10 +612,14 @@ public class MemberService {
                 // 기존 이미지를 변경안하려고 이미지 파일을 안줌 ->
                 MemberQuestionImageDto memberQuestionImageDto = 
                     mapper.findByQuestionImage(questionId, memberId);
-                if(memberQuestionImageDto==null) {
-                    throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                if(memberQuestionImageDto!=null) {
+                    memberQuestionEditResponseDto.pathUpadte(memberQuestionImageDto.getQuestionFilePath());
+                //     throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
                 }
-                memberQuestionEditResponseDto.pathUpadte(memberQuestionImageDto.getQuestionFilePath());
+                else {
+                    memberQuestionEditResponseDto.pathUpadte(null);
+                }
+                
             }
         }
         else {
