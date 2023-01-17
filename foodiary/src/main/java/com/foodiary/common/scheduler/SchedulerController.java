@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,9 +100,17 @@ public class SchedulerController {
                 e.printStackTrace();
             }
 
-            String keyMemberId = String.valueOf(memberList.get(k).getMemberId());
-            redisDao.setValues("memberId : " + keyMemberId, saveMenu);
+            LocalDate now = LocalDate.now();
+            while (true){
+                if(!now.getDayOfWeek().toString().equals("SUNDAY")){
+                    now = now.minusDays(1);
+                } else break;
+            }
 
+            String sun = now.toString();
+
+            String keyMemberId = String.valueOf(memberList.get(k).getMemberId());
+            redisDao.setValues("memberId : " + keyMemberId + " " + sun, saveMenu);
         }
         log.info("모든 회원의 식단 구성을 완료하였습니다.");
     }

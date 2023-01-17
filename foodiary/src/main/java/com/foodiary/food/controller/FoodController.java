@@ -64,8 +64,8 @@ public class FoodController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("/menu/week")
-    public ResponseEntity<MenuRecommendResponseDto> findWeekMenu(@RequestParam int memberId) throws JsonProcessingException {
-        MenuRecommendResponseDto response = foodService.findMenuRecommendWeek(memberId);
+    public ResponseEntity<MenuRecommendResponseDto> findWeekMenu(@RequestParam int memberId, @RequestParam String date) throws JsonProcessingException {
+        MenuRecommendResponseDto response = foodService.findMenuRecommendWeek(memberId, date);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

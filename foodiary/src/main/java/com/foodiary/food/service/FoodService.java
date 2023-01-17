@@ -130,9 +130,17 @@ public class FoodService {
         } catch ( JsonProcessingException e) {
             e.printStackTrace();
         }
+        LocalDate now = LocalDate.now();
+        while (true){
+            if(!now.getDayOfWeek().toString().equals("SUNDAY")){
+                now = now.minusDays(1);
+            } else break;
+        }
+
+        String sun = now.toString();
 
         String keyMemberId = String.valueOf(memberId);
-        redisDao.setValues("memberId : " + keyMemberId, saveMenu);
+        redisDao.setValues("memberId : " + keyMemberId + " " + sun, saveMenu);
 
 
          String findMenu = redisDao.getValues("memberId : " + keyMemberId);
@@ -141,11 +149,11 @@ public class FoodService {
 
 
 
-    public MenuRecommendResponseDto findMenuRecommendWeek(int memberId) throws JsonProcessingException {
+    public MenuRecommendResponseDto findMenuRecommendWeek(int memberId, String date) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         String keyMemberId = String.valueOf(memberId);
-        String findMenu = redisDao.getValues("memberId : " + keyMemberId);
+        String findMenu = redisDao.getValues("memberId : " + keyMemberId + " " + date);
         return objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
     }
 
