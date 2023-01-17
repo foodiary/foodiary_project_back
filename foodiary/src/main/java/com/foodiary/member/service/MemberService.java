@@ -523,29 +523,30 @@ public class MemberService {
         if (memberImage == null) {
             userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
         }
-        else if(memberImage.isEmpty()){
-            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
-        }
         else {
-            fileCheck(memberImage);
+            if(memberImage.isEmpty()) {
+                userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
+            }
+            else {
+                fileCheck(memberImage);
 
-            HashMap<String, String> fileMap = s3Service.upload(memberImage, "question");
+                HashMap<String, String> fileMap = s3Service.upload(memberImage, "question");
+    
+                memberQuestionWriteResponseDto.pathUpdate(fileMap.get("url"));
 
-            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
-
-            memberQuestionWriteResponseDto.pathUpdate(fileMap.get("url"));
-
-            String fileFullName = memberImage.getOriginalFilename();
-            String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
-            String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
-
-            MemberQuestionImageDto memberQuestionImageDto = new MemberQuestionImageDto(memberQuestionWriteResponseDto.getMemberId(), memberQuestionWriteResponseDto.getQuestionId(), fileName, fileFullName,
-                    fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
-
-            // 이미지 저장
-            createMemberQuestionImage(memberQuestionImageDto);
-
-            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
+                userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
+    
+                String fileFullName = memberImage.getOriginalFilename();
+                String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+                String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+    
+                MemberQuestionImageDto memberQuestionImageDto = new MemberQuestionImageDto(memberQuestionWriteResponseDto.getMemberId(), memberQuestionWriteResponseDto.getQuestionId(), fileName, fileFullName,
+                        fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
+    
+                // 이미지 저장
+                createMemberQuestionImage(memberQuestionImageDto);
+    
+            }
         }
     }
 
