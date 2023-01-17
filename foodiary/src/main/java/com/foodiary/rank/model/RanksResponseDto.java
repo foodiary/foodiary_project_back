@@ -20,6 +20,6 @@ public class RanksResponseDto {
     private String dailyTitle;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath;
+    private String dailyPath1;
 
 }

@@ -20,7 +20,7 @@ public class SearchDailyResponseDto {
     private String dailyWriter;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath;
+    private String dailyPath1;
 
     @ApiModelProperty(value="게시글 댓글 수", required = true)
     private int dailyComment;
