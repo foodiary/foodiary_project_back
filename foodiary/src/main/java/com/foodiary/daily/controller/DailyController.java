@@ -36,7 +36,7 @@ public class DailyController {
 
     
     @Operation(summary = "daily write", description = "하루 식단 게시글 작성")
-    @ApiResponses({ 
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
@@ -48,22 +48,14 @@ public class DailyController {
     public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "dailyImage1", required = true) MultipartFile dailyImage1,
-        @RequestPart(value = "dailyImage2", required = false) MultipartFile dailyImage2,
-        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3,
-        @RequestPart(value = "dailyImage4", required = false) MultipartFile dailyImage4,
-        @RequestPart(value = "dailyImage5", required = false) MultipartFile dailyImage5
+        @RequestPart(value = "dailyImage", required = true) List<MultipartFile> dailyImage
     ) throws Exception {
 
-        List<MultipartFile> dailyImage = new ArrayList<>();
-        if(dailyImage1 != null){
-            dailyImage.add(dailyImage1);
-        } else throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
-        if(dailyImage2 != null) dailyImage.add(dailyImage2);
-        if(dailyImage3 != null) dailyImage.add(dailyImage3);
-        if(dailyImage4 != null) dailyImage.add(dailyImage4);
-        if(dailyImage5 != null) dailyImage.add(dailyImage5);
+        log.info(dailyImage.get(0).getOriginalFilename());
 
+        if(dailyImage == null){
+            throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
+        }
         dailyService.addDaily(dailyWriteRequestDto, dailyImage);
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);

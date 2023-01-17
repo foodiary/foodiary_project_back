@@ -52,11 +52,11 @@ public class DailyService {
 
         List<DailyImageDto> saveImageList = new ArrayList<>();
 
-        if(dailyImage.size() == 0) {
+        if(dailyImage.size() == 0 || dailyImage.isEmpty()) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
-            for(int i=0; i < dailyImage.size(); i++) {
-                MultipartFile file = dailyImage.get(i);
+
+            for(MultipartFile file : dailyImage) {
                 fileCheck(file);
                 HashMap<String, String> fileMap = s3Service.upload(file, "daily");
                 fileUrlList.add(fileMap.get("url"));
@@ -100,12 +100,14 @@ public class DailyService {
             int dailyId = dailyMapper.findDailyIdByPath(dailyWriteRequestDto.getPath1())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
 
-            for (int i = 0; i < saveImageList.size(); i++) {
-                saveImageList.get(i).setDailyId(dailyId);
-                userService.verifySave(dailyMapper.saveImage(saveImageList.get(i)));
-            }
+            saveImageList.forEach(image -> {
+                image.setDailyId(dailyId);
+                userService.verifySave(dailyMapper.saveImage(image));
+            });
         }
     }
+
+
 
     // 하루 식단 댓글 추가
     public void addDailyComment(DailyCommentWriteRequestDto dailyCommentWriteRequestDto) {
