@@ -42,6 +42,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
 import com.foodiary.member.model.MemberQuestionWriteResponseDto;
@@ -663,12 +664,12 @@ public class MemberController {
     @ResponseBody
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
     @GetMapping(value = "/question/{memberId}/{questionId}")
-    public ResponseEntity<MemberQuestionResponseDto> questionDetail(
+    public ResponseEntity<MemberQuestionDetailResponseDto> questionDetail(
         @PathVariable @ApiParam(value = "멤버 시퀀스", required = true) int memberId,
         @PathVariable @ApiParam(value = "문의 시퀀스", required = true) int questionId
     ) throws Exception {
 
-        MemberQuestionResponseDto memberQuestionResponseDto = memberService.questionDetail(memberId, questionId);
+        MemberQuestionDetailResponseDto memberQuestionResponseDto = memberService.questionDetail(memberId, questionId);
         
         return new ResponseEntity<>(memberQuestionResponseDto, HttpStatus.OK);
     }

@@ -39,6 +39,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
@@ -506,11 +507,11 @@ public class MemberService {
     }
 
     // question 상세보기
-    public MemberQuestionResponseDto questionDetail(int memberId, int questionId) {
+    public MemberQuestionDetailResponseDto questionDetail(int memberId, int questionId) {
         
         // userService.checkUser(memberId);
         
-        MemberQuestionResponseDto memberQuestionResponseDto = mapper.findByQuestionId(questionId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
+        MemberQuestionDetailResponseDto memberQuestionResponseDto = mapper.findByQuestionId(questionId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
 
         return memberQuestionResponseDto;
     }

@@ -260,7 +260,7 @@
         WHERE MEMBER_ID = #{memberId} AND QUESTION_YN = 'N'
 	</select>
 
-    <select id="findByQuestionId" resultType="com.foodiary.member.model.MemberQuestionResponseDto">
+    <select id="findByQuestionId" resultType="com.foodiary.member.model.MemberQuestionDetailResponseDto">
         SELECT * FROM TB_QUESTION tq
         LEFT JOIN TB_ANSWER ta 
         ON tq.QUESTION_ID = ta.QUESTION_ID

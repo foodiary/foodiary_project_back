@@ -20,6 +20,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
@@ -111,7 +112,7 @@ public interface MemberMapper {
 
     List<MemberQuestionResponseDto> findByQuestion(@Param("memberId") int memberId);
 
-    Optional<MemberQuestionResponseDto> findByQuestionId(@Param("questionId") int questionId);
+    Optional<MemberQuestionDetailResponseDto> findByQuestionId(@Param("questionId") int questionId);
 
     int saveQuestion(MemberQuestionWriteResponseDto memberQuestionWriteResponseDto);
 
