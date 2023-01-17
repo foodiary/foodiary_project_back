@@ -42,7 +42,8 @@ public enum ExceptionCode {
     UPDATE_ERROR(500, "업데이트 실패했습니다. 다시 시도해주세요"),
     DELETE_ERROR(500, "삭제 실패했습니다. 다시 시도해주세요"),
     MYPAGE_NOT_FOUND(404, "게시글이 없습니다."),
-    FILE_NOT_FOUND(404, "파일이 없습니다.")
+    FILE_NOT_FOUND(404, "파일이 없습니다."),
+    POST_NOT_EXISTS(404, "작성한 게시글이 없습니다.")
     ;
 
 

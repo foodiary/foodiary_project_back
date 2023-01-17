@@ -4,7 +4,7 @@
 <mapper namespace="com.foodiary.rank.mapper.RankMapper">
 
     <select id="rankWeekList" resultType="com.foodiary.rank.model.RanksResponseDto">
-        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH, td.DAILY_TITLE 
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH1, td.DAILY_TITLE 
         FROM TB_DAILY td 
             LEFT JOIN TB_COMMON tc 
             ON td.DAILY_ID = tc.RANK_WEEK_DAILY_ID 
@@ -12,7 +12,7 @@
     </select>
 
     <select id="rankMonthList" resultType="com.foodiary.rank.model.RanksResponseDto">
-        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH, td.DAILY_TITLE 
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH1, td.DAILY_TITLE 
         FROM TB_DAILY td 
             LEFT JOIN TB_COMMON tc 
             ON td.DAILY_ID = tc.RANK_MONTH_DAILY_ID 
@@ -30,29 +30,29 @@
     </select>
 
     <insert id="weekWrite">
-        INSERT INTO TB_COMMON (RANK_WEEK_DAILY_ID) (
-            SELECT td.DAILY_ID
+        INSERT INTO TB_COMMON (RANK_WEEK_DAILY_ID, RANK_DAILY_LIKE) (
+            SELECT td.DAILY_ID, DAILY_LIKE
             FROM (
                 SELECT DAILY_ID, COUNT(*) AS DAILY_LIKE 
                 FROM TB_DAILY_LIKE trl 
                 GROUP BY DAILY_ID 
             ) AS counts RIGHT JOIN TB_DAILY td 
             ON counts.DAILY_ID = td.DAILY_ID 
-        WHERE NOT DAILY_LIKE is NULL AND td.DAILY_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK ) AND NOW()
+        WHERE NOT DAILY_LIKE is NULL AND td.DAILY_YN ='N' AND td.DAILY_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK ) AND NOW()
         ORDER BY DAILY_LIKE DESC
         LIMIT 20)
     </insert>
 
     <insert id="monthWrite">
-        INSERT INTO TB_COMMON (RANK_MONTH_DAILY_ID) (
-            SELECT td.DAILY_ID
+        INSERT INTO TB_COMMON (RANK_MONTH_DAILY_ID, RANK_DAILY_LIKE) (
+            SELECT td.DAILY_ID, DAILY_LIKE
             FROM (
                 SELECT DAILY_ID, COUNT(*) AS DAILY_LIKE 
                 FROM TB_DAILY_LIKE trl 
                 GROUP BY DAILY_ID 
             ) AS counts RIGHT JOIN TB_DAILY td 
             ON counts.DAILY_ID = td.DAILY_ID 
-        WHERE NOT DAILY_LIKE is NULL AND td.DAILY_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 MONTH ) AND NOW()
+        WHERE NOT DAILY_LIKE is NULL AND td.DAILY_YN ='N' AND td.DAILY_CREATE BETWEEN DATE_ADD(NOW(), INTERVAL -1 MONTH ) AND NOW()
         ORDER BY DAILY_LIKE DESC
         LIMIT 20)
     </insert>

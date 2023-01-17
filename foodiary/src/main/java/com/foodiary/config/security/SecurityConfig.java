@@ -86,6 +86,8 @@ public class SecurityConfig {
                 // "/search/recipe"
 
                 // 권한 필요x url
+            
+               
 
                 .antMatchers(
                         "/dailys/**",
@@ -107,7 +109,9 @@ public class SecurityConfig {
                         "/",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/swagger-resources/**").permitAll()
+                        "/swagger-resources/**",
+                        "/rank/**",
+                        "/health").permitAll()
                 
                 .anyRequest().authenticated() 
                 .and()

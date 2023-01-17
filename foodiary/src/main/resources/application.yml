@@ -11,7 +11,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 3MB
-      max-request-size: 9MB
+      max-request-size: 15MB
 
   config:
     import: classpath:/application-aws.yml, classpath:/application-oauth.yml, classpath:/application-server.yml, classpath:/application-smtp.yml

@@ -20,6 +20,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
@@ -111,13 +112,13 @@ public interface MemberMapper {
 
     List<MemberQuestionResponseDto> findByQuestion(@Param("memberId") int memberId);
 
-    Optional<MemberQuestionResponseDto> findByQuestionId(@Param("questionId") int questionId);
+    Optional<MemberQuestionDetailResponseDto> findByQuestionId(@Param("questionId") int questionId);
 
     int saveQuestion(MemberQuestionWriteResponseDto memberQuestionWriteResponseDto);
 
     int saveMemberQuestionImage(MemberQuestionImageDto memberQuestionImageDto);
 
-    MemberQuestionImageDto findByQuestionImage(@Param("questionId") int questionId);
+    MemberQuestionImageDto findByQuestionImage(@Param("questionId") int questionId, @Param("memberId") int memberId);
 
     int deleteQuestionImage(@Param("questionId") int questionId, @Param("memberId") int memberId);
 
@@ -132,6 +133,8 @@ public interface MemberMapper {
     Optional<MemberDailyCommentDetailResponseDto> findByDailyCommentId(@Param("memberId") int memberId, @Param("dailyId") int dailyId, @Param("dailyCommentId") int dailyCommentId);
 
     Optional<MemberRecipeCommentDetailResponseDto> findByRecipeCommentId(@Param("memberId") int memberId, @Param("recipeId") int recipeId, @Param("recipeCommentId") int recipeCommentId);
+
+    Optional<MemberDto> findByProfile(@Param("memberId") int memberId);
 
 }
 

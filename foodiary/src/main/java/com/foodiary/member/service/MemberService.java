@@ -1,6 +1,7 @@
 package com.foodiary.member.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
 import com.foodiary.member.model.MemberQuestionResponseDto;
@@ -401,11 +403,12 @@ public class MemberService {
     // 다른 사람 프로필 조회 (게시글, 닉네임, 프로필 이미지, 프로필 메세지) 
     public List<MemberOtherMemberResponseDto> findMember(int memberId) {
 
-        List<MemberOtherMemberResponseDto> dailyList = mapper.findByMember(memberId);
+        MemberDto memberDto = mapper.findByProfile(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        if(dailyList.size()==0) {
+        if(memberDto.getMemberYn().equals("Y")) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_EXISTS);
         }
+        List<MemberOtherMemberResponseDto> dailyList = mapper.findByMember(memberId);
 
         return dailyList;
     }
@@ -504,11 +507,11 @@ public class MemberService {
     }
 
     // question 상세보기
-    public MemberQuestionResponseDto questionDetail(int memberId, int questionId) {
+    public MemberQuestionDetailResponseDto questionDetail(int memberId, int questionId) {
         
         // userService.checkUser(memberId);
         
-        MemberQuestionResponseDto memberQuestionResponseDto = mapper.findByQuestionId(questionId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
+        MemberQuestionDetailResponseDto memberQuestionResponseDto = mapper.findByQuestionId(questionId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.BAD_REQUEST));
 
         return memberQuestionResponseDto;
     }
@@ -520,29 +523,30 @@ public class MemberService {
         if (memberImage == null) {
             userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
         }
-        else if(memberImage.isEmpty()){
-            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
-        }
         else {
-            fileCheck(memberImage);
+            if(memberImage.isEmpty()) {
+                userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
+            }
+            else {
+                fileCheck(memberImage);
 
-            HashMap<String, String> fileMap = s3Service.upload(memberImage, "question");
+                HashMap<String, String> fileMap = s3Service.upload(memberImage, "question");
+    
+                memberQuestionWriteResponseDto.pathUpdate(fileMap.get("url"));
 
-            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
-
-            memberQuestionWriteResponseDto.pathUpdate(fileMap.get("url"));
-
-            String fileFullName = memberImage.getOriginalFilename();
-            String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
-            String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
-
-            MemberQuestionImageDto memberQuestionImageDto = new MemberQuestionImageDto(memberQuestionWriteResponseDto.getMemberId(), memberQuestionWriteResponseDto.getQuestionId(), fileName, fileFullName,
-                    fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
-
-            // 이미지 저장
-            createMemberQuestionImage(memberQuestionImageDto);
-
-            userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
+                userService.verifySave(mapper.saveQuestion(memberQuestionWriteResponseDto));
+    
+                String fileFullName = memberImage.getOriginalFilename();
+                String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+                String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+    
+                MemberQuestionImageDto memberQuestionImageDto = new MemberQuestionImageDto(memberQuestionWriteResponseDto.getMemberId(), memberQuestionWriteResponseDto.getQuestionId(), fileName, fileFullName,
+                        fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
+    
+                // 이미지 저장
+                createMemberQuestionImage(memberQuestionImageDto);
+    
+            }
         }
     }
 
@@ -593,53 +597,48 @@ public class MemberService {
         // userService.checkUser(memberId);
 
         // 수정하기
-        if(memberQuestionEditResponseDto.getImageUpdate().equals("Y")) {
+        if(memberImage==null) {
             // 기존 이미지 있을 경우
             String memberPath = memberQuestionEditResponseDto.getQuestionPath();
             if(memberPath!=null) {
                 if(!memberPath.isBlank()) {
-                    // 첨부 파일이 있을경우
-                    if(memberImage!=null) {
-                        if(!memberImage.isEmpty()) {
-                            // 기존 이미지 삭제하고 새로운 이미지 업데이트
-                        
-                            // 이미지 테이블에서 정보 삭제
-                            qnaImageDeleteS3(memberPath, questionId, memberId);
-
-                            // s3에 이미지 업로드 및 이미지 테이블에 이미지 저장
-                            String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
-
-                            memberQuestionEditResponseDto.pathUpadte(url);
-                        }
-                        else {
-                            throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
-                        }
-                    }
-                    // 첨부 파일이 없을경우
-                    else {
-                        // 기존 이미지 삭제
-                        qnaImageDeleteS3(memberPath, questionId, memberId);
-                        memberQuestionEditResponseDto.pathUpadte(null);
-                    }
+                    // 기존 이미지 지우고 싶어서 이미지 파일을 안줌 -> 넘겨준 이미지패스로 이미지를 삭제함
+                    qnaImageDeleteS3(memberPath, questionId, memberId);
+                    memberQuestionEditResponseDto.pathUpadte(null);
                 }
                 else {
-                    // 새로운 이미지 업데이트
-                    String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
-                    memberQuestionEditResponseDto.pathUpadte(url);
+                    throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
                 }
             }
-            // 기존 이미지가 없고, 첨부파일이 있을 경우 
             else {
-                // 새로운 이미지 업데이트
-                String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
-                memberQuestionEditResponseDto.pathUpadte(url);
+                // 기존 이미지를 변경안하려고 이미지 파일을 안줌 ->
+                MemberQuestionImageDto memberQuestionImageDto = 
+                    mapper.findByQuestionImage(questionId, memberId);
+                if(memberQuestionImageDto!=null) {
+                    memberQuestionEditResponseDto.pathUpadte(memberQuestionImageDto.getQuestionFilePath());
+                //     throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
+                }
+                else {
+                    memberQuestionEditResponseDto.pathUpadte(null);
+                }
+                
             }
         }
         else {
-            if(!memberQuestionEditResponseDto.getImageUpdate().equals("N") || memberImage!=null) {
+            // 이미지 파일을 준경우
+            if(!memberImage.isEmpty()) {
+                // 새로운 이미지 업데이트, 기존 이미지 삭제
+                MemberQuestionImageDto memberQuestionImageDto = mapper.findByQuestionImage(questionId, memberId);
+                if(memberQuestionImageDto!=null) {
+                    qnaImageDeleteS3(memberQuestionImageDto.getQuestionFilePath(), questionId, memberId);
+                }
+                String url = qnaImageUploadS3(memberImage, "question", memberId, questionId);
+                memberQuestionEditResponseDto.pathUpadte(url);
+            }
+            else {
+                // 이미지가 비어있을때
                 throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
             }
-
         }
         // 회원 정보 저장
         memberQuestionEditResponseDto.memberIdUpadte(memberId);
@@ -654,18 +653,17 @@ public class MemberService {
         
         userService.verifyDelete(mapper.deleteQuetion(questionId, memberId));
 
-        MemberQuestionImageDto memberQuestionImageDto = mapper.findByQuestionImage(questionId);
-
+        MemberQuestionImageDto memberQuestionImageDto = mapper.findByQuestionImage(questionId, memberId);
+        
         if(memberQuestionImageDto!=null) {
-         
             userService.verifyDelete(mapper.deleteQuestionImage(questionId, memberId));
 
             String url = "question/" + memberQuestionImageDto.getQuestionFileSaveName();
     
             // s3에서 데이터 삭제
             s3Service.deleteImage(url);
-            
         }
+
     }
 
     // 음식 추천 리스트
