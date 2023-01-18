@@ -91,4 +91,4 @@ jobs:
         # Version label for new Beanstalk version
         version_label: github-action-${{steps.current-time.outputs.formattedTime}}
         # Version description for the new Beanstalk version
-        deployment_package: deploy/deploy.zip
+        deployment_package: foodiary/deploy/deploy.zip
