@@ -37,6 +37,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     disable-swagger-default-url: true
-    display-query-params-without-oauth2: true  
+    display-query-params-without-oauth2: true   
 
 
