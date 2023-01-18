@@ -14,7 +14,7 @@ spring:
       max-request-size: 15MB
 
   config:
-    import: classpath:/application-aws.yml, classpath:/application-oauth.yml, classpath:/application-server.yml, classpath:/application-smtp.yml, classpath:/application-secret.yml
+    import: classpath:/application-aws.yml, classpath:/application-oauth.yml, classpath:/application-server.yml, classpath:/application-smtp.yml
     
 
 logging:
