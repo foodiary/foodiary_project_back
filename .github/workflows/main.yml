@@ -45,7 +45,6 @@ jobs:
       
     - name: Build with Gradle
       run: |
-        cd foodiary
         ./gradlew clean build # 프로젝트 빌드
       shell: bash
         
