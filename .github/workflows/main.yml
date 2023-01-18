@@ -17,8 +17,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      working-directory: /foodiary
+    defaults: 
+      run:
+        working-directory: ./foodiary
 
     steps:
     - name: Checkout
