@@ -32,7 +32,7 @@ jobs:
       env:
           FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
           FOODIARY_SECRET_DIR: foodiary/src/main/resources
-          FOODIARY_SECRET_TEST_DIR: foodiary/src/test/resources
+          FOODIARY_SECRET_TEST_DIR: foodiary/src/test
           FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
       run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME && 
            echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_TEST_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
