@@ -47,7 +47,7 @@ jobs:
       
     - name: Build with Gradle
       run: ./gradlew clean build # 프로젝트 빌드
-      working-directory: ${{ env.working-directory }}
+#       working-directory: ${{ env.working-directory }}
       shell: bash
         
     - name: Get current time
