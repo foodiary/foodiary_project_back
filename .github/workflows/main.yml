@@ -42,12 +42,12 @@ jobs:
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew # gradle wrapper를 실행할 수 있도록 권한 부여
-      working-directory: ${{ env.working-directory }}
+#       working-directory: ${{ env.working-directory }}
 #       shell: bash
       
     - name: Build with Gradle
       run: ./gradlew clean build # 프로젝트 빌드
-      working-directory: ${{ env.working-directory }}
+#       working-directory: ${{ env.working-directory }}
 #       shell: bash
         
     - name: Get current time
