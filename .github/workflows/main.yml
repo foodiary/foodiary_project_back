@@ -65,12 +65,13 @@ jobs:
     # gradle build를 통해 만들어진 jar 파일 beanstalk에 배포하기 위한 zip 파일로 만듬
     - name: Generate deployment package
       run: |
+        cd foodiary
         mkdir -p deploy
         cp build/libs/*.jar deploy/application.jar
         cp Procfile deploy/Procfile
         cp -r foodiary/.ebextensions deploy/.ebextensions
         cd deploy && zip -r deploy.zip .
-      working-directory: ${{ env.working-directory }}
+#       working-directory: ${{ env.working-directory }}
       
     - name: Beanstalk Deploy
     # You may pin to the exact commit or the version.
