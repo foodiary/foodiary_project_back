@@ -30,16 +30,33 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
-    - name: Copy Secret
-      env:
-          FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
-          FOODIARY_SECRET_DIR: src/main/resources
-          FOODIARY_SECRET_TEST_DIR: src/test
-          FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
-      run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME && 
-           echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_TEST_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
-      working-directory: ${{ env.working-directory }}
+#     - name: Copy Secret
+#       env:
+#           FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
+#           FOODIARY_SECRET_DIR: src/main/resources
+#           FOODIARY_SECRET_TEST_DIR: src/test
+#           FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
+#       run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME && 
+#            echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_TEST_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
+#       working-directory: ${{ env.working-directory }}
+
+    - name: make application-aws.properties
+      run: |
+        # spring의 resources 경로로 이동
+        cd foodiary
+        cd src/main/resources
+        touch ./application-aws.yml
+        touch ./application-oauth.yml
+        touch ./application-server.yml
+        touch ./application-smtp.yml
+        # GitHub-Actions에서 설정한 값을 application-dev.properties 파일에 쓰기
+        ${{ secrets.AWS_YML }} > ./application-aws.yml
+        ${{ secrets.OAUTH_YML }} > ./application-oauth.yml
+        ${{ secrets.SERVER_YML }} > ./application-server.yml
+        ${{ secrets.SMTP_YML }} > ./application-smtp.yml
         
+      shell: bash
+    
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew # gradle wrapper를 실행할 수 있도록 권한 부여
       working-directory: ${{ env.working-directory }}
