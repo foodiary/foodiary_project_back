@@ -49,14 +49,17 @@ jobs:
         touch ./application-oauth.yml
         touch ./application-server.yml
         touch ./application-smtp.yml
-        # GitHub-Actions에서 설정한 값을 application-dev.properties 파일에 쓰기
-        ${{ secrets.AWS_YML }} > ./application-aws.yml
-        ${{ secrets.OAUTH_YML }} > ./application-oauth.yml
-        ${{ secrets.SERVER_YML }} > ./application-server.yml
-        ${{ secrets.SMTP_YML }} > ./application-smtp.yml
-        
+        $AWS_YML >> ./application-aws.yml
+        $OAUTH_YML >> ./application-oauth.yml
+        $SERVER_YML >> ./application-server.yml
+        $SMTP_YML >> ./application-smtp.yml
       shell: bash
-    
+      env:
+          AWS_YML: ${{ secrets.AWS_YML }}
+          OAUTH_YML: ${{ secrets.OAUTH_YML }}
+          SERVER_YML: ${{ secrets.SERVER_YML }}
+          SMTP_YML: ${{ secrets.SMTP_YML }}
+        
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew # gradle wrapper를 실행할 수 있도록 권한 부여
       working-directory: ${{ env.working-directory }}
