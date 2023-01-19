@@ -30,34 +30,31 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
-#     - name: Copy Secret
-#       env:
-#           FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
-#           FOODIARY_SECRET_DIR: src/main/resources
-#           FOODIARY_SECRET_TEST_DIR: src/test
-#           FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
-#       run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME && 
-#            echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_TEST_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
-#       working-directory: ${{ env.working-directory }}
-
-    - name: make application-aws.properties
-      run: |
-        cd foodiary
-        cd src/main/resources
-        touch ./application-aws.properties
-        echo $AWS_YML >> ./application-aws.properties
-        touch ./application-oauth.properties
-        echo $OAUTH_YML >> ./application-oauth.properties
-        touch ./application-server.properties
-        echo $SERVER_YML >> ./application-server.properties
-        touch ./application-smtp.properties
-        echo $SMTP_YML >> ./application-smtp.properties
-      shell: bash
+    - name: Copy Secret
       env:
-          AWS_YML: ${{ secrets.AWS_YML }}
-          OAUTH_YML: ${{ secrets.OAUTH_YML }}
-          SERVER_YML: ${{ secrets.SERVER_YML }}
-          SMTP_YML: ${{ secrets.SMTP_YML }}
+          FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
+          FOODIARY_SECRET_DIR: foodiary/src/main/resources
+          FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
+      run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
+      
+#     - name: make application-aws.properties
+#       run: |
+#         cd foodiary
+#         cd src/main/resources
+#         touch ./application-aws.properties
+#         echo $AWS_YML >> ./application-aws.properties
+#         touch ./application-oauth.properties
+#         echo $OAUTH_YML >> ./application-oauth.properties
+#         touch ./application-server.properties
+#         echo $SERVER_YML >> ./application-server.properties
+#         touch ./application-smtp.properties
+#         echo $SMTP_YML >> ./application-smtp.properties
+#       shell: bash
+#       env:
+#           AWS_YML: ${{ secrets.AWS_YML }}
+#           OAUTH_YML: ${{ secrets.OAUTH_YML }}
+#           SERVER_YML: ${{ secrets.SERVER_YML }}
+#           SMTP_YML: ${{ secrets.SMTP_YML }}
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew # gradle wrapper를 실행할 수 있도록 권한 부여
