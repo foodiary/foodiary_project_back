@@ -44,14 +44,14 @@ jobs:
       run: |
         cd foodiary
         cd src/main/resources
-        touch ./application-aws.yml
-        $AWS_YML >> ./application-aws.yml
-        touch ./application-oauth.yml
-        $OAUTH_YML >> ./application-oauth.yml
-        touch ./application-server.yml
-        $SERVER_YML >> ./application-server.yml
-        touch ./application-smtp.yml
-        $SMTP_YML >> ./application-smtp.yml
+        touch ./application-aws.properties
+        $AWS_YML >> ./application-aws.properties
+        touch ./application-oauth.properties
+        $OAUTH_YML >> ./application-oauth.properties
+        touch ./application-server.properties
+        $SERVER_YML >> ./application-server.properties
+        touch ./application-smtp.properties
+        $SMTP_YML >> ./application-smtp.properties
       shell: bash
       env:
           AWS_YML: ${{ secrets.AWS_YML }}
