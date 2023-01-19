@@ -39,4 +39,6 @@ springdoc:
     disable-swagger-default-url: true
     display-query-params-without-oauth2: true   
 
-
+server:
+  address: 127.0.0.1
+  port: 8080
