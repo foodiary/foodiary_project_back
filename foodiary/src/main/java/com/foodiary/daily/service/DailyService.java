@@ -37,73 +37,58 @@ public class DailyService {
     private final RankMapper rankMapper;
     private final S3Service s3Service;
     private final UserService userService;
-    
+
+    private DailyImageDto fileHandler(MultipartFile file, int memberId) throws IOException {
+        fileCheck(file);
+        HashMap<String, String> fileMap = s3Service.upload(file, "daily");
+
+        String fileFullName = file.getOriginalFilename();
+        String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
+        String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
+       return DailyImageDto.builder()
+                .memberId(memberId)
+               .dailyFileOriginalName(fileName)
+               .dailyFileFullName(fileFullName)
+               .dailyFileSaveName(fileMap.get("serverName"))
+               .dailyFilePath(fileMap.get("url"))
+               .dailyFileSize(file.getSize())
+               .dailyFileType(ext).build();
+    }
 
     // 하루 식단 게시글 추가
-    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, List<MultipartFile> dailyImage) throws IOException {
+    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile thumbnail, List<MultipartFile> dailyImageList) throws IOException {
 
         userService.checkUser(dailyWriteRequestDto.getMemberId());
         MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-
-        // 파일 url 담을 리스트
-        List<String> fileUrlList = new ArrayList<>();
-
         List<DailyImageDto> saveImageList = new ArrayList<>();
 
-        if(dailyImage.size() == 0 || dailyImage.isEmpty()) {
+        if(thumbnail == null) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
 
-            for(MultipartFile file : dailyImage) {
-                fileCheck(file);
-                HashMap<String, String> fileMap = s3Service.upload(file, "daily");
-                fileUrlList.add(fileMap.get("url"));
-
-                String fileFullName = file.getOriginalFilename();
-                String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
-                String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
-                DailyImageDto saveImage = DailyImageDto.builder()
-                        .memberId(dailyWriteRequestDto.getMemberId())
-                        .originalName(fileName)
-                        .originalFullName(fileFullName)
-                        .saveName(fileMap.get("serverName"))
-                        .path(fileMap.get("url"))
-                        .size(file.getSize())
-                        .ext(ext).build();
+            DailyImageDto dailyThumbnail = fileHandler(thumbnail, dailyWriteRequestDto.getMemberId());
+            for(MultipartFile file : dailyImageList) {
+                DailyImageDto saveImage = fileHandler(file, dailyWriteRequestDto.getMemberId());
                 saveImageList.add(saveImage);
             }
-            //파일 갯수
-            log.info(Integer.toString(fileUrlList.size()));
-
-            // 게시글 경로
-            dailyWriteRequestDto.setPath1(fileUrlList.get(0));
-
-            if(fileUrlList.size()>1) {
-                dailyWriteRequestDto.setPath2(fileUrlList.get(1));
-            }
-            if (fileUrlList.size() > 2) {
-                dailyWriteRequestDto.setPath3(fileUrlList.get(2));
-            }
-            if (fileUrlList.size() > 3) {
-                dailyWriteRequestDto.setPath4(fileUrlList.get(3));
-            }
-            if (fileUrlList.size() > 4) {
-                dailyWriteRequestDto.setPath5(fileUrlList.get(4));
-            }
-
 
             dailyWriteRequestDto.setWriter(member.getMemberNickName());
+            dailyWriteRequestDto.setThumbnail(dailyThumbnail.getDailyFilePath());
             userService.verifySave(dailyMapper.saveDaily(dailyWriteRequestDto));
 
-            int dailyId = dailyMapper.findDailyIdByPath(dailyWriteRequestDto.getPath1())
+            int dailyId = dailyMapper.findDailyIdByPath(dailyWriteRequestDto.getThumbnail())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
+
+            dailyThumbnail.setDailyId(dailyId);
+            userService.verifySave(dailyMapper.saveImage(dailyThumbnail));
 
             saveImageList.forEach(image -> {
                 image.setDailyId(dailyId);
                 userService.verifySave(dailyMapper.saveImage(image));
             });
+            userService.verifyUpdate(dailyMapper.updateThumbnailImage(dailyThumbnail.getDailyFileSaveName()));
         }
     }
 
@@ -152,77 +137,88 @@ public class DailyService {
         memberMapper.findByMemberId(dailyEditRequestDto.getMemberId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-
-        // 기존 게시물의 파일 경로 삭제 및 S3 파일 삭제
-        DailyDetailsResponseDto verifyDaily = verifyDailyPost(dailyEditRequestDto.getDailyId());
-
-        // 이미지 3개 다 업데이트할때의 경우
-        if(verifyDaily.getDailyPath1() != null) {
-            s3Service.deleteImage(verifyDaily.getDailyPath1());
-            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath1());
-        }
-        if(verifyDaily.getDailyPath2() != null) {
-            s3Service.deleteImage(verifyDaily.getDailyPath2());
-            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath2());
-        }
-        if(verifyDaily.getDailyPath3() != null) {
-            s3Service.deleteImage(verifyDaily.getDailyPath3());
-            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath3());
-        }
-        if(verifyDaily.getDailyPath4() != null) {
-            s3Service.deleteImage(verifyDaily.getDailyPath4());
-            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath4());
-        }
-        if(verifyDaily.getDailyPath5() != null) {
-            s3Service.deleteImage(verifyDaily.getDailyPath5());
-            dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), verifyDaily.getDailyPath5());
+        //썸네일을 변경한다는 요청을 하였는데 변경할 이미지를 선택하지 않거나 새로운 파일을 추가 안했을 경우 예외처리
+        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) || (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getDeletePath() == null)) {
+            throw new BusinessLogicException(ExceptionCode.THUMBNAUL_BAD_REQUEST);
         }
 
-        // 파일 url 담을 리스트
-        List<String> fileUrlList = new ArrayList<>();
+              verifyDailyPost(dailyEditRequestDto.getDailyId());
+        List<DailyImageDto> imageList = dailyMapper.findAllImageDtoList(dailyEditRequestDto.getDailyId()); // 기존 저장된 이미지 리스트
+        List<DailyImageDto> newImageList = new ArrayList<>();
+        List<String> deletePathList = dailyEditRequestDto.getDeletePath(); // 삭제할 이미지 경로 리스트
 
-        // 만약에 기존이미지1, 2가 있고, 제가 2만 교체 한다고 했을때
-        // image2만 들어오겠죠?
+       // 삭제할 이미지 경로가 없을경우
+        if(deletePathList == null){
 
+           // 이미지가 추가된 경우
+            if(dailyImage != null) {
 
-        // 새로 첨부 받은 이미지 파일로 업데이트
-        for (int i = 0; i < dailyImage.size(); i++) {
-            MultipartFile file = dailyImage.get(i);
-            fileCheck(file);
-            HashMap<String, String> fileMap = s3Service.upload(file, "daily");
-            fileUrlList.add(fileMap.get("url"));
+                // 이미지 합계가 5개 초과되면 예외처리
+                if (imageList.size() + dailyImage.size() > 5) {
+                    throw new BusinessLogicException(ExceptionCode.IMAGE_ERROR);
+                }
+                for (MultipartFile image : dailyImage) {
+                    DailyImageDto saveImage = fileHandler(image, dailyEditRequestDto.getMemberId());
+                    newImageList.add(saveImage);
+                    saveImage.setDailyId(dailyEditRequestDto.getDailyId());
+                    dailyMapper.saveImage(saveImage);
+                }
+            } else {
+                userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
+            }
+            // 삭제할 이미지 경로가 있는 경우
+        } else {
+            List<DailyImageDto> deleteImageList = new ArrayList<>();
+            // 기존 이미지 리스트에서 삭제할 이미지들만 추출
+            for(DailyImageDto image : imageList) {
+                        for(String path : deletePathList) {
+                            if(image.getDailyFilePath().equals(path)){
+                                deleteImageList.add(image);
+                            }
+                        }
+                    }
+            // 삭제할 이미지 경로가 잘못 입력되었을 경우 예외처리
+            if(deleteImageList.isEmpty()) {
+                throw new BusinessLogicException(ExceptionCode.IMAGE_NOT_FOUND);
+            }
 
-            String fileFullName = file.getOriginalFilename();
-            String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
-            String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
-            DailyImageDto saveImage = DailyImageDto.builder()
-                    .memberId(dailyEditRequestDto.getMemberId())
-                    .originalName(fileName)
-                    .originalFullName(fileFullName)
-                    .saveName(fileMap.get("serverName"))
-                    .path(fileMap.get("url"))
-                    .size(file.getSize())
-                    .ext(ext).build();
-            saveImage.setDailyId(dailyEditRequestDto.getDailyId());
-            userService.verifySave(dailyMapper.saveImage(saveImage));
-            log.info("파일이 업로드 되었습니다.");
-        }
+            // S3, db에서 이미지 삭제
+            for (DailyImageDto image : deleteImageList) {
+                String url = "daily/" + image.getDailyFileSaveName();
+                s3Service.deleteImage(url);
+                dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
+            }
 
-        // 게시글 DB에 이미지 경로 저장
-        dailyEditRequestDto.setPath1(fileUrlList.get(0));
-        if(fileUrlList.size() > 1) {
-            dailyEditRequestDto.setPath2(fileUrlList.get(1));
+            // 이미지가 추가된 경우
+            if(dailyImage != null){
+
+                // 이미지 합계가 5개 초과되면 예외처리
+                if(imageList.size() + dailyImage.size() - deleteImageList.size() > 5){
+                    throw new BusinessLogicException(ExceptionCode.IMAGE_ERROR);
+                }
+                for(MultipartFile image : dailyImage) {
+                    DailyImageDto saveImage = fileHandler(image, dailyEditRequestDto.getMemberId());
+                    saveImage.setDailyId(dailyEditRequestDto.getDailyId());
+                    newImageList.add(saveImage);
+                    dailyMapper.saveImage(saveImage);
+                }
+                // 이미지가 추가 안된 경우
+            } else {
+                userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
+            }
+            // 썸네일 이미지를 교체할 경우
+            if(dailyEditRequestDto.isThumbnailYn()){
+                // 기존 이미지에서 썸네일 대체할 경우
+                if(dailyEditRequestDto.getThumbnailPath() != null) {
+                    userService.verifyUpdate(dailyMapper.updateThumbnailPath(dailyEditRequestDto.getThumbnailPath(), dailyEditRequestDto.getDailyId()));
+
+                    // 새로운 파일에서 썸네일 대체할 경우
+                } else {
+                    userService.verifyUpdate(dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId()));
+                }
+            }
+            userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
         }
-        if (fileUrlList.size() > 2) {
-            dailyEditRequestDto.setPath3(fileUrlList.get(2));
-        }
-        if (fileUrlList.size() > 3) {
-            dailyEditRequestDto.setPath4(fileUrlList.get(3));
-        }
-        if (fileUrlList.size() > 4) {
-            dailyEditRequestDto.setPath5(fileUrlList.get(4));
-        }
-        userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
     }
 
 
@@ -271,6 +267,9 @@ public class DailyService {
         userService.verifyUpdate(dailyMapper.updateDailyView(dailyId));
 
         DailyDetailsResponseDto daily = verifyDailyPost(dailyId);
+        List<String> imageList = dailyMapper.findAllImageList(dailyId);
+        daily.setDailyImageList(imageList);
+
         if(daily.getMemberId() == memberId){
             daily.setUserCheck(true);
         } else {
@@ -306,15 +305,14 @@ public class DailyService {
     //하루식단 게시글 삭제
     public void removeDaily(int dailyId, int memberId) {
         userService.checkUser(memberId);
-        DailyDetailsResponseDto verifyDaily = verifyDailyPost(dailyId);
-        DailyImageDto dailyImageDto = dailyMapper.findImageByDailyId(dailyId).get();
+        verifyDailyPost(dailyId);
+        List<DailyImageDto> dailyImageDto = dailyMapper.findImageByDailyId(dailyId);
 
-        if(verifyDaily.getDailyPath1() != null) {
-            String url = "daily/" + dailyImageDto.getSaveName();
+        dailyImageDto.forEach(image -> {
+            String url = "daily/" + image.getDailyFileSaveName();
             s3Service.deleteImage(url);
-            dailyMapper.deleteDailyImage(dailyId, verifyDaily.getDailyPath1());
-        }
-
+        });
+        dailyMapper.deleteAllDailyImage(dailyId);
         userService.verifyDelete(dailyMapper.deleteDaily(dailyId));
     }
 

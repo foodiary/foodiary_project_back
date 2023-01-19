@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -25,22 +26,12 @@ public class DailyEditRequestDto {
     @ApiModelProperty(value="게시글 내용", required = false)
     private String content;
 
-    @ApiModelProperty(value="이미지 경로1", required = false)
-    @Setter private String path1;
+    @ApiModelProperty(value="삭제할 이미지 경로", required = false)
+    List<String> deletePath;
 
-    @ApiModelProperty(value="이미지 경로2", required = false)
-    @Setter private String path2;
+    @ApiModelProperty(value="썸네일 변경 여부", required = true)
+    @Setter private boolean thumbnailYn;
 
-    @ApiModelProperty(value="이미지 경로3", required = false)
-    @Setter private String path3;
-
-    @ApiModelProperty(value="이미지 경로4", required = false)
-    @Setter private String path4;
-
-    @ApiModelProperty(value="이미지 경로5", required = false)
-    @Setter private String path5;
-
-    @ApiModelProperty(value="이미지 수정 여부", required = true)
-    private char imageDelete;
-
+    @ApiModelProperty(value="변경할 썸네일 이미지 경로", required = false)
+    @Setter private String thumbnailPath;
 }

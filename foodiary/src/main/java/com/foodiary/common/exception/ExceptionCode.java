@@ -12,6 +12,7 @@ public enum ExceptionCode {
     MEMBER_NOT_EXISTS(404, "탈퇴한 회원입니다."),
     LIKE_NOT_FOUND(404, "좋아요 한 적 없는 게시글입니다."),
     SCRAP_NOT_FOUND(404, "저장한 스크랩이 없습니다."),
+    IMAGE_NOT_FOUND(404, "삭제할 이미지가 존재하지 않습니다."),
 
     METHOD_NOT_ALLOWED(405, "METHOD NOT ALLOWED"),
 
@@ -23,6 +24,8 @@ public enum ExceptionCode {
     INTERNAL_SERVER_ERROR(500, "INTERNAL SERVER ERROR"),
 
     IMAGE_BAD_REQUEST(400, "이미지를 한장 이상 올려주세요"),
+    IMAGE_ERROR(400, "이미지를 5개 이하로 올려주세요."),
+    THUMBNAUL_BAD_REQUEST(400, "변경할 썸네일의 이미지 경로 또는 파일을 올려주세요"),
     FILE_BAD_REQUEST(400, "해당 파일의 확장자를 올릴수 없습니다."),
     EMAIL_BAD_REQUEST(400, "이메일이 중복입니다"),
     NICKNAME_BAD_REQUEST(400, "닉네임이 중복입니다"),

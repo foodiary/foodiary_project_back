@@ -13,7 +13,6 @@ import lombok.Setter;
 public class MemberFoodRequestDto {
 
     @Setter
-    @ApiModelProperty(value="추천받은 음식 시퀀스", required = true)
     private int memberFoodId;
 
     @ApiModelProperty(value="사용자 시퀀스", required = true)

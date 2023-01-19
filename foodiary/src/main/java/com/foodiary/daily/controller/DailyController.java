@@ -5,6 +5,7 @@ import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.daily.model.*;
 import com.foodiary.daily.service.DailyService;
 import com.github.pagehelper.PageHelper;
+import com.sendgrid.Response;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,15 +49,14 @@ public class DailyController {
     public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "dailyImage", required = true) List<MultipartFile> dailyImage
+        @RequestPart(value = "thumbnail", required = true) MultipartFile dailyImage,
+        @RequestPart(value = "dailyImage", required = false) List<MultipartFile> dailyImageList
     ) throws Exception {
-
-        log.info(dailyImage.get(0).getOriginalFilename());
 
         if(dailyImage == null){
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         }
-        dailyService.addDaily(dailyWriteRequestDto, dailyImage);
+        dailyService.addDaily(dailyWriteRequestDto, dailyImage, dailyImageList);
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
@@ -72,31 +72,34 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @ResponseBody
     @PostMapping(value = "/daily/{dailyId}/{memberId}")
     public ResponseEntity<String> dailyModify(
         @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
         @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
         @RequestPart("dailyEdit") DailyEditRequestDto dailyEditRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "dailyImage1", required = false) MultipartFile dailyImage1,
-        @RequestPart(value = "dailyImage2", required = false) MultipartFile dailyImage2,
-        @RequestPart(value = "dailyImage3", required = false) MultipartFile dailyImage3,
-        @RequestPart(value = "dailyImage4", required = false) MultipartFile dailyImage4,
-        @RequestPart(value = "dailyImage5", required = false) MultipartFile dailyImage5
-
+        @RequestPart(value = "dailyImage", required = false) List<MultipartFile> dailyImage
     ) throws Exception {
 
-        List<MultipartFile> dailyImage = new ArrayList<>();
-        if(dailyImage1 != null) dailyImage.add(dailyImage1);
-        if(dailyImage2 != null) dailyImage.add(dailyImage2);
-        if(dailyImage3 != null) dailyImage.add(dailyImage3);
-        if(dailyImage4 != null) dailyImage.add(dailyImage4);
-        if(dailyImage5 != null) dailyImage.add(dailyImage5);
-        
         dailyEditRequestDto.setDailyId(dailyId);
         dailyEditRequestDto.setMemberId(memberId);
         dailyService.modifyDaily(dailyEditRequestDto, dailyImage);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @Operation(summary = "daily modify", description = "하루 식단 게시글 이미지 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
+    @DeleteMapping("/daily/image/{dailyId}")
+    public ResponseEntity<?> deleteDailyImage(
+            @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+            @ApiParam(value = "이미지 URL", required = true) @Positive String imagePath
+    ) throws Exception {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
@@ -222,7 +225,7 @@ public class DailyController {
     @GetMapping(value = "/dailys/details")
     public ResponseEntity<DailyDetailsResponseDto> getDailyDetails (
         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
-        @ApiParam(value = "회원 시퀀스", required = false) @Positive int memberId
+        @ApiParam(value = "회원 시퀀스", required = false) int memberId
     ) throws Exception {
 
         DailyDetailsResponseDto response = dailyService.findDaily(dailyId, memberId);

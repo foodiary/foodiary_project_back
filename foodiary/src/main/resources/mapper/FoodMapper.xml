@@ -47,12 +47,12 @@
 
     <insert id="saveMemberFoodLike" useGeneratedKeys="true" keyProperty="memberFoodId" keyColumn="MEMBER_FOOD_ID">
         INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_CREATE)
-        VALUES (#{memberId}, #{foodId}, Y, now());
+        VALUES (#{memberId}, #{foodId}, 'Y', now());
     </insert>
 
     <insert id="saveMemberFoodHate" useGeneratedKeys="true" keyProperty="memberFoodId" keyColumn="MEMBER_FOOD_ID">
         INSERT INTO TB_MEMBER_FOOD (MEMBER_ID, FOOD_ID, MEMBER_FOOD_LIKE, MEMBER_FOOD_CREATE)
-        VALUES (#{memberId}, #{foodId}, N, now());
+        VALUES (#{memberId}, #{foodId}, 'N', now());
     </insert>
 
     <insert id="saveWeekRecommendMenu" useGeneratedKeys="true" keyProperty="menuId" keyColumn="MENU_ID">

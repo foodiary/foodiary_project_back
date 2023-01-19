@@ -1,6 +1,7 @@
 package com.foodiary.daily.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -28,20 +29,9 @@ public class DailyDetailsResponseDto {
     @ApiModelProperty(value="게시글 작성자", required = true)
     private String dailyWriter;
 
-    @ApiModelProperty(value="게시글 이미지 경로1", required = true)
-    private String dailyPath1;
-
-    @ApiModelProperty(value="게시글 이미지 경로2", required = false)
-    private String dailyPath2;
-
-    @ApiModelProperty(value="게시글 이미지 경로3", required = false)
-    private String dailyPath3;
-
-    @ApiModelProperty(value="게시글 이미지 경로4", required = false)
-    private String dailyPath4;
-
-    @ApiModelProperty(value="게시글 이미지 경로5", required = false)
-    private String dailyPath5;
+    @Setter
+    @ApiModelProperty(value="게시글 이미지 경로", required = true)
+    private List<String> dailyImageList;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
      private Integer dailyLike;

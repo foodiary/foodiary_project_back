@@ -34,6 +34,10 @@ public interface DailyMapper {
 
     int updateDailyView(@Param("dailyId") int dailyId);
 
+    int updateThumbnailImage(@Param("name") String name);
+
+    int updateThumbnailPath(@Param("path") String path, @Param("dailyId") int dailyId);
+
 
 
 
@@ -43,7 +47,7 @@ public interface DailyMapper {
 
     Optional<DailyCommentDetailsResponseDto> findByDailyComment(@Param("commentId") int commentId);
 
-    Optional<DailyImageDto> findImageByDailyId(@Param("dailyId") int dailyId);
+    List<DailyImageDto> findImageByDailyId(@Param("dailyId") int dailyId);
 
     Optional<Integer> findByDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
@@ -59,6 +63,10 @@ public interface DailyMapper {
 
     List<DailysResponseDto> findTopDaily();
 
+    List<String> findAllImageList(@Param("dailyId") int dailyId);
+
+    List<DailyImageDto> findAllImageDtoList(@Param("dailyId") int dailyId);
+
 
 
 
@@ -71,6 +79,8 @@ public interface DailyMapper {
     int deleteDailyComment(@Param("dailyId") int dailyId, @Param("commentId") int commentId, @Param("memberId") int memberId);
 
     int deleteDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
+
+    int deleteAllDailyImage(@Param("dailyId") int dailyId);
 
     int deleteDailyImage(@Param("dailyId") int dailyId, @Param("path") String path);
 }

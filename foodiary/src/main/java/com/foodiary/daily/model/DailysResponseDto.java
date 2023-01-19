@@ -23,7 +23,7 @@ public class DailysResponseDto {
     private String dailyWriter;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath1;
+    private String dailyThumbnail;
 
     @ApiModelProperty(value="게시글 좋아요 수", required = true)
     private int dailyLike;
