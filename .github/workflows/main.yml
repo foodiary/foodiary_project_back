@@ -42,16 +42,15 @@ jobs:
 
     - name: make application-aws.properties
       run: |
-        # spring의 resources 경로로 이동
         cd foodiary
         cd src/main/resources
         touch ./application-aws.yml
-        touch ./application-oauth.yml
-        touch ./application-server.yml
-        touch ./application-smtp.yml
         $AWS_YML >> ./application-aws.yml
+        touch ./application-oauth.yml
         $OAUTH_YML >> ./application-oauth.yml
+        touch ./application-server.yml
         $SERVER_YML >> ./application-server.yml
+        touch ./application-smtp.yml
         $SMTP_YML >> ./application-smtp.yml
       shell: bash
       env:
