@@ -30,11 +30,11 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         
-    - name: Copy Secret
-      env:
-          FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
-          FOODIARY_SECRET_DIR: foodiary/src/main/resources
-          FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
+#     - name: Copy Secret
+#       env:
+#           FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
+#           FOODIARY_SECRET_DIR: foodiary/src/main/resources
+#           FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
 #       run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
       
     - name: make application-sceret.yml
@@ -50,7 +50,8 @@ jobs:
 #        touch ./application-smtp.properties
 #        echo $SMTP_YML >> ./application-smtp.properties
       shell: bash
-#       env:
+      env:
+          FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
 #           AWS_YML: ${{ secrets.AWS_YML }}
 #           OAUTH_YML: ${{ secrets.OAUTH_YML }}
 #           SERVER_YML: ${{ secrets.SERVER_YML }}
