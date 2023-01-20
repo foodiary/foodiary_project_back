@@ -34,8 +34,6 @@ public interface DailyMapper {
 
     int updateDailyView(@Param("dailyId") int dailyId);
 
-    int updateThumbnailImage(@Param("name") String name);
-
     int updateThumbnailPath(@Param("path") String path, @Param("dailyId") int dailyId);
 
 

@@ -88,7 +88,6 @@ public class DailyService {
                 image.setDailyId(dailyId);
                 userService.verifySave(dailyMapper.saveImage(image));
             });
-            userService.verifyUpdate(dailyMapper.updateThumbnailImage(dailyThumbnail.getDailyFileSaveName()));
         }
     }
 
@@ -138,7 +137,7 @@ public class DailyService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         //썸네일을 변경한다는 요청을 하였는데 변경할 이미지를 선택하지 않거나 새로운 파일을 추가 안했을 경우 예외처리
-        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) || (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getDeletePath() == null)) {
+        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) && (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getDeletePath() == null)) {
             throw new BusinessLogicException(ExceptionCode.THUMBNAUL_BAD_REQUEST);
         }
 
@@ -163,20 +162,18 @@ public class DailyService {
                     saveImage.setDailyId(dailyEditRequestDto.getDailyId());
                     dailyMapper.saveImage(saveImage);
                 }
-            } else {
-                userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
             }
             // 삭제할 이미지 경로가 있는 경우
         } else {
             List<DailyImageDto> deleteImageList = new ArrayList<>();
             // 기존 이미지 리스트에서 삭제할 이미지들만 추출
             for(DailyImageDto image : imageList) {
-                        for(String path : deletePathList) {
-                            if(image.getDailyFilePath().equals(path)){
-                                deleteImageList.add(image);
-                            }
-                        }
+                for(String path : deletePathList) {
+                    if(image.getDailyFilePath().equals(path)){
+                        deleteImageList.add(image);
                     }
+                }
+            }
             // 삭제할 이미지 경로가 잘못 입력되었을 경우 예외처리
             if(deleteImageList.isEmpty()) {
                 throw new BusinessLogicException(ExceptionCode.IMAGE_NOT_FOUND);
@@ -202,9 +199,6 @@ public class DailyService {
                     newImageList.add(saveImage);
                     dailyMapper.saveImage(saveImage);
                 }
-                // 이미지가 추가 안된 경우
-            } else {
-                userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
             }
             // 썸네일 이미지를 교체할 경우
             if(dailyEditRequestDto.isThumbnailYn()){
@@ -217,8 +211,8 @@ public class DailyService {
                     userService.verifyUpdate(dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId()));
                 }
             }
-            userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
         }
+        userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
     }
 
 

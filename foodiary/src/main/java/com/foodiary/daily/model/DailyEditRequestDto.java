@@ -14,10 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 public class DailyEditRequestDto {
 
-    @ApiModelProperty(value="게시글 시퀀스", required = true)
+    @ApiModelProperty(value="게시글 시퀀스", required = false)
     @Setter private int dailyId;
 
-    @ApiModelProperty(value="회원 시퀀스", required = true)
+    @ApiModelProperty(value="회원 시퀀스", required = false)
     @Setter private int memberId;
 
     @ApiModelProperty(value="게시글 제목", required = false)

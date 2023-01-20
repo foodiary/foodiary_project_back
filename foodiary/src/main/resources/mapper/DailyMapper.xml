@@ -68,11 +68,6 @@
         WHERE DAILY_ID = #{dailyId};
     </update>
 
-    <update id="updateThumbnailImage">
-        UPDATE TB_DAILY_IMAGE
-        SET THUMBNAIL = 'Y'
-        WHERE DAILY_FILE_SAVE_NAME = #{name};
-    </update>
 
     <update id="updateThumbnailPath">
         UPDATE TB_DAILY
