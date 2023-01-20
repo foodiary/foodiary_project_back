@@ -20,7 +20,7 @@ public class MemberPostScrapResponseDto {
     private int dailyId;
 
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
-    private String dailyPath1;
+    private String dailyThumbnail;
 
     @ApiModelProperty(value="스크랩한 일자", required = true)
     private String dailyScrapCreate;

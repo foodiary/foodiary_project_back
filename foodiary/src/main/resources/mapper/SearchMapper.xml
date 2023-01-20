@@ -14,7 +14,7 @@
 
     <select id="findbyDaily" resultType="com.foodiary.search.model.SearchDailyResponseDto">
         SELECT td.DAILY_ID, td.DAILY_TITLE, td.DAILY_WRITER, 
-            td.DAILY_PATH1, td.DAILY_VIEW, td.DAILY_BODY,
+            td.DAILY_THUMBNAIL, td.DAILY_VIEW, td.DAILY_BODY,
             (SELECT COUNT(*) from TB_DAILY_LIKE tdl WHERE tdl.DAILY_ID = td.DAILY_ID) AS DAILY_LIKE,
             (SELECT COUNT(*) from TB_DAILY_COMMENT tdc WHERE tdc.DAILY_ID = td.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY td 

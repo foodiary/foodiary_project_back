@@ -14,6 +14,7 @@ import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberEditResponseDto;
 import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
+import com.foodiary.member.model.MemberIdResponseDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
@@ -53,6 +54,10 @@ public interface MemberMapper {
     Optional<MemberResponseDto> findById(@Param("id") int id);
 
     List<MemberDto> findAll();
+
+    MemberIdResponseDto findByMemberDailyComment(@Param("memberId") int memberId);
+
+    MemberIdResponseDto findByMemberDaily(@Param("memberId") int memberId);
 
     int saveMemberImage(MemberImageDto memberImageDto);
 
