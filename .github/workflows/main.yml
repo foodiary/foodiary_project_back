@@ -35,14 +35,14 @@ jobs:
           FOODIARY_SECRET: ${{ secrets.FOODIARY_SECRET }}
           FOODIARY_SECRET_DIR: foodiary/src/main/resources
           FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
-      run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
+#       run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
       
     - name: make application-sceret.yml
       run: |
         cd foodiary
         cd src/main/resources
         touch ./application-secret.yml
-        echo $FOODIARY_SECRET >> ./application-secret.yml
+        echo $FOODIARY_SECRET | base64 --decode >> ./application-secret.yml
 #        touch ./application-oauth.properties
 #        echo $OAUTH_YML >> ./application-oauth.properties
 #        touch ./application-server.properties
