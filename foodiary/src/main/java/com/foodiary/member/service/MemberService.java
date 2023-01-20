@@ -135,7 +135,6 @@ public class MemberService {
         userService.verifyUpdate(mapper.updateMemberInfo(memberEditDto));
 
         // 데일리 테이블 작성자 업데이트
-        MemberIdResponseDto memberIdResponseDto = mapper.findByMemberDaily(id);
         if(mapper.findByMemberDaily(id)!=null) {
             userService.verifyUpdate(mapper.updateDailyWriter(id, memberEditDto.getNickName()));
         }
