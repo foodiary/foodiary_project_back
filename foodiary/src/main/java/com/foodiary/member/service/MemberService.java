@@ -33,6 +33,7 @@ import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
+import com.foodiary.member.model.MemberIdResponseDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
@@ -134,6 +135,7 @@ public class MemberService {
         userService.verifyUpdate(mapper.updateMemberInfo(memberEditDto));
 
         // 데일리 테이블 작성자 업데이트
+        MemberIdResponseDto memberIdResponseDto = mapper.findByMemberDaily(id);
         if(mapper.findByMemberDaily(id)!=null) {
             userService.verifyUpdate(mapper.updateDailyWriter(id, memberEditDto.getNickName()));
         }
