@@ -87,22 +87,6 @@ public class DailyController {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
-    @Operation(summary = "daily modify", description = "하루 식단 게시글 이미지 삭제")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
-            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
-    })
-    @ApiImplicitParam(name = "Authorization", value = "JWT Token", required = true, dataType = "string", paramType = "header")
-    @DeleteMapping("/daily/image/{dailyId}")
-    public ResponseEntity<?> deleteDailyImage(
-            @PathVariable @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
-            @ApiParam(value = "이미지 URL", required = true) @Positive String imagePath
-    ) throws Exception {
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
-
 
 
     @Operation(summary = "daily list", description = "하루 식단 게시판 보기")

@@ -179,13 +179,6 @@ public class DailyService {
                 throw new BusinessLogicException(ExceptionCode.IMAGE_NOT_FOUND);
             }
 
-            // S3, db에서 이미지 삭제
-            for (DailyImageDto image : deleteImageList) {
-                String url = "daily/" + image.getDailyFileSaveName();
-                s3Service.deleteImage(url);
-                dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
-            }
-
             // 이미지가 추가된 경우
             if(dailyImage != null){
 
@@ -198,6 +191,13 @@ public class DailyService {
                     saveImage.setDailyId(dailyEditRequestDto.getDailyId());
                     newImageList.add(saveImage);
                     dailyMapper.saveImage(saveImage);
+                }
+
+                // S3, db에서 이미지 삭제
+                for (DailyImageDto image : deleteImageList) {
+                    String url = "daily/" + image.getDailyFileSaveName();
+                    s3Service.deleteImage(url);
+                    dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
                 }
             }
         }
