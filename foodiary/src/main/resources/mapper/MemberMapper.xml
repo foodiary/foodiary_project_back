@@ -62,7 +62,7 @@
     </select>
 
     <select id="findByDaily" resultType="com.foodiary.member.model.MemberDailyResponseDto">
-        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_CREATE, td.DAILY_PATH1
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_CREATE, td.DAILY_THUMBNAIL
         FROM TB_DAILY td 
         WHERE td.MEMBER_ID = #{memberId} AND td.DAILY_YN = 'N'
         ORDER by td.DAILY_CREATE DESC 
@@ -95,7 +95,7 @@
 
     <select id="findByMember" resultType="com.foodiary.member.model.MemberOtherMemberResponseDto">
         SELECT 
-            td.DAILY_ID, tm.MEMBER_ID, td.DAILY_PATH1, tm.MEMBER_PATH, 
+            td.DAILY_ID, tm.MEMBER_ID, td.DAILY_THUMBNAIL, tm.MEMBER_PATH, 
             tm.MEMBER_PROFILE, tm.MEMBER_NICKNAME, td.DAILY_CREATE, td.DAILY_YN
         FROM TB_MEMBER tm LEFT JOIN TB_DAILY td
             ON tm.MEMBER_ID = td.MEMBER_ID 
@@ -115,7 +115,7 @@
 
     <select id="postScrap" resultType="com.foodiary.member.model.MemberPostScrapResponseDto">
         SELECT tmsd.MEMBER_DAILY_SCRAP_ID, tmsd.DAILY_ID, tmsd.MEMBER_ID, 
-        tmsd.DAILY_SCRAP_CREATE, td.DAILY_PATH1
+        tmsd.DAILY_SCRAP_CREATE, td.DAILY_THUMBNAIL
         from TB_DAILY_SCRAP tmsd 
             left join TB_DAILY td 
             ON tmsd.DAILY_ID = td.DAILY_ID
@@ -125,7 +125,7 @@
 
     <select id="postLike" resultType="com.foodiary.member.model.MemberPostLikeResponseDto">
         SELECT tdl.DAILY_LIKE_ID, tdl.DAILY_ID, 
-            tdl.MEMBER_ID, tdl.DAILY_LIKE_CREATE, td.DAILY_PATH1
+            tdl.MEMBER_ID, tdl.DAILY_LIKE_CREATE, td.DAILY_THUMBNAIL
         FROM TB_DAILY_LIKE tdl 
             right join TB_DAILY td 
             ON tdl.DAILY_ID = td.DAILY_ID 

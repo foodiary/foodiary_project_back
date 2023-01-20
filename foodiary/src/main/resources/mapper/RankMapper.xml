@@ -4,7 +4,7 @@
 <mapper namespace="com.foodiary.rank.mapper.RankMapper">
 
     <select id="rankWeekList" resultType="com.foodiary.rank.model.RanksResponseDto">
-        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH1, td.DAILY_TITLE 
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_THUMBNAIL, td.DAILY_TITLE 
         FROM TB_DAILY td 
             LEFT JOIN TB_COMMON tc 
             ON td.DAILY_ID = tc.RANK_WEEK_DAILY_ID 
@@ -12,7 +12,7 @@
     </select>
 
     <select id="rankMonthList" resultType="com.foodiary.rank.model.RanksResponseDto">
-        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_PATH1, td.DAILY_TITLE 
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_THUMBNAIL, td.DAILY_TITLE 
         FROM TB_DAILY td 
             LEFT JOIN TB_COMMON tc 
             ON td.DAILY_ID = tc.RANK_MONTH_DAILY_ID 
