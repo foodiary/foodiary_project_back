@@ -36,7 +36,7 @@ public class SearchService {
         
         if(searchRequestDto.getMemberId() > 0) {
 
-            // userService.checkUser(searchRequestDto.getMemberId());
+            userService.checkUser(searchRequestDto.getMemberId());
             String hashkey = "dailySearch:"+ searchRequestDto.getMemberId();
             HashOperations<String, Integer, String> hashOperations = redisTemplate.opsForHash();
             
