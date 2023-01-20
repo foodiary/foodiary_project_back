@@ -19,6 +19,9 @@ public class RecipesResponseDto {
     @ApiModelProperty(value="게시글 제목", required = true)
     private String recipeTitle;
 
+    @ApiModelProperty(value="게시글 작성자", required = true)
+    private String recipeWriter;
+
     @ApiModelProperty(value="게시글 이미지 경로", required = true)
     private String recipePath1;
 

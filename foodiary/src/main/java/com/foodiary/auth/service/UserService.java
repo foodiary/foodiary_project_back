@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,12 +42,20 @@ public class UserService {
 
         if(providerId.equals("GOOGLE")){
             GoogleUserDto googleUser = oAuthService.getGoogleUserInfo(userInfoResponse);
+
+            Optional<MemberDto> member = memberMapper.findByEmail(googleUser.email);
+
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(googleUser.email) == null){
+            if (member.isEmpty()){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(googleUser.email, googleUser.picture, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            } else{
+            }
+            // 탈퇴한 회원인지 팔별
+            else if (member.get().getMemberYn().toUpperCase().equals('Y')) {
+                    throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+            }
+            else{
                 // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(googleUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -54,12 +63,20 @@ public class UserService {
         }
         else if (providerId.equals("NAVER")) {
             NaverUserDto naverUser = oAuthService.getNaverUserInfo(userInfoResponse);
+
+            Optional<MemberDto> member = memberMapper.findByEmail(naverUser.email);
+
             // 신규회원인지 판별
-            if (memberMapper.findByEmail(naverUser.email) == null){
+            if (member.isEmpty()){
                 // 신규 회원일 경우
                 NewUserResponseDto response = new NewUserResponseDto(naverUser.email, naverUser.profile_image, true);
                 return new ResponseEntity<>(response, HttpStatus.OK);
-            } else{
+            }
+            // 탈퇴한 회원인지 팔별
+            else if (member.get().getMemberYn().toUpperCase().equals('Y')) {
+                throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+            }
+            else{
                 // 기존 회원일 경우
                 TokenResponseDto response = createTokenResponse(naverUser.email);
                 return new ResponseEntity<>(response, HttpStatus.OK);
@@ -71,8 +88,13 @@ public class UserService {
 
 
             MemberDto member = verifyMember(email);
+            String yn = member.getMemberYn().toUpperCase();
+            if(yn.equals("Y")) {
+                throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+            }
             log.info(member.getMemberEmail());
             TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
+            tokenResponseDto.setMemberId(member.getMemberId());
             tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
             tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
             return tokenResponseDto;
@@ -82,12 +104,17 @@ public class UserService {
         String encryptPw = encrypt(loginDto.getPassword());
         log.info(encryptPw);
         MemberDto member = memberMapper.findByLoginIdAndPw(loginDto.getLoginId(), encryptPw)
-                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_EXISTS));
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ID_PW_BAD_REQUEST));
+        String yn = member.getMemberYn().toUpperCase();
+        if(yn.equals("Y")) {
+            throw new BusinessLogicException(ExceptionCode.SECESSION_MEMBER);
+        }
 
         log.info(member.getMemberEmail());
         log.info(member.getMemberPassword());
 
         TokenResponseDto tokenResponseDto = jwtProvider.createTokensByLogin(member);
+        tokenResponseDto.setMemberId(member.getMemberId());
         tokenResponseDto.setAccessTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60));
         tokenResponseDto.setRefreshTokenExpirationMinutes(LocalDateTime.now().plusMinutes(60 * 24 * 7));
         return tokenResponseDto;

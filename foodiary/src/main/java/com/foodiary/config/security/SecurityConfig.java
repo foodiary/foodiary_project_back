@@ -58,13 +58,6 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeRequests()
                     .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
-                
-                
-                .antMatchers(
-                "/",
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-resources/**",
 
                 // 권한 필요 url
                 // "/member/password/{memberId}",
@@ -93,23 +86,32 @@ public class SecurityConfig {
                 // "/search/recipe"
 
                 // 권한 필요x url
-                "/member/find/password",
-                "/member/find/id",
-                "/member/check/loginid",
-                "/member/check/nickname",
-                "/member/check/email",
-                "/member/email/send",
-                "/member/email/send/confirm",
-                "/member/signup",
-                "/notice",
-                "/notice/{noticeId}",
-                "/faq",
-                "/rank/**",
-                "/health"
+            
+               
 
-                ).permitAll()
-                
-                .antMatchers("/**").permitAll()
+                .antMatchers(
+                        "/dailys/**",
+                        "/recipes/**",
+                        "/food",
+                        "/auth/login",
+                        "/oauth/**",
+                        "/member/find/password",
+                        "/member/find/id",
+                        "/member/check/loginid",
+                        "/member/check/nickname",
+                        "/member/check/email",
+                        "/member/email/send",
+                        "/member/email/send/confirm",
+                        "/member/signup",
+                        "/notice",
+                        "/notice/{noticeId}",
+                        "/faq",
+                        "/",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/rank/**",
+                        "/health").permitAll()
                 
                 .anyRequest().authenticated() 
                 .and()

@@ -29,7 +29,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
-@RestController
+//@RestController
 public class RecipeController {
 
         private final RecipeService recipeService;
@@ -117,7 +117,7 @@ public class RecipeController {
                 PageHelper.startPage(page, 10);
 
                 List<RecipesResponseDto> response = recipeService.findRecipes();
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
 
@@ -143,7 +143,7 @@ public class RecipeController {
                 LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         @Operation(summary = "week recipe list", description = "주간 레시피 게시판 보기")
@@ -166,7 +166,7 @@ public class RecipeController {
                 LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         @Operation(summary = "month recipe list", description = "월간 레시피 게시판 보기")
@@ -189,7 +189,7 @@ public class RecipeController {
                 LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59));
 
                 List<RecipesResponseDto> response = recipeService.findCreateRecipes(start, end);
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
 
@@ -204,7 +204,7 @@ public class RecipeController {
         public ResponseEntity<?> topRecipe() throws Exception {
 
                 List<RecipesResponseDto> response = recipeService.findTopRecipes();
-                return new ResponseEntity<>(PageInfo.of(response), HttpStatus.OK);
+                return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
 
@@ -216,7 +216,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
         
-        @GetMapping(value = "/recipe/datils")
+        @GetMapping(value = "/recipes/datils")
         public ResponseEntity<RecipeDetailsResponseDto> getRecipeDetails (
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId
         ) throws Exception {
@@ -258,7 +258,7 @@ public class RecipeController {
         })
         
         @PostMapping(value = "/recipe/comment")
-        public ResponseEntity<String> RecipeCommentWrite(@RequestBody RecipeCommentWriteRequestDto recipeCommentWriteRequestDto)
+        public ResponseEntity<String> RecipeCommentWrite(@Valid @RequestBody RecipeCommentWriteRequestDto recipeCommentWriteRequestDto)
                 throws Exception {
                 recipeService.addRecipeComment(recipeCommentWriteRequestDto);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
@@ -275,7 +275,7 @@ public class RecipeController {
                 @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
         })
         
-        @GetMapping(value = "/recipe/comment")
+        @GetMapping(value = "/recipes/comment")
         public ResponseEntity<?> RecipeCommentDetails(
                 @ApiParam(value = "게시글 시퀀스", required = true) @Positive int recipeId,
                 @ApiParam(value = "댓글 페이지", required = true) @Positive int page
@@ -384,7 +384,7 @@ public class RecipeController {
                 @PathVariable @ApiParam(value = "회원 시퀀스", required = true) @Positive int memberId,
                 @PathVariable @ApiParam(value = "게시글 스크랩 시퀀스", required = true) @Positive int scrapId
         ) throws Exception {
-                recipeService.removeRecipeScrap(recipeId, memberId, scrapId);
+                recipeService.removeRecipeScrap(recipeId, memberId);
                 return new ResponseEntity<>("OK", HttpStatus.OK);
         }
 }

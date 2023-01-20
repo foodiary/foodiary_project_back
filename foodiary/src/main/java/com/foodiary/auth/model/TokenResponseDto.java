@@ -12,6 +12,9 @@ import lombok.Setter;
 @Setter
 public class TokenResponseDto {
 
+    @ApiModelProperty(value="memberId", required = true)
+    private int memberId;
+
     @ApiModelProperty(value="Access Token", required = true)
     private String accessToken;
 

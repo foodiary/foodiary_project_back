@@ -19,6 +19,16 @@
         WHERE NOT tc.RANK_MONTH_DAILY_ID is NULL
     </select>
 
+    <select id="findByWeekDailyId" resultType="Integer">
+        SELECT RANK_WEEK_DAILY_ID FROM TB_COMMON
+        WHERE NOT RANK_WEEK_DAILY_ID is NULL
+    </select>
+
+    <select id="findByMonDailyId" resultType="Integer">
+        SELECT RANK_MONTH_DAILY_ID FROM TB_COMMON
+        WHERE NOT RANK_MONTH_DAILY_ID is NULL
+    </select>
+
     <insert id="weekWrite">
         INSERT INTO TB_COMMON (RANK_WEEK_DAILY_ID, RANK_DAILY_LIKE) (
             SELECT td.DAILY_ID, DAILY_LIKE
@@ -46,6 +56,8 @@
         ORDER BY DAILY_LIKE DESC
         LIMIT 20)
     </insert>
+
+
 
     <delete id="rankDelete">
         DELETE FROM TB_COMMON WHERE RANK_WEEK_DAILY_ID OR RANK_MONTH_DAILY_ID

@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -50,7 +51,7 @@ public class RecipeService {
             for(int i=0; i < recipeImage.size(); i++) {
                 MultipartFile file = recipeImage.get(i);
                 fileCheck(file);
-                HashMap<String, String> fileMap = s3Service.upload(file, "daily");
+                HashMap<String, String> fileMap = s3Service.upload(file, "recipe");
                 fileUrlList.add(fileMap.get("url"));
 
                 String fileFullName = file.getOriginalFilename();
@@ -102,10 +103,13 @@ public class RecipeService {
     public void addRecipeComment(RecipeCommentWriteRequestDto recipeCommentWriteRequestDto) {
         userService.checkUser(recipeCommentWriteRequestDto.getMemberId());
         verifyRecipePost(recipeCommentWriteRequestDto.getRecipeId());
+        MemberDto member = memberMapper.findByMemberId(recipeCommentWriteRequestDto.getMemberId()).get();
+        recipeCommentWriteRequestDto.setWriter(member.getMemberNickName());
 
         userService.verifySave(recipeMapper.saveRecipeComment(recipeCommentWriteRequestDto));
     }
 
+    
     // 레시피 식단 게시글 좋아요
     public void addRecipeLike(int memberId, int recipeId) {
         userService.checkUser(memberId);
@@ -121,11 +125,13 @@ public class RecipeService {
     // 레시피 식단 게시글 스크랩
     public void addRecipeScrap(int recipeId, int memberId) {
         userService.checkUser(memberId);
-        recipeMapper.findByRecipeScrap(recipeId, memberId)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.SCRAP_EXISTS));
         verifyRecipePost(recipeId);
+        if(!recipeMapper.findByRecipeScrap(recipeId, memberId).isEmpty()) {
+            removeRecipeScrap(memberId, recipeId);
+        } else {
+            userService.verifySave(recipeMapper.saveRecipeScrap(recipeId, memberId));
+        }
 
-        userService.verifySave(recipeMapper.saveRecipeScrap(recipeId, memberId));
     }
 
 
@@ -137,10 +143,7 @@ public class RecipeService {
         verifyRecipePost(recipeEditRequestDto.getRecipeId());
             memberMapper.findByMemberId(recipeEditRequestDto.getMemberId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
-        if(recipeImage == null) {
-            // 삭제 필요 
-            // throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
-        } else {
+
             // 이미지값이 있을때, 싹다 교체
             // 재료 지우고
             recipeMapper.deleteIngredient(recipeEditRequestDto.getRecipeId());
@@ -190,7 +193,7 @@ public class RecipeService {
             for (int i = 0; i < recipeImage.size(); i++) {
                 MultipartFile file = recipeImage.get(i);
                 fileCheck(file);
-                HashMap<String, String> fileMap = s3Service.upload(file, "daily");
+                HashMap<String, String> fileMap = s3Service.upload(file, "recipe");
                 fileUrlList.add(fileMap.get("url"));
 
                 String fileFullName = file.getOriginalFilename();
@@ -218,7 +221,6 @@ public class RecipeService {
                 recipeEditRequestDto.setPath3(fileUrlList.get(2));
             }
             userService.verifyUpdate(recipeMapper.updateRecipe(recipeEditRequestDto));
-        }
     }
 
 
@@ -256,7 +258,6 @@ public class RecipeService {
         recipeMapper.updateRecipeView(recipeId);
         RecipeDetailsResponseDto recipeResponse = verifyRecipePost(recipeId);
         recipeResponse.setIngredient(recipeMapper.findAllIngredient(recipeId));
-        recipeResponse.setUserCheck(userService.verifyUser(recipeResponse.getMemberId()));
 
         return recipeResponse;
     }
@@ -292,17 +293,19 @@ public class RecipeService {
     public void removeRecipe(int recipeId, int memberId) {
         userService.checkUser(memberId);
         RecipeDetailsResponseDto verifyRecipe = verifyRecipePost(recipeId);
+        List<RecipeImageDto> recipeImage = recipeMapper.findImageByRecipeId(recipeId);
 
         if(verifyRecipe.getRecipePath1() != null) {
-            s3Service.deleteImage(verifyRecipe.getRecipePath1());
+
+            s3Service.deleteImage( recipeImage.get(0).getSaveName());
             userService.verifyDelete(recipeMapper.deleteRecipeImage(recipeId, verifyRecipe.getRecipePath1()));
         }
         if(verifyRecipe.getRecipePath2() != null) {
-            s3Service.deleteImage(verifyRecipe.getRecipePath2());
+            s3Service.deleteImage( recipeImage.get(1).getSaveName());
             userService.verifyDelete(recipeMapper.deleteRecipeImage(recipeId, verifyRecipe.getRecipePath2()));
         }
         if(verifyRecipe.getRecipePath3() != null) {
-            s3Service.deleteImage(verifyRecipe.getRecipePath3());
+            s3Service.deleteImage( recipeImage.get(2).getSaveName());
             userService.verifyDelete(recipeMapper.deleteRecipeImage(recipeId, verifyRecipe.getRecipePath3()));
         }
 
@@ -315,16 +318,15 @@ public class RecipeService {
         userService.checkUser(memberId);
         verifyRecipeComment(commentId);
 
-        userService.verifyDelete(recipeMapper.deleteRecipeComment(recipeId, commentId));
+        userService.verifyDelete(recipeMapper.deleteRecipeComment(recipeId, commentId, memberId));
     }
 
 
 
     // 래시피 게시글 스크랩 삭제
-    public void removeRecipeScrap(int recipeId, int memberId, int scrapId) {
-        userService.checkUser(memberId);
+    public void removeRecipeScrap(int memberId, int recipeId) {
 
-        userService.verifyDelete(recipeMapper.deleteRecipeScrap(recipeId, scrapId));
+        userService.verifyDelete(recipeMapper.deleteRecipeScrap(memberId, recipeId));
     }
 
 
