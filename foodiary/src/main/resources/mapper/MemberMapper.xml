@@ -239,6 +239,15 @@
         WHERE RECIPE_COMMENT_ID = #{recipeCommentId}
     </update>
 
+    <select id="findByMemberDailyComment" resultType="com.foodiary.member.model.MemberIdResponseDto">
+        SELECT * FROM TB_DAILY_COMMENT 
+        MEMBER_ID = #{memberId}
+	</select>
+
+    <select id="findByMemberDaily" resultType="com.foodiary.member.model.MemberIdResponseDto">
+        SELECT * FROM TB_DAILY 
+        MEMBER_ID = #{memberId}
+	</select>
 
     <select id="findByNotice" resultType="com.foodiary.member.model.MemberNoticeResponseDto">
         SELECT * FROM TB_NOTICE 

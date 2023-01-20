@@ -134,10 +134,14 @@ public class MemberService {
         userService.verifyUpdate(mapper.updateMemberInfo(memberEditDto));
 
         // 데일리 테이블 작성자 업데이트
-        userService.verifyUpdate(mapper.updateDailyWriter(id, memberEditDto.getNickName()));
+        if(mapper.findByMemberDaily(id)!=null) {
+            userService.verifyUpdate(mapper.updateDailyWriter(id, memberEditDto.getNickName()));
+        }
 
         // 데일리 코멘트 테이블 작성자 업데이트
-        userService.verifyUpdate(mapper.updateDailyCommentWriter(id, memberEditDto.getNickName()));
+        if(mapper.findByMemberDailyComment(id)!=null) {
+            userService.verifyUpdate(mapper.updateDailyCommentWriter(id, memberEditDto.getNickName()));
+        }
 
         // 레시피 테이블 작성자 업데이트
         // userService.verifyUpdate(mapper.updateRecipeWriter(id, memberEditDto.getNickName()));
