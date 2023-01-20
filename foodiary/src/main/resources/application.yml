@@ -13,7 +13,9 @@ spring:
       max-file-size: 3MB
       max-request-size: 15MB
 
-
+  config:
+    import: classpath:/application-secret.yml
+    
 
 logging:
   level:
