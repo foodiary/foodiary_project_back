@@ -37,7 +37,7 @@ jobs:
 #           FOODIARY_SECRET_DIR_FILE_NAME: application-secret.yml
 #       run: echo $FOODIARY_SECRET | base64 --decode > $FOODIARY_SECRET_DIR/$FOODIARY_SECRET_DIR_FILE_NAME
       
-    - name: make application-sceret.yml
+    - name: make application-secret.yml
       run: |
         cd foodiary
         cd src/main/resources
