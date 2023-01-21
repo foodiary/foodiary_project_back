@@ -56,6 +56,19 @@ public class FoodController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Operation(summary = "menu recommend", description = "모든 회원 식단 추천 테스트")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @GetMapping("/menu/all")
+    public ResponseEntity<?> recommendWeekMenuAll() throws JsonProcessingException {
+        foodService.weekRecommendMenuAll();
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
     @Operation(summary = "verify menu recommend", description = "식단 확인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
