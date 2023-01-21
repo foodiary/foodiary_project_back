@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -79,6 +80,13 @@ public class AuthController {
         log.info("토큰 재발급에 성공하였습니다.");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/auth/time")
+    public ResponseEntity verifyTime() throws Exception {
+
+        LocalDateTime now = LocalDateTime.now();
+        return new ResponseEntity<>(now, HttpStatus.OK);
     }
 
 
