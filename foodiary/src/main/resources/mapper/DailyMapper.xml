@@ -165,7 +165,10 @@
 
 <!--    댓글 조회-->
     <select id="findAllDailyComment" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">
-        SELECT * FROM TB_DAILY_COMMENT
+        SELECT d.DAILY_COMMENT_ID, d.MEMBER_ID, d.DAILY_ID, d.DAILY_COMMENT_BODY,
+               d.DAILY_COMMENT_WRITER, d.DAILY_COMMENT_CREATE,
+               (SELECT MEMBER_PATH FROM TB_MEMBER WHERE MEMBER_ID = d.MEMBER_ID) AS MEMBER_IMAGE
+        FROM TB_DAILY_COMMENT AS d
         WHERE  DAILY_ID = #{dailyId}
     </select>
 
