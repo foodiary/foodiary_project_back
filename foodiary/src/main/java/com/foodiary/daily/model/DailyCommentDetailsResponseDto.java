@@ -22,6 +22,9 @@ public class DailyCommentDetailsResponseDto {
     @ApiModelProperty(value="회원 시퀀스", required = true)
     private int memberId;
 
+    @ApiModelProperty(value="회원 프로필", required = true)
+    private String memberImage;
+
     @ApiModelProperty(value="댓글 작성자", required = true)
     private String dailyCommentWriter;
 
