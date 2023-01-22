@@ -209,10 +209,10 @@ public class FoodService {
         String sun = now.toString();
 
         String keyMemberId = String.valueOf(memberId);
-        redisDao.setValues("memberId : " + keyMemberId + " " + sun, saveMenu + " " + sun);
+        redisDao.setValues("memberId : " + keyMemberId + " " + sun, saveMenu);
 
 
-         String findMenu = redisDao.getValues("memberId : " + keyMemberId);
+         String findMenu = redisDao.getValues("memberId : " + keyMemberId + " " + sun);
         return objectMapper.readValue(findMenu, MenuRecommendResponseDto.class);
     }
 
