@@ -21,6 +21,7 @@ import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.common.exception.MorePasswordException;
 import com.foodiary.common.exception.VaildErrorResponseDto;
 import com.foodiary.common.s3.S3Service;
+import com.foodiary.food.service.FoodService;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberCheckEmailNumRequestDto;
 import com.foodiary.member.model.MemberCheckEmailRequestDto;
@@ -33,7 +34,6 @@ import com.foodiary.member.model.MemberEditPasswordRequestDto;
 import com.foodiary.member.model.MemberEditRequestDto;
 import com.foodiary.member.model.MemberFaqDto;
 import com.foodiary.member.model.MemberFoodsResponseDto;
-import com.foodiary.member.model.MemberIdResponseDto;
 import com.foodiary.member.model.MemberImageDto;
 import com.foodiary.member.model.MemberNoticeInfoResponseDto;
 import com.foodiary.member.model.MemberNoticeResponseDto;
@@ -72,6 +72,8 @@ public class MemberService {
 
     private final JwtProvider jwtProvider;
 
+    private final FoodService foodService;
+
     public void createdMember(MemberSignUpRequestDto memberSignUpDto, MultipartFile memberImage) throws Exception {
 
         // 한번 더 입력한 비밀번호 검사
@@ -95,6 +97,7 @@ public class MemberService {
         if (memberImage == null) {
             
             userService.verifySave(mapper.saveMember(memberSignUpDto));
+            foodService.weekRecommendMenu(memberSignUpDto.getMemberId());
 
         } else {
             fileCheck(memberImage);
@@ -102,14 +105,13 @@ public class MemberService {
 
             memberSignUpDto.pathUpdate(fileMap.get("url"));
             userService.verifySave(mapper.saveMember(memberSignUpDto));
-
-            MemberDto memberDto = mapper.findByLoginId(memberSignUpDto.getLoginId()).orElseThrow(() -> new BusinessLogicException(ExceptionCode.INTERNAL_SERVER_ERROR));
+            foodService.weekRecommendMenu(memberSignUpDto.getMemberId());
 
             String fileFullName = memberImage.getOriginalFilename();
             String fileName = fileFullName.substring(0, fileFullName.lastIndexOf('.'));
             String ext = fileFullName.substring(fileFullName.lastIndexOf(".") + 1);
 
-            MemberImageDto memberImageDto = new MemberImageDto(memberDto.getMemberId(), fileName, fileFullName,
+            MemberImageDto memberImageDto = new MemberImageDto(memberSignUpDto.getMemberId(), fileName, fileFullName,
                     fileMap.get("serverName"), fileMap.get("url"), memberImage.getSize(), ext);
 
             // 이미지 저장

@@ -1,10 +1,7 @@
 package com.foodiary.common.s3;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -33,58 +31,29 @@ public class S3Service {
 
         // 파일 유효성 검사
         
-
-        File uploadFile = convert(multipartFile, dirName)
-                .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
-        return upload(uploadFile, dirName);
-
-    }
-
-    private HashMap<String, String> upload(File uploadFile, String dirName) {
-        // fileName = 폴더명 / 파일명
-        String fileName = dirName + "/" + uploadFile.getName();
-        System.out.println("파일 이름 확인 : " + fileName);
-        String uploadImageUrl = putS3(uploadFile, fileName);
-        System.out.println("업로드 url : "+ uploadImageUrl);
-        removeNewFile(uploadFile);
-
-        HashMap<String, String> fileMap = new HashMap<>();
-        fileMap.put("serverName", uploadFile.getName());
-        fileMap.put("url", uploadImageUrl);
-        
-        return fileMap;
-    }
-
-    private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, uploadFile)
-            .withCannedAcl(CannedAccessControlList.PublicRead));
-        return amazonS3Client.getUrl(bucket, fileName).toString();
-    }
-
-    private void removeNewFile(File targetFile) {
-        if(targetFile.delete()) {
-            log.info("File delete success");
-            return;
-        }
-        log.info("File delete fail");
-    }
-
-
-    private Optional<File> convert(MultipartFile multipartFile, String filePath) throws IOException {
-        if(multipartFile.isEmpty()) {
-            return Optional.empty();
-        }
+        ObjectMetadata objMeta = new ObjectMetadata();
+        objMeta.setContentType(multipartFile.getContentType());
+        objMeta.setContentLength(multipartFile.getSize());
 
         String originalFilename = multipartFile.getOriginalFilename();
         String storeFilename = createStoreFileName(originalFilename);
         System.out.println("스토어 이름 확인 : " + storeFilename);
 
-        File file = new File(System.getProperty("user.dir")+"/src/main/resources/static/"+filePath+"/"+storeFilename);
-        // File file = new File(System.getProperty("user.dir")+"/src/main/resources/static/"+storeFilename);
+        String uploadImageUrl = putS3(multipartFile, dirName+"/"+storeFilename, objMeta);
 
-        multipartFile.transferTo(file);
+        HashMap<String, String> fileMap = new HashMap<>();
+        fileMap.put("serverName", storeFilename);
+        fileMap.put("url", uploadImageUrl);
 
-        return Optional.of(file);
+        log.info("파일 업로드 성공");
+        return fileMap;
+
+    }
+
+    private String putS3(MultipartFile multipartFile, String fileName, ObjectMetadata objMeta) throws IOException{
+        amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, multipartFile.getInputStream(), objMeta)
+            .withCannedAcl(CannedAccessControlList.PublicRead));
+        return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
     // 서버에 저장되는 이름, uuid+밀리초

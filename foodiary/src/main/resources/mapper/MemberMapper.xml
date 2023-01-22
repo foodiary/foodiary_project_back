@@ -3,7 +3,7 @@
 
 <mapper namespace="com.foodiary.member.mapper.MemberMapper">
 
-    <insert id="saveMember">
+    <insert id="saveMember" parameterType="com.foodiary.member.model.MemberDto" useGeneratedKeys="true" keyProperty="memberId" keyColumn="MEMBER_ID">
         INSERT INTO TB_MEMBER (MEMBER_LOGINID, MEMBER_EMAIL, MEMBER_PASSWORD, MEMBER_NICKNAME,
         MEMBER_PROFILE, MEMBER_PATH, MEMBER_REQUIRED_TERMS, MEMBER_CHOICE_TERMS, MEMBER_CREATE, MEMBER_UPDATE)
         VALUES (#{loginId}, #{email}, #{password}, #{nickName}, #{profile}, #{memberPath}, #{requiredTerms}, #{choiceTerms}, now(), now())
