@@ -209,7 +209,7 @@ public class FoodService {
         String sun = now.toString();
 
         String keyMemberId = String.valueOf(memberId);
-        redisDao.setValues("memberId : " + keyMemberId + " " + sun, saveMenu);
+        redisDao.setValues("memberId : " + keyMemberId + " " + sun, saveMenu + " " + sun);
 
 
          String findMenu = redisDao.getValues("memberId : " + keyMemberId);
