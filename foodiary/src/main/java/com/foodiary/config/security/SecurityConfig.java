@@ -57,38 +57,7 @@ public class SecurityConfig {
 
                 .csrf().disable()
                 .authorizeRequests()
-                    .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
-
-                // 권한 필요 url
-                // "/member/password/{memberId}",
-                // "/member/password/change/jwt",
-                // "/member/{memberId}",
-                // "/member/post/daily/{memberId}",
-                // "/member/post/recipe/{memberId}",
-                // "/member/image/{memberId}",
-                // "/member/scrap/daily/{memberId}",
-                // "/member/scrap/recipe/{memberId}",
-                // "/member/like/daily/{memberId}",
-                // "/member/like/recipe/{memberId}",
-                // "/member/comment/daily/{memberId}",
-                // "/member/comment/recipe/{memberId}",
-                // "/member/comment/daily/{memberId}/{dailyId}/{dailyCommentId}",
-                // "/member/comment/recipe/{memberId}/{recipeId}/{recipeCommentId}",
-                // "/question/{memberId}",
-                // "/question/{memberId}/{questionId}",
-                // "/member/food/{memberId}",
-                // "/member/food/{memberId}/{memberFoodId}",
-                // "/member/image/{memberId}",
-                // "/member/scrap/{memberId}",
-                // "/search/daily/delete/{memberId}/{keywordId}",
-                // "/search/daily",
-                // "/search/recipe/delete/{memberId}/{keywordId}",
-                // "/search/recipe"
-
-                // 권한 필요x url
-            
-               
-
+                .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
                 .antMatchers(
                         "/dailys/**",
                         "/recipes/**",
@@ -136,7 +105,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 출처에 대해 HTTP 통신을 허용
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 출처에 대해 HTTP 통신을 허용
+        configuration.setAllowedOrigins(Arrays.asList("https://foodiary.netlify.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS")); //파라미터로 지정한 HTTP Method에 대한 HTTP 통신을 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
