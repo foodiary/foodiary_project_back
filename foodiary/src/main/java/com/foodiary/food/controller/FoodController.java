@@ -7,6 +7,7 @@ import com.foodiary.food.model.MemberFoodRequestDto;
 import com.foodiary.food.model.MenuRecommendResponseDto;
 import com.foodiary.food.service.FoodService;
 import com.foodiary.member.model.MemberFoodsResponseDto;
+import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -51,7 +52,7 @@ public class FoodController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("/menu")
-    public ResponseEntity<MenuRecommendResponseDto> recommendWeekMenu(@RequestParam int memberId) throws JsonProcessingException {
+    public ResponseEntity<MenuRecommendResponseDto> recommendWeekMenu(@ApiParam(value = "회원 시퀀스", required = true) int memberId) throws JsonProcessingException {
         MenuRecommendResponseDto response = foodService.weekRecommendMenu(memberId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
