@@ -46,6 +46,23 @@ public class DailyDetailsResponseDto {
     private int dailyComment;
 
     @Setter
+    @ApiModelProperty(value="주간 랭킹 여부", required = true)
+    private boolean weekRank;
+
+    @Setter
+    @ApiModelProperty(value="월 랭킹 여부", required = true)
+    private boolean monRank;
+
+    @Setter
+    @ApiModelProperty(value="스크랩 여부 체크", required = true)
+    private boolean scrapCheck;
+
+    @Setter
+    @ApiModelProperty(value="좋아요 여부 체크 인증", required = true)
+    private boolean likeCheck;
+
+
+    @Setter
     @ApiModelProperty(value="본인 인증", required = true)
     private boolean userCheck;
 
