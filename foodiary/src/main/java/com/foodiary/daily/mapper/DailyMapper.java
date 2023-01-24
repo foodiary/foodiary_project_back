@@ -49,6 +49,8 @@ public interface DailyMapper {
 
     Optional<Integer> findByDailyScrap(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
+    Optional<Integer> findByDailyLike(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
+
     Optional<Integer> findByMemberIdAndDailyId(@Param("memberId") int memberId, @Param("dailyId") int dailyId);
 
     Optional<Integer> findDailyIdByPath(@Param("path") String path);

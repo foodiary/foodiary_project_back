@@ -269,6 +269,18 @@ public class DailyService {
         } else {
             daily.setUserCheck(false);
         }
+        if(rankMapper.findWeekByDailyId(dailyId).isPresent()) daily.setWeekRank(true);
+        else daily.setWeekRank(false);
+
+        if(rankMapper.findMonByDailyId(dailyId).isPresent()) daily.setMonRank(true);
+        else daily.setMonRank(false);
+
+        if(dailyMapper.findByDailyScrap(dailyId, memberId).isPresent()) daily.setScrapCheck(true);
+        else daily.setScrapCheck(false);
+
+        if(dailyMapper.findByDailyLike(dailyId, memberId).isPresent()) daily.setLikeCheck(true);
+        else daily.setLikeCheck(false);
+
         return daily;
     }
 
