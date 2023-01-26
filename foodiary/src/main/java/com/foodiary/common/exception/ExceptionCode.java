@@ -47,7 +47,7 @@ public enum ExceptionCode {
     MYPAGE_NOT_FOUND(404, "게시글이 없습니다."),
     FILE_NOT_FOUND(404, "파일이 없습니다."),
     POST_NOT_EXISTS(404, "작성한 게시글이 없습니다."),
-    RECOMMEND_NOT_FOUND(404, "게시글이 없습니다.")
+    RECOMMEND_NOT_FOUND(404, "기록된 추천음식이 없습니다.")
     ;
 
 
