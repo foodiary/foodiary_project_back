@@ -91,7 +91,7 @@ public class SecurityConfig {
 
                 .antMatchers(
                         "/dailys/**",
-                        "/recipes/**",
+                        "/search/daily/result",
                         "/food",
                         "/auth/login",
                         "/oauth/**",
