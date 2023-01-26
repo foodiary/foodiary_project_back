@@ -187,6 +187,13 @@
     </select>
 
 
+    <!--    좋아요 유무 확인용-->
+    <select id="findByDailyLike" resultType="Integer">
+        SELECT * FROM TB_DAILY_LIKE
+        WHERE  DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId}
+    </select>
+
+
 <!--    게시글 이미지 가져오기-->
     <select id="findByDailyImage" resultType="String">
         SELECT DAILY_FILE_PATH FROM TB_DAILY_IMAGE

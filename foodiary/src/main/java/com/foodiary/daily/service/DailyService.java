@@ -69,11 +69,12 @@ public class DailyService {
         } else {
 
             DailyImageDto dailyThumbnail = fileHandler(thumbnail, dailyWriteRequestDto.getMemberId());
-            for(MultipartFile file : dailyImageList) {
-                DailyImageDto saveImage = fileHandler(file, dailyWriteRequestDto.getMemberId());
-                saveImageList.add(saveImage);
+            if(dailyImageList != null && dailyImageList.size() > 0){
+                for(MultipartFile file : dailyImageList) {
+                    DailyImageDto saveImage = fileHandler(file, dailyWriteRequestDto.getMemberId());
+                    saveImageList.add(saveImage);
+                }
             }
-
             dailyWriteRequestDto.setWriter(member.getMemberNickName());
             dailyWriteRequestDto.setThumbnail(dailyThumbnail.getDailyFilePath());
             userService.verifySave(dailyMapper.saveDaily(dailyWriteRequestDto));
@@ -84,10 +85,12 @@ public class DailyService {
             dailyThumbnail.setDailyId(dailyId);
             userService.verifySave(dailyMapper.saveImage(dailyThumbnail));
 
-            saveImageList.forEach(image -> {
-                image.setDailyId(dailyId);
-                userService.verifySave(dailyMapper.saveImage(image));
-            });
+            if(saveImageList.size() > 0) {
+                saveImageList.forEach(image -> {
+                    image.setDailyId(dailyId);
+                    userService.verifySave(dailyMapper.saveImage(image));
+                });
+            }
         }
     }
 
@@ -269,6 +272,18 @@ public class DailyService {
         } else {
             daily.setUserCheck(false);
         }
+        if(rankMapper.findWeekByDailyId(dailyId).isPresent()) daily.setWeekRank(true);
+        else daily.setWeekRank(false);
+
+        if(rankMapper.findMonByDailyId(dailyId).isPresent()) daily.setMonRank(true);
+        else daily.setMonRank(false);
+
+        if(dailyMapper.findByDailyScrap(dailyId, memberId).isPresent()) daily.setScrapCheck(true);
+        else daily.setScrapCheck(false);
+
+        if(dailyMapper.findByDailyLike(dailyId, memberId).isPresent()) daily.setLikeCheck(true);
+        else daily.setLikeCheck(false);
+
         return daily;
     }
 
