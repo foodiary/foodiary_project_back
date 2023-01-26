@@ -72,6 +72,7 @@ public class SecurityConfig {
                         "/member/email/send",
                         "/member/email/send/confirm",
                         "/member/signup",
+                        "/member/search/**",
                         "/notice",
                         "/notice/{noticeId}",
                         "/faq",

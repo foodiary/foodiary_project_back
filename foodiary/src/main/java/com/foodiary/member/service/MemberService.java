@@ -40,6 +40,7 @@ import com.foodiary.member.model.MemberNoticeResponseDto;
 import com.foodiary.member.model.MemberOtherMemberResponseDto;
 import com.foodiary.member.model.MemberPostLikeResponseDto;
 import com.foodiary.member.model.MemberPostScrapResponseDto;
+import com.foodiary.member.model.MemberProfileResponseDto;
 import com.foodiary.member.model.MemberQuestionDetailResponseDto;
 import com.foodiary.member.model.MemberQuestionEditResponseDto;
 import com.foodiary.member.model.MemberQuestionImageDto;
@@ -408,16 +409,20 @@ public class MemberService {
     }
 
     // 다른 사람 프로필 조회 (게시글, 닉네임, 프로필 이미지, 프로필 메세지) 
-    public List<MemberOtherMemberResponseDto> findMember(int memberId) {
+    public MemberOtherMemberResponseDto findMember(int memberId) {
 
         MemberDto memberDto = mapper.findByProfile(memberId).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         if(memberDto.getMemberYn().equals("Y")) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_EXISTS);
         }
-        List<MemberOtherMemberResponseDto> dailyList = mapper.findByMember(memberId);
+        List<MemberDailyResponseDto> memberDailyResponseDtos = mapper.findByDaily(memberId);
 
-        return dailyList;
+        MemberProfileResponseDto member = new MemberProfileResponseDto(memberDto.getMemberNickName(), memberDto.getMemberProfile(), memberDto.getMemberPath());
+
+        MemberOtherMemberResponseDto memberOtherMemberResponseDto = new MemberOtherMemberResponseDto(memberId, member, memberDailyResponseDtos);
+
+        return memberOtherMemberResponseDto;
     }
 
     // 레시피 본인이 쓴 글
