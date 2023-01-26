@@ -677,6 +677,9 @@ public class MemberService {
     public List<MemberFoodsResponseDto> foods(int memberId) {
         userService.checkUser(memberId);
 
+        if(mapper.findByFoods(memberId).size()==0) {
+            throw new BusinessLogicException(ExceptionCode.RECOMMEND_NOT_FOUND);
+        }
         return mapper.findByFoods(memberId);
     }
 
