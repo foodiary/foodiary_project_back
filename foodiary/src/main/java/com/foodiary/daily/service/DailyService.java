@@ -56,7 +56,7 @@ public class DailyService {
     }
 
     // 하루 식단 게시글 추가
-    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile thumbnail, List<MultipartFile> dailyImageList) throws IOException {
+    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, List<MultipartFile> dailyImageList) throws IOException {
 
         userService.checkUser(dailyWriteRequestDto.getMemberId());
         MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
@@ -64,11 +64,10 @@ public class DailyService {
 
         List<DailyImageDto> saveImageList = new ArrayList<>();
 
-        if(thumbnail == null) {
+        if(dailyImageList.size() < 1) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
 
-            DailyImageDto dailyThumbnail = fileHandler(thumbnail, dailyWriteRequestDto.getMemberId());
             if(dailyImageList != null && dailyImageList.size() > 0){
                 for(MultipartFile file : dailyImageList) {
                     DailyImageDto saveImage = fileHandler(file, dailyWriteRequestDto.getMemberId());
@@ -76,14 +75,12 @@ public class DailyService {
                 }
             }
             dailyWriteRequestDto.setWriter(member.getMemberNickName());
-            dailyWriteRequestDto.setThumbnail(dailyThumbnail.getDailyFilePath());
+            dailyWriteRequestDto.setThumbnail(saveImageList.get(0).getDailyFilePath());
             userService.verifySave(dailyMapper.saveDaily(dailyWriteRequestDto));
 
             int dailyId = dailyMapper.findDailyIdByPath(dailyWriteRequestDto.getThumbnail())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
 
-            dailyThumbnail.setDailyId(dailyId);
-            userService.verifySave(dailyMapper.saveImage(dailyThumbnail));
 
             if(saveImageList.size() > 0) {
                 saveImageList.forEach(image -> {
