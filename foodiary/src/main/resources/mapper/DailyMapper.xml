@@ -88,7 +88,7 @@
 
     <!--    게시판 조회-->
     <select id="findAll" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_VIEW, d.DAILY_CREATE, d.DAILY_THUMBNAIL,
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_VIEW, d.DAILY_CREATE, d.DAILY_WRITER, d.DAILY_THUMBNAIL,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -98,7 +98,7 @@
 
 <!--    게시판 조회(일, 주, 월)-->
     <select id="findAllCreate" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_VIEW, d.DAILY_CREATE, d.DAILY_THUMBNAIL,
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_VIEW, d.DAILY_CREATE, d.DAILY_WRITER, d.DAILY_THUMBNAIL,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -109,7 +109,7 @@
 
     <!--    게시판 최신글 10개 조회-->
     <select id="findTopDaily" resultType="com.foodiary.daily.model.DailysResponseDto">
-        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_VIEW, d.DAILY_CREATE, d.DAILY_THUMBNAIL,
+        SELECT d.DAILY_ID, d.DAILY_TITLE, d.DAILY_VIEW, d.DAILY_CREATE, d.DAILY_WRITER, d.DAILY_THUMBNAIL,
                (SELECT COUNT(*) FROM TB_DAILY_LIKE WHERE DAILY_ID = d.DAILY_ID) AS DAILY_LIKE,
                (SELECT COUNT(*) FROM TB_DAILY_COMMENT WHERE DAILY_ID = d.DAILY_ID) AS DAILY_COMMENT
         FROM TB_DAILY AS d
@@ -164,13 +164,24 @@
 
 
 <!--    댓글 조회-->
-    <select id="findAllDailyComment" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">
-        SELECT d.DAILY_COMMENT_ID, d.MEMBER_ID, d.DAILY_ID, d.DAILY_COMMENT_BODY,
-               d.DAILY_COMMENT_WRITER, d.DAILY_COMMENT_CREATE,
-               (SELECT MEMBER_PATH FROM TB_MEMBER WHERE MEMBER_ID = d.MEMBER_ID) AS MEMBER_IMAGE
-        FROM TB_DAILY_COMMENT AS d
+<!--    <select id="findAllDailyComments" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">-->
+<!--        SELECT d.DAILY_COMMENT_ID, d.MEMBER_ID, d.DAILY_ID, d.DAILY_COMMENT_BODY,-->
+<!--               d.DAILY_COMMENT_WRITER, d.DAILY_COMMENT_CREATE,-->
+<!--               (SELECT MEMBER_PATH FROM TB_MEMBER WHERE MEMBER_ID = d.MEMBER_ID) AS MEMBER_IMAGE-->
+<!--        FROM TB_DAILY_COMMENT AS d-->
+<!--        WHERE  DAILY_ID = #{dailyId}-->
+<!--        ORDER BY d.DAILY_COMMENT_ID DESC-->
+<!--    </select>-->
+
+
+    <select id="findAllDailyComments" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">
+        SELECT *
+        FROM TB_DAILY_COMMENT
         WHERE  DAILY_ID = #{dailyId}
+        ORDER BY DAILY_COMMENT_ID DESC
     </select>
+
+
 
 
 <!--    댓글 삭제전 null값 확인용-->

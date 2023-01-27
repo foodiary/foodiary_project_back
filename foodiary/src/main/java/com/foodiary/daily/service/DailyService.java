@@ -56,7 +56,7 @@ public class DailyService {
     }
 
     // 하루 식단 게시글 추가
-    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile thumbnail, List<MultipartFile> dailyImageList) throws IOException {
+    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, List<MultipartFile> dailyImageList) throws IOException {
 
         userService.checkUser(dailyWriteRequestDto.getMemberId());
         MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
@@ -64,11 +64,10 @@ public class DailyService {
 
         List<DailyImageDto> saveImageList = new ArrayList<>();
 
-        if(thumbnail == null) {
+        if(dailyImageList.size() < 1) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
 
-            DailyImageDto dailyThumbnail = fileHandler(thumbnail, dailyWriteRequestDto.getMemberId());
             if(dailyImageList != null && dailyImageList.size() > 0){
                 for(MultipartFile file : dailyImageList) {
                     DailyImageDto saveImage = fileHandler(file, dailyWriteRequestDto.getMemberId());
@@ -76,14 +75,12 @@ public class DailyService {
                 }
             }
             dailyWriteRequestDto.setWriter(member.getMemberNickName());
-            dailyWriteRequestDto.setThumbnail(dailyThumbnail.getDailyFilePath());
+            dailyWriteRequestDto.setThumbnail(saveImageList.get(0).getDailyFilePath());
             userService.verifySave(dailyMapper.saveDaily(dailyWriteRequestDto));
 
             int dailyId = dailyMapper.findDailyIdByPath(dailyWriteRequestDto.getThumbnail())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
 
-            dailyThumbnail.setDailyId(dailyId);
-            userService.verifySave(dailyMapper.saveImage(dailyThumbnail));
 
             if(saveImageList.size() > 0) {
                 saveImageList.forEach(image -> {
@@ -140,13 +137,13 @@ public class DailyService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         //썸네일을 변경한다는 요청을 하였는데 변경할 이미지를 선택하지 않거나 새로운 파일을 추가 안했을 경우 예외처리
-        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) && (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getThumbnailPath() == null)) {
-            throw new BusinessLogicException(ExceptionCode.THUMBNAUL_BAD_REQUEST);
-        }
+//        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) && (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getThumbnailPath() == null)) {
+//            throw new BusinessLogicException(ExceptionCode.THUMBNAUL_BAD_REQUEST);
+//        }
 
               verifyDailyPost(dailyEditRequestDto.getDailyId());
         List<DailyImageDto> imageList = dailyMapper.findAllImageDtoList(dailyEditRequestDto.getDailyId()); // 기존 저장된 이미지 리스트
-        List<DailyImageDto> newImageList = new ArrayList<>();
+        List<DailyImageDto> newImageList = new ArrayList<>(); // s3에 세이브한 이미지 추가할 리스트
         List<String> deletePathList = dailyEditRequestDto.getDeletePath(); // 삭제할 이미지 경로 리스트
 
        // 삭제할 이미지 경로가 없을경우
@@ -168,6 +165,9 @@ public class DailyService {
             }
             // 삭제할 이미지 경로가 있는 경우
         } else {
+            if(imageList.size() - deletePathList.size() < 1){
+                throw new BusinessLogicException(ExceptionCode.IMAGE_UPDATE_BAD_REQUEST);
+            }
             List<DailyImageDto> deleteImageList = new ArrayList<>();
             // 기존 이미지 리스트에서 삭제할 이미지들만 추출
             for(DailyImageDto image : imageList) {
@@ -202,19 +202,31 @@ public class DailyService {
                     s3Service.deleteImage(url);
                     dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
                 }
+                if(deletePathList.size() == imageList.size()){
+                    dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId());
+                }
+            } else {
+                for (DailyImageDto image : deleteImageList) {
+                    String url = "daily/" + image.getDailyFileSaveName();
+                    s3Service.deleteImage(url);
+                    dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
+                }
+                String updateThumbnailPath = dailyMapper.findAllImageDtoList(dailyEditRequestDto.getDailyId()).get(0).getDailyFilePath();
+                dailyMapper.updateThumbnailPath(updateThumbnailPath, dailyEditRequestDto.getDailyId());
             }
+            
         }
         // 썸네일 이미지를 교체할 경우
-        if(dailyEditRequestDto.isThumbnailYn()){
-            // 기존 이미지에서 썸네일 대체할 경우
-            if(dailyEditRequestDto.getThumbnailPath() != null) {
-                userService.verifyUpdate(dailyMapper.updateThumbnailPath(dailyEditRequestDto.getThumbnailPath(), dailyEditRequestDto.getDailyId()));
-
-                // 새로운 파일에서 썸네일 대체할 경우
-            } else {
-                userService.verifyUpdate(dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId()));
-            }
-        }
+//        if(dailyEditRequestDto.isThumbnailYn()){
+//            // 기존 이미지에서 썸네일 대체할 경우
+//            if(dailyEditRequestDto.getThumbnailPath() != null) {
+//                userService.verifyUpdate(dailyMapper.updateThumbnailPath(dailyEditRequestDto.getThumbnailPath(), dailyEditRequestDto.getDailyId()));
+//
+//                // 새로운 파일에서 썸네일 대체할 경우
+//            } else {
+//                userService.verifyUpdate(dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId()));
+//            }
+//        }
         userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
     }
 
@@ -222,6 +234,8 @@ public class DailyService {
     // 하루 식단 댓글 수정
     public void modifyDailyComment(DailyCommentEditRequestDto dailyCommentEditRequestDto) {
         userService.checkUser(dailyCommentEditRequestDto.getMemberId());
+        dailyMapper.findByDailyComment(dailyCommentEditRequestDto.getDailyId())
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
 
         userService.verifyUpdate(dailyMapper.updateDailyComment(dailyCommentEditRequestDto));
     }
@@ -293,16 +307,16 @@ public class DailyService {
     public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId, int memberId) {
         verifyDailyPost(dailyId);
 
-        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComment(dailyId);
-        if (commentList.size() == 0) {
+        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComments(dailyId);
+        if (commentList.size() <= 0) {
             throw new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND);
         }
-        return commentList.stream()
-                    .map(comment -> {
-                        if(comment.getMemberId() == memberId) comment.setUserCheck(true);
-                        else comment.setUserCheck(false);
-                        return comment;
-                    }).collect(Collectors.toList());
+
+        for(DailyCommentDetailsResponseDto comment : commentList) {
+            if (comment.getMemberId() == memberId) comment.setUserCheck(true);
+            else comment.setUserCheck(false);
+        }
+        return commentList;
     }
 
     
