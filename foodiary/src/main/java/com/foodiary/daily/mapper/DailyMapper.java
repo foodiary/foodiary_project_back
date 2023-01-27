@@ -55,7 +55,7 @@ public interface DailyMapper {
 
     Optional<Integer> findDailyIdByPath(@Param("path") String path);
 
-    List<DailyCommentDetailsResponseDto> findAllDailyComment(@Param("dailyId") int dailyId);
+    List<DailyCommentDetailsResponseDto> findAllDailyComments(@Param("dailyId") int dailyId);
 
     List<DailysResponseDto> findAllCreate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 

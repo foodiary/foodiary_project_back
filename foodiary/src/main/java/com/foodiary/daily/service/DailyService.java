@@ -56,7 +56,7 @@ public class DailyService {
     }
 
     // 하루 식단 게시글 추가
-    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, MultipartFile thumbnail, List<MultipartFile> dailyImageList) throws IOException {
+    public void addDaily(DailyWriteRequestDto dailyWriteRequestDto, List<MultipartFile> dailyImageList) throws IOException {
 
         userService.checkUser(dailyWriteRequestDto.getMemberId());
         MemberDto member = memberMapper.findByMemberId(dailyWriteRequestDto.getMemberId())
@@ -64,11 +64,10 @@ public class DailyService {
 
         List<DailyImageDto> saveImageList = new ArrayList<>();
 
-        if(thumbnail == null) {
+        if(dailyImageList.size() < 1) {
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         } else {
 
-            DailyImageDto dailyThumbnail = fileHandler(thumbnail, dailyWriteRequestDto.getMemberId());
             if(dailyImageList != null && dailyImageList.size() > 0){
                 for(MultipartFile file : dailyImageList) {
                     DailyImageDto saveImage = fileHandler(file, dailyWriteRequestDto.getMemberId());
@@ -76,14 +75,12 @@ public class DailyService {
                 }
             }
             dailyWriteRequestDto.setWriter(member.getMemberNickName());
-            dailyWriteRequestDto.setThumbnail(dailyThumbnail.getDailyFilePath());
+            dailyWriteRequestDto.setThumbnail(saveImageList.get(0).getDailyFilePath());
             userService.verifySave(dailyMapper.saveDaily(dailyWriteRequestDto));
 
             int dailyId = dailyMapper.findDailyIdByPath(dailyWriteRequestDto.getThumbnail())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.POST_NOT_FOUND));
 
-            dailyThumbnail.setDailyId(dailyId);
-            userService.verifySave(dailyMapper.saveImage(dailyThumbnail));
 
             if(saveImageList.size() > 0) {
                 saveImageList.forEach(image -> {
@@ -222,6 +219,8 @@ public class DailyService {
     // 하루 식단 댓글 수정
     public void modifyDailyComment(DailyCommentEditRequestDto dailyCommentEditRequestDto) {
         userService.checkUser(dailyCommentEditRequestDto.getMemberId());
+        dailyMapper.findByDailyComment(dailyCommentEditRequestDto.getDailyId())
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
 
         userService.verifyUpdate(dailyMapper.updateDailyComment(dailyCommentEditRequestDto));
     }
@@ -293,16 +292,16 @@ public class DailyService {
     public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId, int memberId) {
         verifyDailyPost(dailyId);
 
-        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComment(dailyId);
-        if (commentList.size() == 0) {
+        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComments(dailyId);
+        if (commentList.size() <= 0) {
             throw new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND);
         }
-        return commentList.stream()
-                    .map(comment -> {
-                        if(comment.getMemberId() == memberId) comment.setUserCheck(true);
-                        else comment.setUserCheck(false);
-                        return comment;
-                    }).collect(Collectors.toList());
+
+        for(DailyCommentDetailsResponseDto comment : commentList) {
+            if (comment.getMemberId() == memberId) comment.setUserCheck(true);
+            else comment.setUserCheck(false);
+        }
+        return commentList;
     }
 
     

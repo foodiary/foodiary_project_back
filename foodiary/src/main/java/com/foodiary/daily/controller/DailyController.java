@@ -49,14 +49,13 @@ public class DailyController {
     public ResponseEntity<?> dailyWrite(
         @RequestPart(value = "dailyWrite") @Valid DailyWriteRequestDto dailyWriteRequestDto,
         @Parameter(description = "사진 이미지")
-        @RequestPart(value = "thumbnail", required = true) MultipartFile dailyImage,
         @RequestPart(value = "dailyImage", required = false) List<MultipartFile> dailyImageList
     ) throws Exception {
 
-        if(dailyImage == null){
+        if(dailyImageList.size() < 1){
             throw new BusinessLogicException(ExceptionCode.IMAGE_BAD_REQUEST);
         }
-        dailyService.addDaily(dailyWriteRequestDto, dailyImage, dailyImageList);
+        dailyService.addDaily(dailyWriteRequestDto, dailyImageList);
 
         return new ResponseEntity<>("OK", HttpStatus.CREATED);
     }
@@ -261,20 +260,18 @@ public class DailyController {
             @ApiResponse(responseCode = "404", description = "NOT FOUND"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
-    @ResponseBody
-    @GetMapping(value = "/dailys/comment")
+    @GetMapping("/dailys/comment")
     public ResponseEntity<?> dailyCommentDetails(
-        @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
-        @ApiParam(value = "회원 시퀀스", required = false) @Positive int memberId,
-        @ApiParam(value = "댓글 페이지", required = true) @Positive int page
+         @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
+         @ApiParam(value = "회원 시퀀스", required = false) @Positive int memberId,
+         @ApiParam(value = "댓글 페이지", required = true) @Positive int page
     ) throws Exception {
         if(page <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
-
-        PageHelper.startPage(page, 10);
-
+        PageHelper.startPage(1, 10);
         List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId, memberId);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
