@@ -40,9 +40,9 @@
         WHERE RANK_MONTH_DAILY_ID = ${dailyId}
     </select>
 
-
-
-
+    <select id="findRank" resultType="RankListDto">
+        SELECT * FROM TB_COMMON
+    </select>
 
     <insert id="weekWrite">
         INSERT INTO TB_COMMON (RANK_WEEK_DAILY_ID, RANK_DAILY_LIKE) (

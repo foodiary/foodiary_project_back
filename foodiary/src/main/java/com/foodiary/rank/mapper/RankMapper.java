@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.foodiary.rank.model.RankListDto;
 import com.foodiary.rank.model.RanksResponseDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,6 +23,8 @@ public interface RankMapper {
     Optional<Integer> findWeekByDailyId(@Param("dailyId") int dailyId);
 
     Optional<Integer> findMonByDailyId(@Param("dailyId") int dailyId);
+
+    List<RankListDto> findRank();
 
     int weekWrite();
 

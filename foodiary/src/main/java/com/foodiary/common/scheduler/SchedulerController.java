@@ -11,6 +11,7 @@ import com.foodiary.food.service.FoodService;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.rank.mapper.RankMapper;
+import com.foodiary.rank.model.RankListDto;
 import com.foodiary.rank.model.RanksResponseDto;
 import com.foodiary.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +37,32 @@ public class SchedulerController {
     
     @Transactional(rollbackFor = BusinessLogicException.class)
     @Scheduled(cron="0 0 0/1 * * *")
-    // @Scheduled(cron="*/10 * *    * * *") // 테스트용
+    // @Scheduled(cron="*/10 * * * * *") // 테스트용
     public void scheduler() {
 
         log.info("랭킹 작업 실행");
+        
+        List<RankListDto> rankdDtos = mapper.findRank();
 
-        int deleteCheck = mapper.rankDelete();
-        rankSize(deleteCheck);
-        log.info("deleteCheck {}",deleteCheck);
+        log.info("allSize {}",rankdDtos.size());
+
+        if(rankdDtos.size()!=0) {
+            int deleteCheck = mapper.rankDelete();
+            log.info("deleteCheck {}",deleteCheck);
+
+            if(deleteCheck < rankdDtos.size()) {
+                log.info("Before ReAllSize {}",rankdDtos.size());
+
+                int reDeleteCheck = mapper.rankDelete();
+                log.info("reDeleteCheck {}",reDeleteCheck);
+                
+                List<RankListDto> reRankdDtos = mapper.findRank();
+
+                log.info("after ReAllSize {}",reRankdDtos.size());
+                rankSize(reDeleteCheck);
+
+            }
+        }
 
         int weekCheck = mapper.weekWrite();
         rankSize(weekCheck);
@@ -53,12 +72,9 @@ public class SchedulerController {
         rankSize(monthCheck);
         log.info("monthCheck {}",monthCheck);
 
-        List<RanksResponseDto> month = mapper.rankMonthList();
-
-        List<RanksResponseDto> week = mapper.rankWeekList();
+        List<RankListDto> lastRankdDtos = mapper.findRank();
          
-        log.info("먼스 테스트 "+month.size());
-        log.info("위크 테스트 "+week.size());
+        log.info("last ReAllSize {}",lastRankdDtos.size());
 
     }
 
