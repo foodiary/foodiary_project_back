@@ -24,6 +24,7 @@ public enum ExceptionCode {
     INTERNAL_SERVER_ERROR(500, "INTERNAL SERVER ERROR"),
 
     IMAGE_BAD_REQUEST(400, "이미지를 한장 이상 올려주세요"),
+    IMAGE_UPDATE_BAD_REQUEST(400, "게시판에 이미지가 한 장 이상 있어야합니다."),
     IMAGE_ERROR(400, "이미지를 5개 이하로 올려주세요."),
     THUMBNAUL_BAD_REQUEST(400, "변경할 썸네일의 이미지 경로 또는 파일을 올려주세요"),
     FILE_BAD_REQUEST(400, "해당 파일의 확장자를 올릴수 없습니다."),

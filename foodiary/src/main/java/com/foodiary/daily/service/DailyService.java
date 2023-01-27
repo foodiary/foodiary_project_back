@@ -165,6 +165,9 @@ public class DailyService {
             }
             // 삭제할 이미지 경로가 있는 경우
         } else {
+            if(imageList.size() - deletePathList.size() < 1){
+                throw new BusinessLogicException(ExceptionCode.IMAGE_UPDATE_BAD_REQUEST);
+            }
             List<DailyImageDto> deleteImageList = new ArrayList<>();
             // 기존 이미지 리스트에서 삭제할 이미지들만 추출
             for(DailyImageDto image : imageList) {
@@ -202,7 +205,16 @@ public class DailyService {
                 if(deletePathList.size() == imageList.size()){
                     dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId());
                 }
+            } else {
+                for (DailyImageDto image : deleteImageList) {
+                    String url = "daily/" + image.getDailyFileSaveName();
+                    s3Service.deleteImage(url);
+                    dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
+                }
+                String updateThumbnailPath = dailyMapper.findAllImageDtoList(dailyEditRequestDto.getDailyId()).get(0).getDailyFilePath();
+                dailyMapper.updateThumbnailPath(updateThumbnailPath, dailyEditRequestDto.getDailyId());
             }
+            
         }
         // 썸네일 이미지를 교체할 경우
 //        if(dailyEditRequestDto.isThumbnailYn()){
