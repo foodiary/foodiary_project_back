@@ -4,13 +4,14 @@ import com.sendgrid.*;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.*;
 
-// import com.sendgrid.helpers.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmailService {
 
@@ -21,6 +22,7 @@ public class EmailService {
 
       // Email to = new Email(email);
       // Email from = new Email("em6052.www.foodiary.store");
+      log.info("메일 발송 이메일과 타입 {}, {}", email, type);
       Mail mail = new Mail();
       mail.setFrom(new Email("foodiary@em6052.www.foodiary.store"));
       Personalization personalization = new Personalization();
@@ -50,9 +52,9 @@ public class EmailService {
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
         Response response = sg.api(request);
-        System.out.println("스테이터스 코드"+response.getStatusCode());
-        System.out.println("바디 내용"+response.getBody());
-        System.out.println("헤더 내용"+response.getHeaders());
+        log.info("스테이터스 코드 {}",response.getStatusCode());
+        log.info("바디 내용 {}",response.getBody());
+        log.info("헤더 내용 {}",response.getHeaders());
       } catch (IOException ex) {
         throw ex;
       }
