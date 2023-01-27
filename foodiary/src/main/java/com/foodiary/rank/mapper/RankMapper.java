@@ -23,10 +23,10 @@ public interface RankMapper {
 
     Optional<Integer> findMonByDailyId(@Param("dailyId") int dailyId);
 
-    void weekWrite();
+    int weekWrite();
 
-    void monthWrite();
+    int monthWrite();
 
-    void rankDelete();
+    int rankDelete();
 
 }

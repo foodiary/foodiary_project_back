@@ -11,11 +11,13 @@ import com.foodiary.food.service.FoodService;
 import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.rank.mapper.RankMapper;
+import com.foodiary.rank.model.RanksResponseDto;
 import com.foodiary.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,16 +34,38 @@ public class SchedulerController {
     private final FoodService foodService;
     private final RedisDao redisDao;
     
+    @Transactional(rollbackFor = BusinessLogicException.class)
     @Scheduled(cron="0 0 0/1 * * *")
+    // @Scheduled(cron="*/10 * *    * * *") // 테스트용
     public void scheduler() {
 
         log.info("랭킹 작업 실행");
 
-        mapper.rankDelete();
+        int deleteCheck = mapper.rankDelete();
+        rankSize(deleteCheck);
+        log.info("deleteCheck {}",deleteCheck);
 
-        mapper.weekWrite();
-        mapper.monthWrite();
+        int weekCheck = mapper.weekWrite();
+        rankSize(weekCheck);
+        log.info("weekCheck {}",weekCheck);
 
+        int monthCheck = mapper.monthWrite();
+        rankSize(monthCheck);
+        log.info("monthCheck {}",monthCheck);
+
+        List<RanksResponseDto> month = mapper.rankMonthList();
+
+        List<RanksResponseDto> week = mapper.rankWeekList();
+         
+        log.info("먼스 테스트 "+month.size());
+        log.info("위크 테스트 "+week.size());
+
+    }
+
+    private void rankSize(int size) {
+        if(size==0) {
+            throw new BusinessLogicException(ExceptionCode.RANK_ERROR);
+        }
     }
 
     @Scheduled(cron="0 0 * * * MON")

@@ -355,7 +355,7 @@ public class MemberController {
     })
     @ResponseBody
     @GetMapping(value = "/member/search/{memberId}")
-    public ResponseEntity<List<MemberOtherMemberResponseDto>> memberDetailOther(
+    public ResponseEntity<MemberOtherMemberResponseDto> memberDetailOther(
         @PathVariable @ApiParam(value = "조회할 회원의 시퀀스", required = true)int memberId,
         @ApiParam(value="페이지", required = true) @Positive int page
     ) throws Exception {
@@ -364,9 +364,9 @@ public class MemberController {
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
         PageHelper.startPage(page, 10);
-        List<MemberOtherMemberResponseDto> dailyList = memberService.findMember(memberId);
+        MemberOtherMemberResponseDto memberOtherMemberResponseDto = memberService.findMember(memberId);
         
-        return new ResponseEntity<>(dailyList, HttpStatus.OK);
+        return new ResponseEntity<>(memberOtherMemberResponseDto, HttpStatus.OK);
     }
 
     @Operation(summary = "member post view", description = "본인이 쓴 하루 식단 게시글 조회")
