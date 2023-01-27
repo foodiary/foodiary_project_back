@@ -137,13 +137,13 @@ public class DailyService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
         //썸네일을 변경한다는 요청을 하였는데 변경할 이미지를 선택하지 않거나 새로운 파일을 추가 안했을 경우 예외처리
-        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) && (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getThumbnailPath() == null)) {
-            throw new BusinessLogicException(ExceptionCode.THUMBNAUL_BAD_REQUEST);
-        }
+//        if((dailyEditRequestDto.isThumbnailYn() && dailyImage == null) && (dailyEditRequestDto.isThumbnailYn() && dailyEditRequestDto.getThumbnailPath() == null)) {
+//            throw new BusinessLogicException(ExceptionCode.THUMBNAUL_BAD_REQUEST);
+//        }
 
               verifyDailyPost(dailyEditRequestDto.getDailyId());
         List<DailyImageDto> imageList = dailyMapper.findAllImageDtoList(dailyEditRequestDto.getDailyId()); // 기존 저장된 이미지 리스트
-        List<DailyImageDto> newImageList = new ArrayList<>();
+        List<DailyImageDto> newImageList = new ArrayList<>(); // s3에 세이브한 이미지 추가할 리스트
         List<String> deletePathList = dailyEditRequestDto.getDeletePath(); // 삭제할 이미지 경로 리스트
 
        // 삭제할 이미지 경로가 없을경우
@@ -199,19 +199,22 @@ public class DailyService {
                     s3Service.deleteImage(url);
                     dailyMapper.deleteDailyImage(dailyEditRequestDto.getDailyId(), image.getDailyFilePath());
                 }
+                if(deletePathList.size() == imageList.size()){
+                    dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId());
+                }
             }
         }
         // 썸네일 이미지를 교체할 경우
-        if(dailyEditRequestDto.isThumbnailYn()){
-            // 기존 이미지에서 썸네일 대체할 경우
-            if(dailyEditRequestDto.getThumbnailPath() != null) {
-                userService.verifyUpdate(dailyMapper.updateThumbnailPath(dailyEditRequestDto.getThumbnailPath(), dailyEditRequestDto.getDailyId()));
-
-                // 새로운 파일에서 썸네일 대체할 경우
-            } else {
-                userService.verifyUpdate(dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId()));
-            }
-        }
+//        if(dailyEditRequestDto.isThumbnailYn()){
+//            // 기존 이미지에서 썸네일 대체할 경우
+//            if(dailyEditRequestDto.getThumbnailPath() != null) {
+//                userService.verifyUpdate(dailyMapper.updateThumbnailPath(dailyEditRequestDto.getThumbnailPath(), dailyEditRequestDto.getDailyId()));
+//
+//                // 새로운 파일에서 썸네일 대체할 경우
+//            } else {
+//                userService.verifyUpdate(dailyMapper.updateThumbnailPath(newImageList.get(0).getDailyFilePath(), dailyEditRequestDto.getDailyId()));
+//            }
+//        }
         userService.verifyUpdate(dailyMapper.updateDaily(dailyEditRequestDto));
     }
 

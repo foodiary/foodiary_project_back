@@ -29,9 +29,9 @@ public class DailyEditRequestDto {
     @ApiModelProperty(value="삭제할 이미지 경로", required = false)
     List<String> deletePath;
 
-    @ApiModelProperty(value="썸네일 변경 여부", required = true)
-    @Setter private boolean thumbnailYn;
-
-    @ApiModelProperty(value="변경할 썸네일 이미지 경로", required = false)
-    @Setter private String thumbnailPath;
+//    @ApiModelProperty(value="썸네일 변경 여부", required = true)
+//    @Setter private boolean thumbnailYn;
+//
+//    @ApiModelProperty(value="변경할 썸네일 이미지 경로", required = false)
+//    @Setter private String thumbnailPath;
 }
