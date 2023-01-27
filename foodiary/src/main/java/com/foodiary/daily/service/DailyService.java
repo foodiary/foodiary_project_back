@@ -222,6 +222,8 @@ public class DailyService {
     // 하루 식단 댓글 수정
     public void modifyDailyComment(DailyCommentEditRequestDto dailyCommentEditRequestDto) {
         userService.checkUser(dailyCommentEditRequestDto.getMemberId());
+        dailyMapper.findByDailyComment(dailyCommentEditRequestDto.getDailyId())
+                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND));
 
         userService.verifyUpdate(dailyMapper.updateDailyComment(dailyCommentEditRequestDto));
     }
@@ -293,16 +295,16 @@ public class DailyService {
     public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId, int memberId) {
         verifyDailyPost(dailyId);
 
-        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComment(dailyId);
-        if (commentList.size() == 0) {
+        List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComments(dailyId);
+        if (commentList.size() <= 0) {
             throw new BusinessLogicException(ExceptionCode.COMMENT_NOT_FOUND);
         }
-        return commentList.stream()
-                    .map(comment -> {
-                        if(comment.getMemberId() == memberId) comment.setUserCheck(true);
-                        else comment.setUserCheck(false);
-                        return comment;
-                    }).collect(Collectors.toList());
+
+        for(DailyCommentDetailsResponseDto comment : commentList) {
+            if (comment.getMemberId() == memberId) comment.setUserCheck(true);
+            else comment.setUserCheck(false);
+        }
+        return commentList;
     }
 
     
