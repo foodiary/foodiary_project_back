@@ -72,10 +72,8 @@
         LIMIT 20)
     </insert>
 
-
-
     <delete id="rankDelete">
-        DELETE FROM TB_COMMON WHERE RANK_WEEK_DAILY_ID OR RANK_MONTH_DAILY_ID
+        DELETE FROM TB_COMMON
     </delete>
 
 </mapper>
