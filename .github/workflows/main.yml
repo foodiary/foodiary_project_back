@@ -1,5 +1,5 @@
 name: foodiary-webapp 
-
+ 
 on:
   push:
     branches: [ "main" ]
