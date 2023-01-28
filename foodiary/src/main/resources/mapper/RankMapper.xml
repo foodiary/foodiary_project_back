@@ -40,7 +40,7 @@
         WHERE RANK_MONTH_DAILY_ID = ${dailyId}
     </select>
 
-    <select id="findRank" resultType="RankListDto">
+    <select id="findRank" resultType="com.foodiary.rank.model.RankListDto">
         SELECT * FROM TB_COMMON
     </select>
 
