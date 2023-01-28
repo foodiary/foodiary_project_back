@@ -121,11 +121,14 @@ public class UserService {
     }
 
     public TokenReissueDto tokenReissue(String refreshToken) throws Exception {
+        log.info("리프레시 토큰 재발급 진행중 : 리프레시 토큰 {}",refreshToken);
         String memberEmail = jwtProvider.getClaims(refreshToken).getBody().getSubject();
         log.info(memberEmail);
         MemberDto member = memberMapper.findByEmail(memberEmail)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
         TokenResponseDto tokenResponse = jwtProvider.reissueAtk(member, refreshToken);
+        log.info("리프레시 토큰 발급 완료 : 엑세스 토큰 {}",tokenResponse.getAccessToken());
+        log.info("리프레시 토큰 발급 완료 : 리프레시 토큰 {}",tokenResponse.getRefreshToken());
 
         return TokenReissueDto.builder()
                     .memberId(member.getMemberId())
