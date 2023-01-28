@@ -1,4 +1,4 @@
-name: foodiary-webapp
+name: foodiary-webapp 
 
 on:
   push:
