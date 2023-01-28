@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.foodiary.common.exception.BusinessLogicException;
+import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.rank.model.RanksResponseDto;
 import com.foodiary.rank.service.RankService;
 
@@ -35,6 +37,10 @@ public class RankController {
 
         List<RanksResponseDto> ranksResponseDtoList =rankService.rankWeekView();
 
+        if(ranksResponseDtoList.size()==0) {
+            throw new BusinessLogicException(ExceptionCode.RANK_NOT_FOUND);
+        }
+
         return new ResponseEntity<>(ranksResponseDtoList, HttpStatus.OK);
     }
 
@@ -51,6 +57,10 @@ public class RankController {
 
         List<RanksResponseDto> ranksResponseDtoList =rankService.rankMonthView();
 
+        if(ranksResponseDtoList.size()==0) {
+            throw new BusinessLogicException(ExceptionCode.RANK_NOT_FOUND);
+        }
+        
         return new ResponseEntity<>(ranksResponseDtoList, HttpStatus.OK);
     }
 }

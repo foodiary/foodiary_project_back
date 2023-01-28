@@ -51,16 +51,7 @@ public class SchedulerController {
             log.info("deleteCheck {}",deleteCheck);
 
             if(deleteCheck < rankdDtos.size()) {
-                log.info("Before ReAllSize {}",rankdDtos.size());
-
-                int reDeleteCheck = mapper.rankDelete();
-                log.info("reDeleteCheck {}",reDeleteCheck);
-                
-                List<RankListDto> reRankdDtos = mapper.findRank();
-
-                log.info("after ReAllSize {}",reRankdDtos.size());
-                rankSize(reDeleteCheck);
-
+                throw new BusinessLogicException(ExceptionCode.RANK_ERROR);
             }
         }
 
