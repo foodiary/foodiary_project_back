@@ -82,6 +82,7 @@ public class FoodService {
     public void weekRecommendMenuAll() throws JsonProcessingException {
         List<MemberDto> memberList = memberMapper.findAll();
         List<FoodDto> FoodList = foodMapper.findAllFood();
+        System.out.println(memberList.size());
 
         for (int k = 0; k < memberList.size() ; k++) {
             List<Integer> hateFoodList = foodMapper.findAllHateFood(memberList.get(k).getMemberId());
@@ -135,7 +136,7 @@ public class FoodService {
 
             LocalDate now = LocalDate.now();
             while (true){
-                if(!now.getDayOfWeek().toString().equals("SUNDAY")){
+                if(!now.getDayOfWeek().toString().equals("MONDAY")){
                     now = now.minusDays(1);
                 } else break;
             }
@@ -201,7 +202,7 @@ public class FoodService {
         }
         LocalDate now = LocalDate.now();
         while (true){
-            if(!now.getDayOfWeek().toString().equals("SUNDAY")){
+            if(!now.getDayOfWeek().toString().equals("MONDAY")){
                 now = now.minusDays(1);
             } else break;
         }
