@@ -83,7 +83,7 @@ public class MemberSignUpRequestDto {
             @NotBlank(message = "비밀번호 검사를 하지 않았습니다.") @Pattern(regexp = "^[Y]$", message = "잘못된 요청입니다.") String passwordYn,
             @NotBlank(message = "이메일이 비어있습니다") @Email(message = "이메일 형식에 부합하지 않습니다.") String email,
             @NotBlank(message = "이메일 검사를 하지 않았습니다.") @Pattern(regexp = "^[Y]$", message = "잘못된 요청입니다.") String emailYn,
-            @NotBlank(message = "닉네임이 비어있습니다.") @Pattern(regexp = "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]{2,16}$", message = "닉네임은 2~16자리 한글, 영어 숫자만 가능합니다.") String nickName,
+            @NotBlank(message = "닉네임이 비어있습니다.") @Pattern(regexp = "^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]{2,10}$", message = "닉네임은 2~10자리 한글, 영어 숫자만 가능합니다.") String nickName,
             @NotBlank(message = "닉네임 검사를 하지 않았습니다.") @Pattern(regexp = "^[Y]$", message = "잘못된 요청입니다.") String nickNameYn,
             String profile, @NotBlank(message = "필수약관 동의가 비어있습니다.") String requiredTerms,
             @NotBlank(message = "선택약관 동의가 비어있습니다.") String choiceTerms) {

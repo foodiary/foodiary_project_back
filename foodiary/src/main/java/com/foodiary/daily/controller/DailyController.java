@@ -261,7 +261,7 @@ public class DailyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
     })
     @GetMapping("/dailys/comment")
-    public ResponseEntity<?> dailyCommentDetails(
+    public ResponseEntity<List<DailyCommentDetailsResponseDto>> dailyCommentDetails(
          @ApiParam(value = "게시글 시퀀스", required = true) @Positive int dailyId,
          @ApiParam(value = "회원 시퀀스", required = false) @Positive int memberId,
          @ApiParam(value = "댓글 페이지", required = true) @Positive int page
@@ -269,7 +269,7 @@ public class DailyController {
         if(page <= 0){
             throw new BusinessLogicException(ExceptionCode.BAD_REQUEST);
         }
-        PageHelper.startPage(1, 10);
+        PageHelper.startPage(page, 10);
         List<DailyCommentDetailsResponseDto> response = dailyService.findDailyComments(dailyId, memberId);
 
         return new ResponseEntity<>(response, HttpStatus.OK);

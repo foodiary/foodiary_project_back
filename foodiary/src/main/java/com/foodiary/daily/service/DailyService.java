@@ -109,7 +109,7 @@ public class DailyService {
         boolean verifyLike = dailyMapper.findByMemberIdAndDailyId(memberId, dailyId).isEmpty();
 
         if (!verifyLike) {
-            removeDailyLike(dailyId);
+            removeDailyLike(dailyId, memberId);
         } else {
             userService.verifySave(dailyMapper.saveDailyLike(memberId, dailyId));
         }
@@ -305,7 +305,6 @@ public class DailyService {
 
     // 하루식단 댓글 조회
     public List<DailyCommentDetailsResponseDto> findDailyComments(int dailyId, int memberId) {
-        verifyDailyPost(dailyId);
 
         List<DailyCommentDetailsResponseDto> commentList = dailyMapper.findAllDailyComments(dailyId);
         if (commentList.size() <= 0) {
@@ -316,13 +315,14 @@ public class DailyService {
             if (comment.getMemberId() == memberId) comment.setUserCheck(true);
             else comment.setUserCheck(false);
         }
+
         return commentList;
     }
 
     
     //하루식단 게시글 좋아요 취소
-    public void removeDailyLike(int dailyId) {
-        dailyMapper.deleteDailyLike(dailyId);
+    public void removeDailyLike(int dailyId, int memberId) {
+        dailyMapper.deleteDailyLike(dailyId, memberId);
     }
 
     //하루식단 게시글 삭제
