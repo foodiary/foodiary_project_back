@@ -164,22 +164,22 @@
 
 
 <!--    댓글 조회-->
-<!--    <select id="findAllDailyComments" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">-->
-<!--        SELECT d.DAILY_COMMENT_ID, d.MEMBER_ID, d.DAILY_ID, d.DAILY_COMMENT_BODY,-->
-<!--               d.DAILY_COMMENT_WRITER, d.DAILY_COMMENT_CREATE,-->
-<!--               (SELECT MEMBER_PATH FROM TB_MEMBER WHERE MEMBER_ID = d.MEMBER_ID) AS MEMBER_IMAGE-->
-<!--        FROM TB_DAILY_COMMENT AS d-->
-<!--        WHERE  DAILY_ID = #{dailyId}-->
-<!--        ORDER BY d.DAILY_COMMENT_ID DESC-->
-<!--    </select>-->
-
-
     <select id="findAllDailyComments" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">
-        SELECT *
-        FROM TB_DAILY_COMMENT
+        SELECT d.DAILY_COMMENT_ID, d.MEMBER_ID, d.DAILY_ID, d.DAILY_COMMENT_BODY,
+               d.DAILY_COMMENT_WRITER, d.DAILY_COMMENT_CREATE,
+               (SELECT MEMBER_PATH FROM TB_MEMBER WHERE MEMBER_ID = d.MEMBER_ID) AS MEMBER_IMAGE
+        FROM TB_DAILY_COMMENT AS d
         WHERE  DAILY_ID = #{dailyId}
-        ORDER BY DAILY_COMMENT_ID DESC
+        ORDER BY d.DAILY_COMMENT_ID DESC
     </select>
+
+
+<!--    <select id="findAllDailyComments" resultType="com.foodiary.daily.model.DailyCommentDetailsResponseDto">-->
+<!--        SELECT *-->
+<!--        FROM TB_DAILY_COMMENT-->
+<!--        WHERE  DAILY_ID = #{dailyId}-->
+<!--        ORDER BY DAILY_COMMENT_ID DESC-->
+<!--    </select>-->
 
 
 
