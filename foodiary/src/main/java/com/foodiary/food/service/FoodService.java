@@ -136,7 +136,7 @@ public class FoodService {
 
             LocalDate now = LocalDate.now();
             while (true){
-                if(!now.getDayOfWeek().toString().equals("MONDAY")){
+                if(!now.getDayOfWeek().toString().equals("SUNDAY")){
                     now = now.minusDays(1);
                 } else break;
             }
@@ -202,7 +202,7 @@ public class FoodService {
         }
         LocalDate now = LocalDate.now();
         while (true){
-            if(!now.getDayOfWeek().toString().equals("MONDAY")){
+            if(!now.getDayOfWeek().toString().equals("SUNDAY")){
                 now = now.minusDays(1);
             } else break;
         }
