@@ -72,7 +72,7 @@ public interface DailyMapper {
 
 // =================== DELETE ====================
 
-    int deleteDailyLike(@Param("dailyId") int dailyId);
+    int deleteDailyLike(@Param("dailyId") int dailyId, @Param("memberId") int memberId);
 
     int deleteDaily(@Param("dailyId") int dailyId);
 

@@ -233,7 +233,7 @@
 <!--    좋아요 취소-->
     <delete id="deleteDailyLike">
         DELETE FROM TB_DAILY_LIKE
-            WHERE DAILY_ID = #{dailyId}
+            WHERE DAILY_ID = #{dailyId} AND MEMBER_ID = #{memberId}
     </delete>
 
 
