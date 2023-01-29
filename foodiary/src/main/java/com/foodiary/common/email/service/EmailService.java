@@ -1,9 +1,12 @@
-package com.foodiary.common.email;
+package com.foodiary.common.email.service;
 
+import com.foodiary.common.email.mapper.EmailMapper;
+import com.foodiary.common.email.model.EmailDto;
 import com.sendgrid.*;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.*;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -13,7 +16,10 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
+
+    private final EmailMapper mapper;  
 
     @Value("${smtp.password}")
     private String secretKey;
@@ -55,6 +61,8 @@ public class EmailService {
         log.info("스테이터스 코드 {}",response.getStatusCode());
         log.info("바디 내용 {}",response.getBody());
         log.info("헤더 내용 {}",response.getHeaders());
+        EmailDto emailDto = new EmailDto(type, email);
+        mapper.saveEmail(emailDto);
       } catch (IOException ex) {
         throw ex;
       }

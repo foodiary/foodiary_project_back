@@ -1,7 +1,6 @@
 package com.foodiary.member.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.foodiary.auth.jwt.JwtProvider;
 import com.foodiary.auth.service.UserService;
-import com.foodiary.common.email.EmailService;
+import com.foodiary.common.email.service.EmailService;
 import com.foodiary.common.exception.BusinessLogicException;
 import com.foodiary.common.exception.ExceptionCode;
 import com.foodiary.common.exception.MorePasswordException;
