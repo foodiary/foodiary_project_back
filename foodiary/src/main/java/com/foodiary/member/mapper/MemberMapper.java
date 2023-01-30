@@ -55,9 +55,9 @@ public interface MemberMapper {
 
     List<MemberDto> findAll();
 
-    MemberIdResponseDto findByMemberDailyComment(@Param("memberId") int memberId);
+    List<MemberIdResponseDto> findByMemberDailyComment(@Param("memberId") int memberId);
 
-    MemberIdResponseDto findByMemberDaily(@Param("memberId") int memberId);
+    List<MemberIdResponseDto> findByMemberDaily(@Param("memberId") int memberId);
 
     int saveMemberImage(MemberImageDto memberImageDto);
 

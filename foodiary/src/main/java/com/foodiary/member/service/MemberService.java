@@ -137,12 +137,12 @@ public class MemberService {
         userService.verifyUpdate(mapper.updateMemberInfo(memberEditDto));
 
         // 데일리 테이블 작성자 업데이트
-        if(mapper.findByMemberDaily(id)!=null) {
+        if(mapper.findByMemberDaily(id).size()>0) {
             userService.verifyUpdate(mapper.updateDailyWriter(id, memberEditDto.getNickName()));
         }
 
         // 데일리 코멘트 테이블 작성자 업데이트
-        if(mapper.findByMemberDailyComment(id)!=null) {
+        if(mapper.findByMemberDailyComment(id).size()>0) {
             userService.verifyUpdate(mapper.updateDailyCommentWriter(id, memberEditDto.getNickName()));
         }
 

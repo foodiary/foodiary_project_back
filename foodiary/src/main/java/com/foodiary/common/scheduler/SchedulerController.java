@@ -12,7 +12,6 @@ import com.foodiary.member.mapper.MemberMapper;
 import com.foodiary.member.model.MemberDto;
 import com.foodiary.rank.mapper.RankMapper;
 import com.foodiary.rank.model.RankListDto;
-import com.foodiary.rank.model.RanksResponseDto;
 import com.foodiary.redis.RedisDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
