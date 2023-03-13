@@ -26,8 +26,6 @@ public class EmailService {
 
     public void EmailSend(String email, String info, String type) throws IOException {
 
-      // Email to = new Email(email);
-      // Email from = new Email("em6052.www.foodiary.store");
       log.info("메일 발송 이메일과 타입 {}, {}", email, type);
       Mail mail = new Mail();
       mail.setFrom(new Email("foodiary@em6052.www.foodiary.store"));
@@ -58,6 +56,7 @@ public class EmailService {
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
         Response response = sg.api(request);
+        log.info("--------이메일 발송 결과------");
         log.info("스테이터스 코드 {}",response.getStatusCode());
         log.info("바디 내용 {}",response.getBody());
         log.info("헤더 내용 {}",response.getHeaders());

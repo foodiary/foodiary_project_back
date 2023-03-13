@@ -34,10 +34,10 @@ public class SchedulerController {
     private final FoodService foodService;
     private final RedisDao redisDao;
     
-    @Transactional(rollbackFor = BusinessLogicException.class)
+    @Transactional(rollbackFor = {Exception.class, BusinessLogicException.class})
     @Scheduled(cron="0 0 0/1 * * *")
     // @Scheduled(cron="*/10 * * * * *") // 테스트용
-    public void scheduler() {
+    public void rankScheduler() {
 
         log.info("랭킹 작업 실행");
         
