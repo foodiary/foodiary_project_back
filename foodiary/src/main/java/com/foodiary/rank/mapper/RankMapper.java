@@ -16,6 +16,8 @@ public interface RankMapper {
 
     List<RanksResponseDto> rankMonthList();
 
+    List<RanksResponseDto> rankRecommendList();
+
     List<Integer> findByWeekDailyId();
 
     List<Integer> findByMonDailyId();

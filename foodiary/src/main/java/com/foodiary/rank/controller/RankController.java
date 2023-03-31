@@ -63,4 +63,24 @@ public class RankController {
         
         return new ResponseEntity<>(ranksResponseDtoList, HttpStatus.OK);
     }
+
+    @Operation(summary = "ranking", description = "랜덤 게시글 추천")
+    @ApiResponses({ 
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST"),
+            @ApiResponse(responseCode = "404", description = "NOT FOUND"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+    })
+    @ResponseBody
+    @GetMapping(value = "/rank/recommend")
+    public ResponseEntity<List<RanksResponseDto>> ranksRecommend() throws Exception {
+
+        List<RanksResponseDto> ranksResponseDtoList =rankService.rankRecommendView();
+
+        if(ranksResponseDtoList.size()==0) {
+            throw new BusinessLogicException(ExceptionCode.POST_NOT_FOUND);
+        }
+        
+        return new ResponseEntity<>(ranksResponseDtoList, HttpStatus.OK);
+    }
 }

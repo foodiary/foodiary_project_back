@@ -19,6 +19,12 @@
         WHERE NOT tc.RANK_MONTH_DAILY_ID is NULL
     </select>
 
+    <select id="rankRecommendList" resultType="com.foodiary.rank.model.RanksResponseDto">
+        SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_THUMBNAIL, td.DAILY_TITLE 
+        FROM TB_DAILY td 
+        ORDER BY RAND() LIMIT 5;
+    </select>
+
     <select id="findByWeekDailyId" resultType="Integer">
         SELECT RANK_WEEK_DAILY_ID FROM TB_COMMON
         WHERE NOT RANK_WEEK_DAILY_ID is NULL

@@ -24,4 +24,9 @@ public class RankService {
         
         return mapper.rankMonthList();
     }
+
+    public List<RanksResponseDto> rankRecommendView() {
+        
+        return mapper.rankRecommendList();
+    }
 }
