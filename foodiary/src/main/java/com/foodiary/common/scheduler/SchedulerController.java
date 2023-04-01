@@ -54,13 +54,15 @@ public class SchedulerController {
             }
         }
 
-        int weekCheck = mapper.weekWrite();
-        rankSize(weekCheck);
-        log.info("weekCheck {}",weekCheck);
+        mapper.weekWrite();
+        // int weekCheck = mapper.weekWrite();
+        // rankSize(weekCheck);
+        // log.info("weekCheck {}",weekCheck);
 
-        int monthCheck = mapper.monthWrite();
-        rankSize(monthCheck);
-        log.info("monthCheck {}",monthCheck);
+        mapper.monthWrite();
+        // int monthCheck = mapper.monthWrite();
+        // rankSize(monthCheck);
+        // log.info("monthCheck {}",monthCheck);
 
         List<RankListDto> lastRankdDtos = mapper.findRank();
          
@@ -68,11 +70,11 @@ public class SchedulerController {
 
     }
 
-    private void rankSize(int size) {
-        if(size==0) {
-            throw new BusinessLogicException(ExceptionCode.RANK_ERROR);
-        }
-    }
+    // private void rankSize(int size) {
+    //     if(size==0) {
+    //         throw new BusinessLogicException(ExceptionCode.RANK_ERROR);
+    //     }
+    // }
 
     @Scheduled(cron="0 0 0 * * SUN")
     public void menuScheduler() {
