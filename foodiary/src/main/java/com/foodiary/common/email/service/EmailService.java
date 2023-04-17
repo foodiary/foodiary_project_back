@@ -24,7 +24,7 @@ public class EmailService {
     @Value("${smtp.password}")
     private String secretKey;
 
-    public void EmailSend(String email, String info, String type) throws IOException {
+    public void emailSend(String email, String info, String type) throws IOException {
 
       log.info("메일 발송 이메일과 타입 {}, {}", email, type);
       Mail mail = new Mail();

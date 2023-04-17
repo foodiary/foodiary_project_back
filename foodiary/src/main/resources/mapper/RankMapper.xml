@@ -22,6 +22,7 @@
     <select id="rankRecommendList" resultType="com.foodiary.rank.model.RanksResponseDto">
         SELECT td.DAILY_ID, td.MEMBER_ID, td.DAILY_THUMBNAIL, td.DAILY_TITLE 
         FROM TB_DAILY td 
+        WHERE td.DAILY_YN ='N'
         ORDER BY RAND() LIMIT 5;
     </select>
 
