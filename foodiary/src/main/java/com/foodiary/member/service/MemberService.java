@@ -266,7 +266,7 @@ public class MemberService {
 
         MemberDto memberDto = mapper.findByEmail(email).orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        emailService.EmailSend(email, memberDto.getMemberLoginId(), type);
+        emailService.emailSend(email, memberDto.getMemberLoginId(), type);
     }
 
     // 비밀번호 찾기
@@ -283,7 +283,7 @@ public class MemberService {
 
         String jwt = jwtProvider.generateAccessToken(claims, subject, expiration);
         log.info("jwt = {}", jwt);
-        emailService.EmailSend(email, jwt, type);
+        emailService.emailSend(email, jwt, type);
     }
 
     // 비밀번호 찾기 이후 새 비밀번호로 변경
@@ -377,7 +377,7 @@ public class MemberService {
         redisTemplate.opsForValue().set("signup:" + memberCheckEmailRequestDto.getEmail(), num);
         redisTemplate.expire("signup:" + memberCheckEmailRequestDto.getEmail(), 5, TimeUnit.MINUTES);
 
-        emailService.EmailSend(memberCheckEmailRequestDto.getEmail(), num, "signup");
+        emailService.emailSend(memberCheckEmailRequestDto.getEmail(), num, "signup");
 
     }
 
