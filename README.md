@@ -11,8 +11,8 @@
 
 > 💡 온라인으로 인원 모집부터 배포까지 진행한 프로젝트입니다. 날이면 날마다 고민하는 오늘 뭐 먹을까?를 항상 고민하는 사람들을 위해 대신 고민해주고 또 해결해 줄 서비스로 매번 색다른 메뉴를 추천합니다. 또한 자신이 오늘 무엇을 먹었는지 기록하고 또 공유할 수 있는 서비스입니다.
 
-<img width=50% src="https://user-images.githubusercontent.com/112879800/234303756-c8f87b18-ae1a-481f-9cc2-5f78e7e3d956.png">
-<img width=44% src="https://user-images.githubusercontent.com/112879800/234303895-e3c4c65e-a7be-44d5-9619-7283b8ba8f0d.png">
+<img width=45% src="https://user-images.githubusercontent.com/112879800/234303756-c8f87b18-ae1a-481f-9cc2-5f78e7e3d956.png">
+<img width=40% src="https://user-images.githubusercontent.com/112879800/234303895-e3c4c65e-a7be-44d5-9619-7283b8ba8f0d.png">
 
 <br>
 
