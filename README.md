@@ -13,7 +13,6 @@
 
 <img width="838" alt="스크린샷 2023-04-25 오후 11 33 28" src="https://user-images.githubusercontent.com/112879800/234310688-002f895f-1d14-4fb9-be75-cb583a1ef332.png">
 
-<br>
 
 ### 🛠️ 사용 기술 및 라이브러리
 
