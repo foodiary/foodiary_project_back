@@ -21,12 +21,17 @@
 - Mybatis
 - Gradle
 - AWS EC2, S3, RDS, Route 53, Elastic Beanstalk
-- MySql, MariaDB, Redis
+- MariaDB, Redis
 - Github Action
 
 ### 🙋🏻‍♀️ 담당한 역할
 
-팀 리더, 인프라 설계 및 회원 서비스 및 랭킹 서비스 구축
+- 팀장 (기획 및 디자인, 개발)
+- 백엔드 api 개발(총 2명이 분담하여 진행)
+- AWS 환경 및 배포 설계
+- 마이페이지 개발 ( 1 : 1 문의 및 회원 정보 수정 구현)
+- 랭킹 기능 및 검색(+최근 검색어 저장) 기능 구현
+- 회원 가입 및 회원 인증 구현
 
 ### 📱 구현 기능 (API)
 
