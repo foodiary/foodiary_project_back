@@ -31,7 +31,7 @@
 ### 📱 구현 기능 (API)
 
 - Elastic Beanstalk 및 Route 53, ACM(AWS Certificate Manager)을 활용하여 SSL 환경 구성을 통해 통신 보안 구축
-- github Action을 사용하여 CI/CD 구축을 통해 배포 시 빌드 테스트 및 배포 자동화 구축
+- Github Action을 사용하여 CI/CD 구축을 통해 배포 시 빌드 테스트 및 배포 자동화 구축
 - SendGrid를 활용한 이메일 api 연동, 템플릿 제작 및 관리, 이메일 발송 서비스 구현을 통해 회원가입 시 이메일 인증으로 본인 확인
     
     SendGrid의 템플릿 관리 서비스를 이용하여, 이메일 발송할 타입에 맞춘 템플릿을 적용하여 이메일 발송
@@ -47,7 +47,7 @@
     <img width="838" alt="2" src="https://user-images.githubusercontent.com/112879800/234305918-df6897f9-7a4d-43bb-8b86-36494c065cd4.png">
 
     
-- redis를 통한 최근 검색어 저장 및 관리
+- Redis를 통한 최근 검색어 저장 및 관리
     
     키값을 “dailySearch:+회원시퀀스”로 하여 회원들의 최근 검색어를 저장
     
