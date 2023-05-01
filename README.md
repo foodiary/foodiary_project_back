@@ -21,20 +21,25 @@
 - Mybatis
 - Gradle
 - AWS EC2, S3, RDS, Route 53, Elastic Beanstalk
-- MySql, MariaDB, redis
+- MariaDB, Redis
 - Github Action
 
 ### 🙋🏻‍♀️ 담당한 역할
 
-팀 리더, 인프라 설계 및 회원 서비스 및 랭킹 서비스 구축
+- 팀장 (기획 및 디자인, 개발)
+- 백엔드 api 개발(총 2명이 분담하여 진행)
+- AWS 환경 및 배포 설계
+- 마이페이지 개발 ( 1 : 1 문의 및 회원 정보 수정 구현)
+- 랭킹 기능 및 검색(+최근 검색어 저장) 기능 구현
+- 회원 가입 및 회원 인증 구현
 
 ### 📱 구현 기능 (API)
 
 - Elastic Beanstalk 및 Route 53, ACM(AWS Certificate Manager)을 활용하여 SSL 환경 구성을 통해 통신 보안 구축
-- github Action을 사용하여 CI/CD 구축을 통해 배포 시 빌드 테스트 및 배포 자동화 구축
-- Sendgrid를 활용한 이메일 api 연동, 템플릿 제작 및 관리, 이메일 발송 서비스 구현을 통해 회원가입 시 이메일 인증으로 본인 확인
+- Github Action을 사용하여 CI/CD 구축을 통해 배포 시 빌드 테스트 및 배포 자동화 구축
+- SendGrid를 활용한 이메일 api 연동, 템플릿 제작 및 관리, 이메일 발송 서비스 구현을 통해 회원가입 시 이메일 인증으로 본인 확인
     
-    Sendgrid의 템플릿 관리 서비스를 이용하여, 이메일 발송할 타입에 맞춘 템플릿을 적용하여 이메일 발송
+    SendGrid의 템플릿 관리 서비스를 이용하여, 이메일 발송할 타입에 맞춘 템플릿을 적용하여 이메일 발송
     
    <img width="838" alt="2" src="https://user-images.githubusercontent.com/112879800/234305524-17a60e29-ca73-4616-8695-82d478b44abe.png">
 
@@ -47,7 +52,7 @@
     <img width="838" alt="2" src="https://user-images.githubusercontent.com/112879800/234305918-df6897f9-7a4d-43bb-8b86-36494c065cd4.png">
 
     
-- redis를 통한 최근 검색어 저장 및 관리
+- Redis를 통한 최근 검색어 저장 및 관리
     
     키값을 “dailySearch:+회원시퀀스”로 하여 회원들의 최근 검색어를 저장
     
@@ -71,9 +76,9 @@
 ### 💡 성과
 
 - SSL 환경 구성을 통해 통신 보안 구축
-- AWS EB를 활용하여 배포하여 배포 버전 관리 방법 터득
+- AWS Elastic Beanstalk를 활용하여 배포하여 배포 버전 관리 방법 터득
     - 롤백을 하지 않더라도, 이전 소스 코드로 배포를 쉽게 배포
 - SendGrid api를 사용하여 메일 발송 및 관리
     - 메일 전송과 관련된 통계 및 메일 수신 여부 확인
-- redis를 활용하여 유효기간 부여를 통해 데이터 자동 삭제를 통한 데이터 관리의 효율성 증대
-- 스웨거를 통해 api 명세 관리 및 간단한 api 테스트 환경 구축
+- Redis를 활용하여 유효기간 부여를 통해 데이터 자동 삭제를 통한 데이터 관리의 효율성 증대
+- Swagger를 이용해 api 명세 관리 및 테스트 환경 구축
