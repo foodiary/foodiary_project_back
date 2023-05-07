@@ -33,7 +33,10 @@
 - 랭킹 기능 및 검색(+최근 검색어 저장) 기능 구현
 - 회원 가입 및 회원 인증 구현
 
-### 📱 구현 기능 (API)
+### 📄 Swagger api 확인 주소
+https://www.foodiary.store/swagger-ui/index.html#/
+
+### 📱 구현 기능 (API)     
 
 - Elastic Beanstalk 및 Route 53, ACM(AWS Certificate Manager)을 활용하여 SSL 환경 구성을 통해 통신 보안 구축
 - Github Action을 사용하여 CI/CD 구축을 통해 배포 시 빌드 테스트 및 배포 자동화 구축
