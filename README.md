@@ -24,7 +24,11 @@
 - MariaDB, Redis
 - Github Action
 
-### 🙋🏻‍♀️ 담당한 역할
+### 📄 Swagger api 확인 주소
+https://www.foodiary.store/swagger-ui/index.html#/
+
+
+### 🙋🏻‍♀️ 김미주 담당 역할 / (김미주 외 백엔드 역할 및 구현 기능은 추후 업데이트)
 
 - 팀장 (기획 및 디자인, 개발)
 - 백엔드 api 개발(총 2명이 분담하여 진행)
@@ -32,9 +36,6 @@
 - 마이페이지 개발 ( 1 : 1 문의 및 회원 정보 수정 구현)
 - 랭킹 기능 및 검색(+최근 검색어 저장) 기능 구현
 - 회원 가입 및 회원 인증 구현
-
-### 📄 Swagger api 확인 주소
-https://www.foodiary.store/swagger-ui/index.html#/
 
 ### 📱 구현 기능 (API)     
 
